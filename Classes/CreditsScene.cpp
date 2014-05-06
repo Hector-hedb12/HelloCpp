@@ -8,24 +8,21 @@ USING_NS_CC;
 
 CCScene* CreditsScene::scene()
 {
-    // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
     
-    // 'layer' is an autorelease object
     CreditsScene *layer = CreditsScene::create();
 
-    // add layer as a child to scene
+    // agrega layer como hijo de scene
     scene->addChild(layer);
 
-    // return the scene
+    // retorna la escena
     return scene;
 }
 
-// on "init" you need to initialize your instance
 bool CreditsScene::init()
 {
     //////////////////////////////
-    // 1. super init first
+    // 1. super init primero
     if ( !CCLayer::init() )
     {
         return false;
@@ -47,22 +44,22 @@ bool CreditsScene::init()
     // ** FIN: Back Menu **
 
     // ** Titulo **
-    CCLabelTTF* pLabel = CCLabelTTF::create("Granadenses CardGame", "Arial", FONT_SIZE);
+    CCLabelTTF* pLabel = CCLabelTTF::create("Zombies!! el juego", "Arial", FONT_SIZE);
     
-    // position the label on the center of the screen
+    // coloca el sprite en el centro de la pantalla
     pLabel->setPosition(ccp(VisibleRect::center().x, VisibleRect::top().y - pLabel->getContentSize().height - 10));
 
-    // add the label as a child to this layer
+    // agrega el label como un hijo del layer principal
     this->addChild(pLabel, 1);
 
     // ** FIN Titulo **
 
     CCSprite* pSprite = CCSprite::create("ugr_logo.png");
 
-    // position the sprite on the center of the screen
+    // coloca el sprite en el centro de la pantalla
     pSprite->setPosition(ccp(VisibleRect::center().x, VisibleRect::center().y));
 
-    // add the sprite as a child to this layer
+    // agrega el sprite como un hijo del layer principal
     this->addChild(pSprite, 0);
     
     return true;

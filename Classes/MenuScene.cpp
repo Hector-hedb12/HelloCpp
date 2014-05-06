@@ -19,16 +19,14 @@ static CCPoint s_tCurPos = CCPointZero;
 
 CCScene* MenuScene::scene()
 {
-    // 'scene' is an autorelease object
     CCScene *scene = CCScene::create();
 
-    // 'layer' is an autorelease object
     MenuScene *layer = MenuScene::create();
 
-    // add layer as a child to scene
+    // agrega layer como un hijo de escena
     scene->addChild(layer);
 
-    // return the scene
+    // retorna la escena
     return scene;
 }
 
@@ -39,6 +37,8 @@ bool MenuScene::init()
         return false;
     }
 
+
+    // Crea el menu y agrega las opciones con su respectivo callback
 	menuOptions = CCMenu::create();
 
 	for ( int i = 0;  i < MENU_OPTIONS_COUNT; ++ i) {
@@ -58,11 +58,11 @@ bool MenuScene::init()
 
 void MenuScene::menuCallBack(CCObject * pSender)
 {
-	// get the userdata, it's the index of the menu item clicked
+	// obtiene la opcion del menu cliqueada por el usuario
 	CCMenuItem* pMenuItem = (CCMenuItem *)(pSender);
 	int nIdx = pMenuItem->getZOrder();
 
-	// create the test scene and run it
+	// verifica a cual pantalla se enviara al usuario
 	switch (nIdx)
 	{
 	case PLAY:
@@ -79,8 +79,11 @@ void MenuScene::menuCallBack(CCObject * pSender)
 	}
 }
 
+
 void MenuScene::close()
 {
+	// Cierra la aplicacion
+
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
 	CCMessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
 
@@ -94,6 +97,7 @@ void MenuScene::close()
 
 void MenuScene::credits()
 {
+	// Inicializa la escena de creditos y la muestra
 	CCScene * creditsScene = CreditsScene::scene();
 
 	if (creditsScene)
@@ -104,6 +108,7 @@ void MenuScene::credits()
 
 void MenuScene::play()
 {
+	// Inicializa la escena de Juego y la muestra
 	CCScene * playScene = PlayScene::scene();
 
 	if (playScene)

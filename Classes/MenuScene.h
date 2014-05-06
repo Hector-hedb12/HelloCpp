@@ -14,16 +14,31 @@ USING_NS_CC;
 class MenuScene : public CCLayer
 {
 public:
+	/*
+	 * Metodo utilizado para inicializar todos los componentes que poseerá la
+	 * escena del menu principal
+	 */
 	virtual bool init();
 
+	/*
+	 * Esta sera la funcion a llamar cada vez que sea necesaria la creacion de
+	 * la escena del menu principal. Este método se apoya en el método init.
+	 */
 	static CCScene* scene();
 
+	/*
+	 * Llamada encargada de manejar la navegacion a las pantallas del juego, los
+	 * creditos y para salir de la aplicacion
+	 */
 	void menuCallBack(CCObject * pSender);
 
 	CREATE_FUNC(MenuScene);
 
 private:
 	CCMenu* menuOptions;
+	/*
+	 * Funciones auxiliares utilizadas por el callback del menu para la navegacion
+	 */
 	void close();
 	void play();
 	void credits();

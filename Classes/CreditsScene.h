@@ -6,13 +6,22 @@
 class CreditsScene : public cocos2d::CCLayer
 {
 public:
-    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
+    /*
+     * Metodo utilizado para inicializar todos los componentes que poseerá la
+	 * escena de los créditos
+	 */
     virtual bool init();  
 
-    // there's no 'id' in cpp, so we recommend returning the class instance pointer
+    /*
+     * Esta sera la funcion a llamar cada vez que sea necesaria la creacion de
+     * la escena de los creditos. Este método se apoya en el método init.
+     */
     static cocos2d::CCScene* scene();
     
-    // a selector callback
+    /*
+     * El llamado que se ejecutara cada vez que el boton "Menu Principal" es
+     * presionado. Causa que se muestre la pantalla principal del juego
+     */
     void mainMenuCallback(CCObject* pSender);
     
     // implement the "static node()" method manually

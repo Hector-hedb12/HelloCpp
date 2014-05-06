@@ -27,7 +27,7 @@
 */
 
 #include "CCLayerPanZoom.h"
-
+#include <cmath>
 
 USING_NS_CC;
 
@@ -127,7 +127,6 @@ void CCLayerPanZoom::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *
         _touches->addObject(pTouch);
     }
 
-
     if (_touches->count() == 1)
     {
         _touchMoveBegan = false;
@@ -142,7 +141,7 @@ void CCLayerPanZoom::ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *
 
 void CCLayerPanZoom::ccTouchesMoved(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent){
     bool multitouch = _touches->count() > 1;
-    if (multitouch)
+    if (_touches->count() > 1)
     {
         // Get the two first touches
         CCTouch *touch1 = (CCTouch*)_touches->objectAtIndex(0);
@@ -191,7 +190,7 @@ void CCLayerPanZoom::ccTouchesMoved(cocos2d::CCSet *pTouches, cocos2d::CCEvent *
         // Don't click with multitouch
         _touchDistance = INFINITY;
     }
-    else
+    else if (_touches->count() == 1)
     {	        
         // Get the single touch and it's previous & current position.
         CCTouch *touch = (CCTouch*)_touches->objectAtIndex(0);
@@ -231,7 +230,7 @@ void CCLayerPanZoom::ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *
     if (  (_touchDistance < _maxTouchDistanceToClick) /*&& (self.delegate) */
         && (_touches->count() == 1))
     {
-        CCTouch *touch = (CCTouch*)_touches->objectAtIndex(0);       
+        CCTouch *touch = (CCTouch*)_touches->objectAtIndex(0);
         CCPoint curPos = CCDirector::sharedDirector()->convertToGL(touch->getLocationInView());
         //ToDo add delegate
         /*[self.delegate layerPanZoom: self
@@ -327,7 +326,7 @@ void  CCLayerPanZoom::onExit(){
 }
 void CCLayerPanZoom::setPanBoundsRect(CCRect rect){
     _panBoundsRect = rect;
-    this->setScale(this->minPossibleScale());
+    //this->setScale(this->minPossibleScale());
     this->setPosition(this->getPosition());
 }
 
@@ -363,28 +362,32 @@ void CCLayerPanZoom::setPosition(CCPoint  position){
         else
         {
             CCRect boundBox = this->boundingBox();
+            // Izquierda
             if (this->getPosition().x - boundBox.size.width * this->getAnchorPoint().x > _panBoundsRect.origin.x)
             {
-                CCNode::setPosition(ccp(boundBox.size.width * this->getAnchorPoint().x + _panBoundsRect.origin.x, 
+                CCNode::setPosition(ccp(boundBox.size.width * this->getAnchorPoint().x + _panBoundsRect.origin.x,
                     this->getPosition().y));
-            }	
+            }
+            // Abajo
             if (this->getPosition().y - boundBox.size.height * this->getAnchorPoint().y > _panBoundsRect.origin.y)
             {
-                CCNode::setPosition(ccp(this->getPosition().x, boundBox.size.height * this->getAnchorPoint().y + 
+                CCNode::setPosition(ccp(this->getPosition().x, boundBox.size.height * this->getAnchorPoint().y +
                     _panBoundsRect.origin.y));
             }
+            // Derecha
             if (this->getPosition().x + boundBox.size.width * (1 - this->getAnchorPoint().x) < _panBoundsRect.size.width +
                 _panBoundsRect.origin.x)
             {
-                CCNode::setPosition(ccp(_panBoundsRect.size.width + _panBoundsRect.origin.x - 
+                CCNode::setPosition(ccp(_panBoundsRect.size.width + _panBoundsRect.origin.x -
                     boundBox.size.width * (1 - this->getAnchorPoint().x), this->getPosition().y));
             }
-            if (this->getPosition().y + boundBox.size.height * (1 - this->getAnchorPoint().y) < _panBoundsRect.size.height + 
+            // Arriba
+            if (this->getPosition().y + boundBox.size.height * (1 - this->getAnchorPoint().y) < _panBoundsRect.size.height +
                 _panBoundsRect.origin.y)
             {
-                CCNode::setPosition(ccp(this->getPosition().x, _panBoundsRect.size.height + _panBoundsRect.origin.y - 
+                CCNode::setPosition(ccp(this->getPosition().x, _panBoundsRect.size.height+ _panBoundsRect.origin.y -
                     boundBox.size.height * (1 - this->getAnchorPoint().y)));
-            }	
+            }
         }
     }
 }
@@ -394,6 +397,7 @@ void CCLayerPanZoom::setScale(float scale){
 }
 
 void CCLayerPanZoom::recoverPositionAndScale(){
+
     if (!_panBoundsRect.equals(CCRectZero))
     {    
         CCSize winSize = CCDirector::sharedDirector()->getWinSize();
@@ -501,7 +505,7 @@ void CCLayerPanZoom::recoverEnded(){
 
 float CCLayerPanZoom::topEdgeDistance(){
     CCRect boundBox = this->boundingBox();
-    return (int)(MAX(_panBoundsRect.size.height + _panBoundsRect.origin.y - this->getPosition().y - 
+    return (int)(MAX(_panBoundsRect.size.height + _panBoundsRect.origin.y + this->getPosition().y -
         boundBox.size.height * (1 - this->getAnchorPoint().y), 0));
 }
 
@@ -517,7 +521,7 @@ float CCLayerPanZoom::bottomEdgeDistance(){
 
 float CCLayerPanZoom::rightEdgeDistance(){
     CCRect boundBox = this->boundingBox();
-    return (int)(MAX(_panBoundsRect.size.width + _panBoundsRect.origin.x - this->getPosition().x - 
+    return (int)(MAX(_panBoundsRect.size.width + _panBoundsRect.origin.x + this->getPosition().x -
         boundBox.size.width * (1 - this->getAnchorPoint().x), 0));
 }
 
@@ -527,7 +531,7 @@ float CCLayerPanZoom::minPossibleScale(){
         return MAX(_panBoundsRect.size.width / this->getContentSize().width,
             _panBoundsRect.size.height /this->getContentSize().height);
     }
-    else 
+    else
     {
         return _minScale;
     }
@@ -630,4 +634,4 @@ float CCLayerPanZoom::vertSpeedWithPosition(CCPoint pos){
             _topFrameMargin) / (_topFrameMargin * sqrt(2.0f)));
     }
     return speed;
-} 
+}

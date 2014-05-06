@@ -1,4 +1,4 @@
-APPNAME="HelloCpp"
+APPNAME="Zombies"
 
 # options
 
@@ -43,7 +43,7 @@ then
 fi
 
 # paths
-NDK_ROOT="/home/hector/Documentos/13_UGR/Ludica/android-ndk-r9d"
+#NDK_ROOT="/home/hector/Documentos/13_UGR/Ludica/android-ndk-r9d"
 if [ -z "${NDK_ROOT+aaa}" ];then
 echo "NDK_ROOT not defined. Please define NDK_ROOT in your environment or in local.properties"
 exit 1

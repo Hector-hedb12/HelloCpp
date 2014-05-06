@@ -26,6 +26,11 @@
 *
 */
 
+/*
+ * Clase auxiliar, utilizada para el manejo de Scroll y de Zoom en dispositivos
+ * Android.
+ */
+
 #include "cocos2d.h"
 USING_NS_CC;
 
