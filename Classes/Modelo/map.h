@@ -34,7 +34,7 @@ class mapGrid{
     if(u == end){
       return true;
     }
-
+    
     position v;
     for(int i = 0; i < 4; i++){
       v = u.next(i);

@@ -108,10 +108,16 @@ void state::useCard(int idPlayer, int idCard){
   pile.push(ca);
 }
 
-void state::rollMoveDice(){
+void state::rollPlayerDice(){
   blueDice.next();
   user &ap = playerVector[currentPlayer];
   ap.setLeftMoves(blueDice.recent());
+}
+
+void state::rollZombieDice(){
+  redDice.next();
+  user &ap = playerVector[currentPlayer];
+  ap.setLeftZombieMoves(blueDice.recent());
 }
 
 pair<vector<position>, vector<position> > state::getPossibleMoves(){

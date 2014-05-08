@@ -11,6 +11,7 @@ class user{
   int nBullet;
   int nZombie;
   int leftMoves;
+  int leftZombieMoves;
   vector<card> handCardVector;
   vector<card> tableCardVector;
 public:
@@ -71,9 +72,18 @@ public:
    */
   void setLeftMoves(int x);
   /*
+   * Set x left moves
+   */
+  void setLeftZombieMoves(int x);
+  /*
    * Get the number of left moves
    */
   int getLeftMoves();
+  /*
+   * Get the number of left moves
+   */
+  int getLeftZombieMoves();
+  
   /*
    * Init the user
    */

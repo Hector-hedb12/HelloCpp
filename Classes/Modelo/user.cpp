@@ -55,6 +55,13 @@ int user::getLeftMoves(){
   return leftMoves;
 }
 
+void user::setLeftZombieMoves(int x){
+  leftZombieMoves = x;
+}
+int user::getLeftZombieMoves(){
+  return leftZombieMoves;
+}
+
 void user::init(){
   leftMoves = 0;
   nBullet = PLAYER_INIT_BULLET;

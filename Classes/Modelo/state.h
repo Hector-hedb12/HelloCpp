@@ -29,7 +29,7 @@ public:
  */
   mapCard &pickMapCard();
 /*
- *
+ * Return the last map card picked from the map stack
  */
   mapCard &getLastMapCard();
 /*
@@ -41,9 +41,13 @@ public:
  */
   void useCard(int, int);
 /*
- * Roll the dice.
+ * Roll the blue dice.
  */
-  void rollMoveDice();
+  void rollPlayerDice();
+/*
+ * Roll the red dice.
+ */
+  void rollZombieDice();
 /*
  * Obtain the posible moves from the current position. It assumes that
  * it is called after the dice rolled
