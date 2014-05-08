@@ -12,7 +12,6 @@
 #include "constant.h"
 using namespace constant;
 
-#include "event.h"
 #include "dice.h"
 #include "position.h"
 #include "card.h"
