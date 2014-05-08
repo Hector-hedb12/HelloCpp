@@ -1,3 +1,9 @@
+/*
+ * Jose Gregorio Piñero
+ * Hector Dominguez
+ * Jose Sanchez
+ */
+
 #include "AppDelegate.h"
 #include "MenuScene.h"
 
