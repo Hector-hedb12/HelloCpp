@@ -28,21 +28,18 @@ class mapGrid{
   /*
    * DFS auxiliar function
    */
-  vector<event> dfsMoveRes;
+  vector<position> dfsMoveRes;
   set<position> dfsMoveVisit;
-  bool dfsMove(position u, position end, user &us, bool b = false){
+  bool dfsMove(position u, position end){
     if(u == end){
       return true;
     }
-    if(b){
-      if(getTile(u).hasBullet()) us.increaseBullet();
-      if(getTile(u).hasLife()) us.increaseLife();
-    }
+
     position v;
     for(int i = 0; i < 4; i++){
       v = u.next(i);
       if(!getTile(v).isValid() || dfsMoveVisit.count(v) > 0) continue;
-      dfsMoveRes.push_back(eventMove(i));
+      dfsMoveRes.push_back(v);
       if(dfsMove(v, end, us, b)){
         return true;
       }
@@ -62,14 +59,14 @@ public:
   }
   
   /*
-   * Return the vector of events without moving the player
+   * Return the vector of positions without moving the player
    */
-  vector<event> queryMovePlayerTo(int x, position end);
+  vector<position> queryMovePlayerTo(int x, position end);
   
   /*
-   * Move player x to position end and return a vector of events
+   * Move player x to position end and return a vector of positionss
    */
-  vector<event> movePlayerTo(int x, position end, user &us);
+  vector<position> movePlayerTo(int x, position end, user &us);
   /*
    * Returns true if the position p is inside the table
    */
