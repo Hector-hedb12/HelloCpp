@@ -7,7 +7,6 @@
 #include <set>
 #include "tile.h"
 #include "position.h"
-#include "event.h"
 #include "constant.h"
 #include "user.h"
 #include "mapcard.h"
