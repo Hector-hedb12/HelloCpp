@@ -56,11 +56,11 @@ public:
 /*
  * Move the current player to position to.
  */
-  vector<event> movePlayerTo(position);
+  vector<position> movePlayerTo(position);
 /*
  * Return the event vector of the movement without moving the player
  */
-  vector<event> queryMovePlayerTo(position to);
+  vector<position> queryMovePlayerTo(position to);
 /*
  * Return the number of lifes of the current player
  */

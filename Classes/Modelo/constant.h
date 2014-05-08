@@ -48,7 +48,7 @@ namespace constant{
   {2,0,0}  // Horizontal (Recta)
   };
   
-  vector<int> typeMapCards { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,4,4 };
+  int typeMapCards[] =  { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,4,4 };
 
   /*
    * Map Cards constantns
