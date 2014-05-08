@@ -124,4 +124,3 @@ public:
   void killcurrentPlayer();
   
 };
-
