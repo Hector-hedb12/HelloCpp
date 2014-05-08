@@ -130,13 +130,13 @@ pair<vector<position>, vector<position> > state::getPossibleMoves(){
   return make_pair(r1,r2);
 }
 
-vector<event> state::queryMovePlayerTo(position to){
-  vector<event> ve = world.queryMovePlayerTo(currentPlayer, to);
+vector<position> state::queryMovePlayerTo(position to){
+  vector<position> ve = world.queryMovePlayerTo(currentPlayer, to);
 }
 
-vector<event> state::movePlayerTo(position to){
+vector<position> state::movePlayerTo(position to){
   user &ap = playerVector[currentPlayer];
-  vector<event> ve = world.movePlayerTo(currentPlayer, to, ap);
+  vector<position> ve = world.movePlayerTo(currentPlayer, to, ap);
   assert(ve.size() <= ap.getLeftMoves());
   ap.setLeftMoves(ap.getLeftMoves() - ve.size());
 }

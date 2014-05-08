@@ -1,3 +1,10 @@
+/*
+ * Jose Gregorio Piñero
+ * Hector Dominguez
+ * Jose Sanchez
+ *
+ */
+
 #include "CreditsScene.h"
 #include "MenuScene.h"
 #include "Resources.h"
