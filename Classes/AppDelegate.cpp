@@ -1,7 +1,7 @@
 /*
  * Jose Gregorio Piñero
  * Hector Dominguez
- * Jose Sanches
+ * Jose Sanchez
  */
 
 #include "AppDelegate.h"
