@@ -7,3 +7,5 @@ target/
 
 # ignore all files ending with ~
 *~ 
+
+obj/
