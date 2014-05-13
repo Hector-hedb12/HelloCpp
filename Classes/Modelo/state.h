@@ -7,7 +7,7 @@ class state{
   mapCard lastMapCard;
   mapGrid world;
   cardHeap pile;
-  dice blueDice, redDice;
+  dice blueDice, redDice, yellowDice;
   int currentPlayer;
 public:
   state(){
@@ -41,13 +41,30 @@ public:
  */
   void useCard(int, int);
 /*
- * Roll the blue dice.
+ * Roll the blue dice. (move player)
  */
-  void rollPlayerDice();
+  int rollPlayerDice();
 /*
- * Roll the red dice.
+ * Roll the red dice. (move zombies)
  */
-  void rollZombieDice();
+  int rollZombieDice();
+/*
+ * Roll the yellow dice. (fight with zombies)
+ */
+  int rollFightDice();
+/*
+ * Return the last roll player dice
+ */
+  int getLastRollPlayerDice();
+/*
+ * Return the last roll zombie dice
+ */
+  int getLastRollZombieDice();
+ /*
+  * Return the last roll fight dice
+  */
+  int getLastRollFightDice();
+
 /*
  * Obtain the posible moves from the current position. It assumes that
  * it is called after the dice rolled
@@ -82,7 +99,8 @@ public:
  */  
   void addBullet();
 /*
- * Add Zombie point to current player
+ * Add Zombie point to current player and delete the zombie
+ * of the world
  */
   void addZombie();
 /*
@@ -97,6 +115,20 @@ public:
  * Returns true if exist a zombie in the position p
  */
   bool queryZombie(position p);
+
+
+  /*
+   * Returns true if exist a life in the position of the current player
+   */
+    bool queryLife();
+  /*
+   * Returns true if exist a bullet in the position  of the current player
+   */
+    bool queryBullet();
+  /*
+   * Returns true if exist a zombie in the position  of the current player
+   */
+    bool queryZombie();
 /*
  * Add MapCard ma to the world in the position pos
  */
@@ -123,4 +155,14 @@ public:
    */
   void killcurrentPlayer();
   
+  /*
+   * Return the current player id
+   */
+  int getCurrentPlayer();
+
+  /*
+   * Return the position of the current player
+   */
+  position getCurrentPlayerPosition();
+
 };
