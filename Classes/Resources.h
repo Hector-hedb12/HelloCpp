@@ -31,7 +31,6 @@ static const int UP = 0;
 static const int RIGHT = 1;
 static const int DOWN = 2;
 static const int LEFT = 3;
-static const int MAX_MAP_DIMENSION = 10;
 static const int NUM_FASES = 3;
 static const int NUM_SUB_FASES = 4;
 static const int ZOMBIES_TO_WIN = 25;

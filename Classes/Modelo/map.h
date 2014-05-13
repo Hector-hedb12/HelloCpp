@@ -40,7 +40,7 @@ class mapGrid{
       v = u.next(i);
       if(!getTile(v).isValid() || dfsMoveVisit.count(v) > 0) continue;
       dfsMoveRes.push_back(v);
-      if(dfsMove(v, end, us, b)){
+      if(dfsMove(v, end)){
         return true;
       }
       dfsMoveRes.pop_back();
