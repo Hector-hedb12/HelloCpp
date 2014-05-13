@@ -19,6 +19,16 @@ bool state::queryZombie(position p){
   return world.getTile(p).hasZombie();
 }
 
+bool state::queryLife(){
+  return world.getTile(world.getPlayerPosition(currentPlayer)).hasLife();
+}
+bool state::queryBullet(){
+  return world.getTile(world.getPlayerPosition(currentPlayer)).hasBullet();
+}
+bool state::queryZombie(){
+  return world.getTile(world.getPlayerPosition(currentPlayer)).hasZombie();
+}
+
 void state::printWorld(){
   world.print();
 }
@@ -34,14 +44,17 @@ void state::putCardMap(mapCard ma, position pos){
 void state::addLife(){
   user &ap = playerVector[currentPlayer];
   ap.increaseLife();
+  world.setLife(world.getPlayerPosition(currentPlayer),false);
 }
 void state::addBullet(){
   user &ap = playerVector[currentPlayer];
   ap.increaseBullet();
+  world.setBullet(world.getPlayerPosition(currentPlayer),false);
 }
 void state::addZombie(){
   user &ap = playerVector[currentPlayer];
   ap.increaseZombie();
+  world.setZombie(world.getPlayerPosition(currentPlayer),false);
 }
 
 void state::decreaseLife(){
@@ -108,17 +121,36 @@ void state::useCard(int idPlayer, int idCard){
   pile.push(ca);
 }
 
-void state::rollPlayerDice(){
+int state::rollPlayerDice(){
   blueDice.next();
   user &ap = playerVector[currentPlayer];
   ap.setLeftMoves(blueDice.recent());
+  return blueDice.recent();
 }
 
-void state::rollZombieDice(){
+int state::rollZombieDice(){
   redDice.next();
   user &ap = playerVector[currentPlayer];
-  ap.setLeftZombieMoves(blueDice.recent());
+  ap.setLeftZombieMoves(redDice.recent());
+  return redDice.recent();
 }
+int state::rollFightDice(){
+	return yellowDice.next();
+}
+
+int state::getLastRollPlayerDice(){
+	return blueDice.recent();
+}
+
+int state::getLastRollZombieDice(){
+	return redDice.recent();
+}
+
+int state::getLastRollFightDice(){
+	return yellowDice.recent();
+}
+
+
 
 pair<vector<position>, vector<position> > state::getPossibleMoves(){
   vector<position> r1, r2;
@@ -159,3 +191,13 @@ vector<vector<position> > state::getAllPosibleMapCard(mapCard ma){
 	}
 	return res;
 }
+
+int state::getCurrentPlayer(){
+	return currentPlayer;
+}
+
+position state::getCurrentPlayerPosition(){
+	return world.getPlayerPosition(currentPlayer);
+}
+}
+

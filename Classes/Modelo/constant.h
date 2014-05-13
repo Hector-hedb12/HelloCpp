@@ -5,9 +5,9 @@
 using namespace std;
 
 namespace constant{
-  const int CREP = 50;
-  const int MAPMAX = 100;
-  const int MAPMID = 50;
+  const int MAPMAX = 180;
+  const int MAPMID = 90;
+  const int MAX_MAP_DIM = 30;
   const int MAPNUMPOS = 3;
   const int MAX_LIFE = 5;
   const int PLAYER_INIT_BULLET = 3;

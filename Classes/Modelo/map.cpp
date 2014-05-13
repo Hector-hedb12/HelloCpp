@@ -23,7 +23,7 @@ void mapGrid::init(int nPlayers){
   }  
 }
 
-vector<event> mapGrid::queryMovePlayerTo(int x, position end){
+vector<position> mapGrid::queryMovePlayerTo(int x, position end){
   position u = playerVector[x];
   dfsMoveRes.clear();
   dfsMoveVisit.clear();
@@ -32,16 +32,22 @@ vector<event> mapGrid::queryMovePlayerTo(int x, position end){
   return dfsMoveRes;
 }
 
-vector<event> mapGrid::movePlayerTo(int x, position end, user &us){
+vector<position> mapGrid::movePlayerTo(int x, position end, user &us){
   position u = playerVector[x];
-  dfsMoveRes.clear();
-  dfsMoveVisit.clear();
-  dfsMove(u, end, us, true);
-  playerVector[x] = end;
+
   tile &t1 = getTile(u);
-  t1.removePlayer(x);
   tile &t2 = getTile(end);
+  t1.removePlayer(x);
   t2.addPlayer(x);
+  if(!t2.hasZombie()){
+	  if(t2.hasLife()){
+		  us.increaseLife();
+	  }
+	  if(t2.hasBullet()){
+		  us.increaseBullet();
+	  }
+  }
+
   return dfsMoveRes;
 }
 

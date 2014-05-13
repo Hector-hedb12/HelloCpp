@@ -36,13 +36,13 @@ position position::next(int a){
 
 
 void position::t(){
-  x += CREP;
-  y += CREP;
+  x += MAPMID;
+  y += MAPMID;
 }
 
 void position::invT(){
-  x -= CREP;
-  y -= CREP;
+  x -= MAPMID;
+  y -= MAPMID;
 }
 
 ostream &operator<<(ostream &os, const position &p) {
