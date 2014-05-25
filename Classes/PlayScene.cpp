@@ -1486,12 +1486,7 @@ void PlayScene::setBackgrounds()
 
 void PlayScene::checkBattle(CCNode* sender, void* data)
 {
-	CCPoint point = mSprite[GameState.getCurrentPlayer()]->getPosition();
-	CCPoint mapCard_player_location = axisToMapCardMatrix( (int)point.x, (int)point.y );
-	CCPoint tile_player_location = axisToTileMatrix( (int)point.x, (int)point.y );
-	int content = mapCardMatrix[(int)mapCard_player_location.x][(int)mapCard_player_location.y].grid[(int)tile_player_location.x][(int)tile_player_location.y];
-
-	if ( content == ZOMBIE || content == ZOMBIE_LIFE || content == ZOMBIE_BULLET )
+	if ( GameState.queryZombie() )
 	{
 		HAY_BATALLA = true;
 		msg = "A batallar ! Lanza el dado rojo";
@@ -1507,9 +1502,7 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 	CCPoint ij_cardMap = axisToMapCardMatrix(mSprite[GameState.getCurrentPlayer()]->getPositionX(), mSprite[GameState.getCurrentPlayer()]->getPositionY());
 	CCPoint ij_tile = axisToTileMatrix(mSprite[GameState.getCurrentPlayer()]->getPositionX(), mSprite[GameState.getCurrentPlayer()]->getPositionY());
 
-	int content = mapCardMatrix[(int)ij_cardMap.x][(int)ij_cardMap.y].grid[(int)ij_tile.x][(int)ij_tile.y];
-
-	if ( content == LIFE )
+	if ( GameState.queryLife() )
 	{
 		for (int i = 0; i < lifes.size(); i++) {
 			if ( lifes[i].mapCard_i == (int)ij_cardMap.x &&  lifes[i].mapCard_j == (int)ij_cardMap.y &&
@@ -1527,13 +1520,10 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 			}
 		}
 
-		// provisional
-		mapCardMatrix[(int)ij_cardMap.x][(int)ij_cardMap.y].grid[(int)ij_tile.x][(int)ij_tile.y] = 0;
 		modifyPlayerLifes(1);
 		lifes.pop_back();
-		// FIN provisional
 
-	} else if ( content == BULLET ) {
+	} else if ( GameState.queryBullet() ) {
 
 		for (int i = 0; i < bullets.size(); i++) {
 			if ( bullets[i].mapCard_i == (int)ij_cardMap.x &&  bullets[i].mapCard_j == (int)ij_cardMap.y &&
@@ -1550,11 +1540,8 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 			}
 		}
 
-		// provisional
-		mapCardMatrix[(int)ij_cardMap.x][(int)ij_cardMap.y].grid[(int)ij_tile.x][(int)ij_tile.y] = 0;
 		modifyPlayerBullets(1);
 		bullets.pop_back();
-		// FIN provisional
 
 	} else {
 		changePhase(NULL,NULL);
