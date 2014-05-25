@@ -157,7 +157,7 @@ void PlayScene::activateMapCardModeCallback(CCObject* pSender)
 
 void PlayScene::redDiceCallback()
 {
-	int result = GameState.rollZombieDice(); // [0,5]
+	int result;
 
 	CCArray * actions = CCArray::createWithCapacity(7);
 	CCFiniteTimeAction * single_action;
@@ -176,12 +176,15 @@ void PlayScene::redDiceCallback()
 
 	if ( !HAY_BATALLA )
 	{
+		 result = GameState.rollZombieDice(); // [0,5]
+
 		// Cambiar la subfase
 		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::changeSubPhase), NULL);
 		actions->addObject(single_action);
 
 		NUM_OF_ZOMBIES_TO_MOVE = result + 1;
 	} else {
+		result = GameState.rollFightDice(); // [0,5]
 
 		if ( result < 3 ) {
 
@@ -250,8 +253,7 @@ void PlayScene::setStaticRedDice(CCNode* node) {
 
 void PlayScene::blueDiceCallback()
 {
-	srand(time(NULL));
-	int result = rand() % 6;
+	int result = GameState.rollPlayerDice();
 
 	CCArray * actions = CCArray::createWithCapacity(4);
 	CCFiniteTimeAction * single_action;
@@ -426,7 +428,7 @@ void PlayScene::setMap(CCLayer *mLayer)
 			mLayer->addChild(mapCardSprite);
 		}
 
-	mapCardSprite = CCSprite::create(mapPath[0].c_str());
+	mapCardSprite = CCSprite::create(mapPath[0].c_str()); // Plaza Central
 	mapCardSprite->setPosition(mapCardMatrixToAxis(MAX_MAP_DIM/2, MAX_MAP_DIM/2));
 	mLayer->addChild(mapCardSprite);
 }
@@ -537,7 +539,6 @@ void PlayScene::setPlayerInfo()
 	modifyScreenLifes();
 	modifyScreenBullets();
 	modifyScreenZombies();
-
 }
 
 void PlayScene::modifyPlayerLifes(int num)
@@ -776,7 +777,10 @@ void PlayScene::setStaticZombieSprite(CCNode* sender, void* data) {
 
 
 
-
+/*
+ * Verifica si la posicion p, es valida para la carta
+ * con la rotacion actual
+ */
 
 bool PlayScene::isAllowed(position p) {
 
