@@ -93,6 +93,7 @@ state::state(int nPlayers){
 
 void state::nextTurn(){
   currentPlayer = (currentPlayer + 1)% playerVector.size();
+  movedZombies.clear();
 }
 
 
@@ -173,6 +174,10 @@ pair<vector<position>, vector<position> > state::getPossibleMoves(){
   return make_pair(r1,r2);
 }
 
+vector<postion> state::getPossibleZombieMoves(position pos){
+	return world.getPossibleZombieMoves(pos);
+}
+
 vector<position> state::queryMovePlayerTo(position to){
   vector<position> ve = world.queryMovePlayerTo(currentPlayer, to);
 }
@@ -210,5 +215,8 @@ int state::getCurrentPlayer(){
 
 position state::getCurrentPlayerPosition(){
 	return world.getPlayerPosition(currentPlayer);
+}
+bool state::isValidZombie(position p){
+	return (movedZombies.count(p) == 0 && queryZombie(p));
 }
 

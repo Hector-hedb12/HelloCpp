@@ -205,6 +205,17 @@ vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
   }
   return res;
 }
+vector<postion> mapGrid::getPossibleZombieMoves(position pos){
+	position v;
+	vector<position> res;
+	for(int i = 0; i < 4; i++){
+		v = pos.next(i);
+		if(!this->getTile(v).isValid() || this->getTile(v).hasZombie()) continue;
+		res.push_back(v);
+	}
+	return res;
+}
+
 vector<position> mapGrid::getPosibleObjectPositions(){
   position u, v;
   u = position(0,0);

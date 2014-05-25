@@ -32,6 +32,7 @@ position position::next(int a){
   assert(a >= 0);
   res.x = x + vx1[a%4];
   res.y = y + vy1[a%4];
+  return res;
 }
 
 

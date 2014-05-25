@@ -117,6 +117,12 @@ public:
    * if zomb is false it will evade zombies. In other case it wont.
    */
   vector<position> getPossibleMoves(position p, int nMoves, bool zomb = false);
+
+  /*
+   * Obtain the posible moves where the zombie can move
+   */
+  vector<postion> state::getPossibleZombieMoves(position pos);
+
   /*
    * Get the positions where is able to put objects
    */
