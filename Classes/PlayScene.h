@@ -107,8 +107,6 @@ class PlayScene : public cocos2d::CCLayer
 	   CCSprite * animatedSprite;
 	   vector<Event> events;
 
-	   int currPlayer;
-
 	   // Manejo de fases
 	   int currFase, currSubFase;
 	   bool fase[NUM_FASES];
