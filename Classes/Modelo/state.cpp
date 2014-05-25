@@ -106,6 +106,16 @@ mapCard &state::getLastMapCard(){
   return lastMapCard;
 }
 
+mapCard &state::rotateRLastMapCard(){
+	getLastMapCard().rotateR();
+	return getLastMapCard();
+}
+
+mapCard &state::rotateLLastMapCard(){
+	getLastMapCard().rotateL();
+	return getLastMapCard();
+}
+
 void state::pickCard(int idPlayer = -1){
   if(idPlayer == -1) idPlayer = currentPlayer;
   assert(0 <= idPlayer && idPlayer < playerVector.size());
@@ -198,6 +208,5 @@ int state::getCurrentPlayer(){
 
 position state::getCurrentPlayerPosition(){
 	return world.getPlayerPosition(currentPlayer);
-}
 }
 
