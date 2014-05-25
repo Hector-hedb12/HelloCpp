@@ -72,6 +72,7 @@ void state::decreaseBullet(int x){
 void state::killcurrentPlayer(){
   user &ap = playerVector[currentPlayer];
   ap.die();
+  world.killPlayer(currentPlayer);
   // MOVER JUGADOR AL INICIOO EN EL MAPA
 }
 
@@ -104,6 +105,16 @@ mapCard &state::pickMapCard(){
 
 mapCard &state::getLastMapCard(){
   return lastMapCard;
+}
+
+mapCard &state::rotateRLastMapCard(){
+	getLastMapCard().rotateR();
+	return getLastMapCard();
+}
+
+mapCard &state::rotateLLastMapCard(){
+	getLastMapCard().rotateL();
+	return getLastMapCard();
 }
 
 void state::pickCard(int idPlayer = -1){
@@ -198,6 +209,5 @@ int state::getCurrentPlayer(){
 
 position state::getCurrentPlayerPosition(){
 	return world.getPlayerPosition(currentPlayer);
-}
 }
 

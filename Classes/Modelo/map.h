@@ -66,7 +66,7 @@ public:
   /*
    * Move player x to position end and return a vector of positionss
    */
-  vector<position> movePlayerTo(int x, position end, user &us);
+  void movePlayerTo(int x, position end, user &us);
   /*
    * Returns true if the position p is inside the table
    */
@@ -121,6 +121,9 @@ public:
    * Get the positions where is able to put objects
    */
   vector<position> getPosibleObjectPositions();
+  /*
+   * Move zombie from position u to position v
+   */
   bool moveZombie(position u, position v);
   /*
    * Init the world with the initial mapCard given the number of players
@@ -131,6 +134,12 @@ public:
    */
   position getPlayerPosition(int num);
   
+  /*
+   * Move player to the origin position
+   */
+  void killPlayer(int x){
+
+
 };
 
 #endif

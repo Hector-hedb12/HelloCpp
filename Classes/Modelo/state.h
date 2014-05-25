@@ -32,6 +32,14 @@ public:
  * Return the last map card picked from the map stack
  */
   mapCard &getLastMapCard();
+ /*
+  * Rotate R last Map Card
+  */
+  mapCard &rotateRLastMapCard();
+ /*
+  * Rotate R last Map Card
+  */
+  mapCard &rotateLLastMapCard();
 /*
  * Current player picks a card.
  */
@@ -91,16 +99,18 @@ public:
  */
   int getCurrentPlayerZombie();
 /*
- * Add Life point to current player
+ * Add Life point to current player and delete the life
+ * in the world if exists
  */  
   void addLife();
 /*
- * Add Bullet to current player
+ * Add Bullet to current player and delete the bullet
+ * in the world if exists
  */  
   void addBullet();
 /*
  * Add Zombie point to current player and delete the zombie
- * of the world
+ * int the world if exists
  */
   void addZombie();
 /*
