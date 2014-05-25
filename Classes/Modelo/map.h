@@ -139,7 +139,5 @@ public:
    */
   void killPlayer(int x);
 
-
 };
-
 #endif

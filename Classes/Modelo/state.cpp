@@ -177,11 +177,12 @@ vector<position> state::queryMovePlayerTo(position to){
   vector<position> ve = world.queryMovePlayerTo(currentPlayer, to);
 }
 
-vector<position> state::movePlayerTo(position to){
+void state::movePlayerTo(position to){
   user &ap = playerVector[currentPlayer];
-  vector<position> ve = world.movePlayerTo(currentPlayer, to, ap);
-  assert(ve.size() <= ap.getLeftMoves());
-  ap.setLeftMoves(ap.getLeftMoves() - ve.size());
+  world.movePlayerTo(currentPlayer, to, ap);
+
+  assert(getLeftMoves() > 1);
+  ap.setLeftMoves(ap.getLeftMoves() - 1);
 }
   
 int state::getCurrentPlayerLife(){

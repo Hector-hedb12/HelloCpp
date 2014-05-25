@@ -11,6 +11,7 @@
 
 #include "constant.h"
 using namespace constant;
+using namespace std;
 
 #include "dice.h"
 #include "position.h"
@@ -21,7 +22,7 @@ using namespace constant;
 #include "map.h"
 #include "state.h"
 
-using namespace std;
+
 
 
 #endif
