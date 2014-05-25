@@ -4,11 +4,13 @@
 class state{
   vector<user> playerVector;
   vector<mapCard> mapVector;
+  set<position> movedZombies;
   mapCard lastMapCard;
   mapGrid world;
   cardHeap pile;
   dice blueDice, redDice, yellowDice;
   int currentPlayer;
+
 public:
   state(){
   }
@@ -79,12 +81,17 @@ public:
  */
   pair<vector<position>, vector<position> > getPossibleMoves();
 
+/*
+ * Obtain the posible moves where the zombie can move
+ */
   vector<position> getPossibleZombieMoves(position current_position);
 /*
  * Move the current player to position to.
  */
   void movePlayerTo(position p);
-
+/*
+ * Move the zombie at position prev to position p
+ */
   void moveZombieTo(position prev, position p);
 /*
  * Return the event vector of the movement without moving the player
@@ -129,7 +136,9 @@ public:
  * Returns true if exist a zombie in the position p
  */
   bool queryZombie(position p);
-
+/*
+ * Return true if there is a zombie in position p and the zombie is able to be moved
+ */
   bool isValidZombie(position p);
 
 

@@ -64,9 +64,9 @@ public:
   vector<position> queryMovePlayerTo(int x, position end);
   
   /*
-   * Move player x to position end and return a vector of positionss
+   * Move player x to position end
    */
-  void movePlayerTo(int x, position end, user &us);
+  void movePlayerTo(int x, position end);
   /*
    * Returns true if the position p is inside the table
    */
@@ -117,6 +117,12 @@ public:
    * if zomb is false it will evade zombies. In other case it wont.
    */
   vector<position> getPossibleMoves(position p, int nMoves, bool zomb = false);
+
+  /*
+   * Obtain the posible moves where the zombie can move
+   */
+  vector<postion> state::getPossibleZombieMoves(position pos);
+
   /*
    * Get the positions where is able to put objects
    */
