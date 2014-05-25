@@ -72,6 +72,7 @@ void state::decreaseBullet(int x){
 void state::killcurrentPlayer(){
   user &ap = playerVector[currentPlayer];
   ap.die();
+  world.killPlayer(currentPlayer);
   // MOVER JUGADOR AL INICIOO EN EL MAPA
 }
 

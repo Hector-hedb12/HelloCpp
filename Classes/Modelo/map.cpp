@@ -32,6 +32,10 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
   return dfsMoveRes;
 }
 
+void killPlayer(int x){
+	playerVector[x] = position(0,0);
+}
+
 vector<position> mapGrid::movePlayerTo(int x, position end, user &us){
   position u = playerVector[x];
 
@@ -211,6 +215,7 @@ bool mapGrid::moveZombie(position u, position v){
   assert(getTile(u).hasZombie() && !getTile(v).hasZombie());
   getTile(u).setZombie(false);
   getTile(v).setZombie(true);
+  return true;
 }
 
 
