@@ -164,6 +164,7 @@ class PlayScene : public cocos2d::CCLayer
 	   bool isAllowed(position location);
 	   bool putMapCard(CCPoint location, int id);
 	   bool canMove(position location);
+	   bool canMoveZombie(position prev_p, position p);
 
 	   // Funciones utilizadas para modificar el estado del jugador
 	   void modifyPlayerLifes(int num);
