@@ -78,6 +78,8 @@ public:
  * it is called after the dice rolled
  */
   pair<vector<position>, vector<position> > getPossibleMoves();
+
+  vector<position> getPossibleZombieMoves(position current_position);
 /*
  * Move the current player to position to.
  */
@@ -125,6 +127,8 @@ public:
  * Returns true if exist a zombie in the position p
  */
   bool queryZombie(position p);
+
+  bool isValidZombie(position p);
 
 
   /*

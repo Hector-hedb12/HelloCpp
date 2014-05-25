@@ -47,6 +47,7 @@ class Event {
 public:
 	char orientation;
 	float movement;
+	position end_point;
 
 	Event() {};
 };
@@ -187,7 +188,7 @@ class PlayScene : public cocos2d::CCLayer
 	   // Funciones utilizadas para transformar puntos cartesianos en
 	   // movimientos en los ejes para el movimientos de las criaturas
 	   Event getEventZombieMove(CCPoint prev, CCPoint next);
-	   void pointToEvent(CCPoint prevPoint, CCPoint nextPoint);
+	   void pointToEvent(CCPoint prevPoint, CCPoint nextPoint, position p);
 
 	   // Funciones utilizadas para mantener el orden entre las fases
 	   // que debe seguir el juego

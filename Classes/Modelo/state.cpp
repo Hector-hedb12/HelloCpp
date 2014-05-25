@@ -169,7 +169,7 @@ pair<vector<position>, vector<position> > state::getPossibleMoves(){
   position current = world.getPlayerPosition(currentPlayer);
   int dist = ap.getLeftMoves();
   r1 = world.getPossibleMoves(current, dist, 1);
-  r2 = world.getPossibleMoves(current, dist, 0);
+  r2 = world.getPossibleMoves(current, dist, 0); // no le para a los zombies
   return make_pair(r1,r2);
 }
 

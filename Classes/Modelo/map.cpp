@@ -32,7 +32,7 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
   return dfsMoveRes;
 }
 
-void killPlayer(int x){
+void mapGrid::killPlayer(int x){
 	playerVector[x] = position(0,0);
 }
 

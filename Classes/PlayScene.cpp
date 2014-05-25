@@ -676,13 +676,20 @@ void PlayScene::animateSprite(CCNode* sender, void* data) {
 }
 
 void PlayScene::setStaticSprite(CCNode* sender, void* data) {
-	if (spritebatch != NULL) {
-		_moveLayer->removeChild(spritebatch);
-		spritebatch = NULL;
-		animatedSprite = NULL;
-	}
+	Event *d =  (Event*) data;
 
-	mSprite[GameState.getCurrentPlayer()]->setVisible(true);
+	GameState.movePlayerTo(d->end_point);
+
+	if ( GameState.queryZombie(p) ) {
+
+		if (spritebatch != NULL ) {
+			_moveLayer->removeChild(spritebatch);
+			spritebatch = NULL;
+			animatedSprite = NULL;
+		}
+
+		mSprite[GameState.getCurrentPlayer()]->setVisible(true);
+	}
 }
 
 
@@ -988,22 +995,26 @@ void PlayScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
 	}
 }
 
-void PlayScene::pointToEvent(CCPoint prevPoint, CCPoint nextPoint)
+void PlayScene::pointToEvent(CCPoint prevPoint, CCPoint nextPoint, position p)
 {
 	// Obtenemos el "touch" del usuario y lo enviamos al Modelo para que nos de el
 	// arreglo con los eventos. provisional
 
+	vector<position> road = GameState.queryMovePlayerTo(p);
+
 	events.clear();
-
 	Event e;
+	e.movement = PIXELS_TILE;
 
-	e.orientation = 'H';
-	e.movement = nextPoint.x - prevPoint.x;
-	events.push_back(e);
+	for (int i = 1; i < road.size(); i++){
+		if ( road[i-1].x != road[i].x )
+			e.orientation = 'H';
+		else
+			e.orientation = 'V';
 
-	e.orientation = 'V';
-	e.movement = nextPoint.y - prevPoint.y;
-	events.push_back(e);
+		e.end_point = road[i];
+		events.push_back(e);
+	}
 }
 
 void PlayScene::activateTouch(CCNode* sender, void* data)
@@ -1099,7 +1110,7 @@ bool PlayScene::canMove(position p) {
 void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 {
 	// El dado azul fue cliqueado
-	if (/*possibleMoves.size() == 0 &&*/ !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && blueDices[0]->boundingBox().containsPoint(pto))
+	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && blueDices[0]->boundingBox().containsPoint(pto))
 	{
 		// desactiva touch
 		WAIT = true;
@@ -1112,11 +1123,6 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	position p((int) index_cardMap.x, (int) index_cardMap.y);
 	p.invT();
 
-	// PREGUNTAR CHINO
-
-//	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-//	CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, index_tile.x, index_tile.y);
-
 	if (possibleMoves.size() == 0) possibleMoves = GameState.getPossibleMoves().first;
 
 	if (canMove(p) && LANZODADOAZUL && !HAY_PREGUNTA && !HAY_BATALLA)
@@ -1124,10 +1130,8 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		// desactiva touch
 		WAIT = true;
 
-		// QUITAR CUANDO SE COLOQUE possibleMoves
 		CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, index_tile.x, index_tile.y);
-		// FIN QUITAR
 
 		if (GameState.getCurrentPlayer() == 0)
 			point.x += (mSprite[GameState.getCurrentPlayer()]->getContentSize().width / 2);
@@ -1136,7 +1140,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 		point.y += (mSprite[0]->getContentSize().height / 2);
 
-		pointToEvent(mSprite[GameState.getCurrentPlayer()]->getPosition(), point);
+		pointToEvent(mSprite[GameState.getCurrentPlayer()]->getPosition(), point, p);
 
 		CCArray *actions = CCArray::createWithCapacity(4 * events.size() + 2);
 		CCFiniteTimeAction* single_action;
@@ -1231,10 +1235,11 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 
-		// Si NO hay zombie:
-		tile elemento = GameState.getLastMapCard().getTile((int)tileLocation.x - 1,(int) tileLocation.y - 1);
+		CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
+		position p((int) index_cardMap.x, (int) index_cardMap.y);
+		p.invT();
 
-		if ( elemento.hasZombie() /* && ver si el zombie se movio antes*/)
+		if ( GameState.queryZombie(p) && GameState.isValidZombie(p) )
 		{
 			WAIT = false;
 			return;
