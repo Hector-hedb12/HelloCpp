@@ -137,9 +137,7 @@ public:
   /*
    * Move player to the origin position
    */
-  void killPlayer(int x){
-
+  void killPlayer(int x);
 
 };
-
 #endif

@@ -81,7 +81,7 @@ public:
 /*
  * Move the current player to position to.
  */
-  vector<position> movePlayerTo(position);
+  void movePlayerTo(position);
 /*
  * Return the event vector of the movement without moving the player
  */
