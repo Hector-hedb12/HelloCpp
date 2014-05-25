@@ -36,7 +36,7 @@ void killPlayer(int x){
 	playerVector[x] = position(0,0);
 }
 
-vector<position> mapGrid::movePlayerTo(int x, position end, user &us){
+void mapGrid::movePlayerTo(int x, position end, user &us){
   position u = playerVector[x];
 
   tile &t1 = getTile(u);
@@ -46,13 +46,13 @@ vector<position> mapGrid::movePlayerTo(int x, position end, user &us){
   if(!t2.hasZombie()){
 	  if(t2.hasLife()){
 		  us.increaseLife();
+		  this->setLife(end, false);
 	  }
 	  if(t2.hasBullet()){
 		  us.increaseBullet();
+		  this->setBullet(end, false);
 	  }
   }
-
-  return dfsMoveRes;
 }
 
 bool mapGrid::isValid(position p){
@@ -146,12 +146,27 @@ tile& mapGrid::getTile(position p){
 }
 void mapGrid::setLife(position p, bool b){
   getTile(p).setLife(b);
+  if(b){
+	  this->lifeSet.insert(p);
+  }else{
+	  this->lifeSet.erase(p);
+  }
 }
 void mapGrid::setBullet(position p, bool b){
   getTile(p).setBullet(b);
+  	if(b){
+  	  this->bulletSet.insert(p);
+    }else{
+  	  this->bulletSet.erase(p);
+    }
 }
 void mapGrid::setZombie(position p, bool b){
   getTile(p).setZombie(b);
+  if(b){
+  	  this->zombieSet.insert(p);
+    }else{
+  	  this->zombieSet.erase(p);
+    }
 }
 
 bool mapGrid::isValidMove(position u, int i){

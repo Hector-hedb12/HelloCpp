@@ -66,7 +66,7 @@ public:
   /*
    * Move player x to position end and return a vector of positionss
    */
-  vector<position> movePlayerTo(int x, position end, user &us);
+  void movePlayerTo(int x, position end, user &us);
   /*
    * Returns true if the position p is inside the table
    */
