@@ -680,7 +680,7 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data) {
 
 	GameState.movePlayerTo(d->end_point);
 
-	if ( GameState.queryZombie(p) ) {
+	if ( GameState.queryZombie(d->end_point) ) {
 
 		if (spritebatch != NULL ) {
 			_moveLayer->removeChild(spritebatch);
@@ -1107,6 +1107,17 @@ bool PlayScene::canMove(position p) {
 	return false;
 }
 
+bool PlayScene::canMoveZombie(position prev_p, position p) {
+	vector<position> posibles_moves = GameState.getPossibleZombieMoves(prev_p);
+
+	for (int i = 0; i < posibles_moves.size(); i++) {
+		if (posibles_moves[i] == p)
+			return true;
+	}
+
+	return false;
+}
+
 void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 {
 	// El dado azul fue cliqueado
@@ -1120,7 +1131,8 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	}
 
 	CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
-	position p((int) index_cardMap.x, (int) index_cardMap.y);
+	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
+	position p((int) index_tile.x, (int) index_tile.y);
 	p.invT();
 
 	if (possibleMoves.size() == 0) possibleMoves = GameState.getPossibleMoves().first;
@@ -1130,7 +1142,6 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		// desactiva touch
 		WAIT = true;
 
-		CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, index_tile.x, index_tile.y);
 
 		if (GameState.getCurrentPlayer() == 0)
@@ -1234,12 +1245,11 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 	{
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-
-		CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
-		position p((int) index_cardMap.x, (int) index_cardMap.y);
+		position p((int) tileLocation.x, (int) tileLocation.y);
 		p.invT();
 
-		if ( GameState.queryZombie(p) && GameState.isValidZombie(p) )
+		// si no hay zombie o si  ha sido movido antes
+		if ( !GameState.queryZombie(p) || GameState.isValidZombie(p) )
 		{
 			WAIT = false;
 			return;
@@ -1250,46 +1260,31 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		WAIT = false;
 
 	} else { // Va a seleccionar a donde lo quiere mover
+		position prev_pos(prevZombieLocation.x, prevZombieLocation.y);
+		prev_pos.invT();
 
 		CCPoint nLocation = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		CCPoint nTileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-
-		events.clear();
-		events.push_back( getEventZombieMove(prevZombieLocation, ptoConvertido) );
+		CCPoint axisLocation = tileMatrixToAxis(nLocation.x, nLocation.y, nTileLocation.x, nTileLocation.y);
+		position p(axisLocation.x, axisLocation.y);
+		p.invT();
 
 		// Si hay zombie en el nuevo lugar o no es valido el movimiento --> no se mueve
-		if (mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] == ZOMBIE ||
-			mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] == ZOMBIE_BULLET ||
-			mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] == ZOMBIE_LIFE ||
-			!mapCardMatrix[(int)nLocation.x][(int)nLocation.y].isOnMap ||
-			events[0].orientation == '-'  )
+		if ( GameState.queryZombie(p) || !canMoveZombie(prev_pos, p) )
 		{
 			WAIT = false;
 			return;
 		}
 
-		//provisional update
-		if (mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] == BULLET)
-			mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] = ZOMBIE_BULLET;
-		else if (mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] == LIFE)
-			mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] = ZOMBIE_LIFE;
-		else
-			mapCardMatrix[(int)nLocation.x][(int)nLocation.y].grid[(int)nTileLocation.x][(int)nTileLocation.y] = ZOMBIE;
+		events.clear();
+		events.push_back( getEventZombieMove(prevZombieLocation, ptoConvertido) );
 
-		// FIN provisional
+		GameState.moveZombieTo(prev_pos,p);
 
 		// El movimiento es valido:
 
 		location = axisToMapCardMatrix(prevZombieLocation.x,prevZombieLocation.y);
 		tileLocation = axisToTileMatrix(prevZombieLocation.x,prevZombieLocation.y);
-
-		// provisional UPDATE
-		if (mapCardMatrix[(int)location.x][(int)location.y].grid[(int)tileLocation.x][(int)tileLocation.y] == ZOMBIE_BULLET)
-			mapCardMatrix[(int)location.x][(int)location.y].grid[(int)tileLocation.x][(int)tileLocation.y] = BULLET;
-		else if (mapCardMatrix[(int)location.x][(int)location.y].grid[(int)tileLocation.x][(int)tileLocation.y] == ZOMBIE_LIFE)
-			mapCardMatrix[(int)location.x][(int)location.y].grid[(int)tileLocation.x][(int)tileLocation.y] = LIFE;
-		else
-			mapCardMatrix[(int)location.x][(int)location.y].grid[(int)tileLocation.x][(int)tileLocation.y] = 0;
 
 		// Se busca el sprite
 		for (int i = 0; i < zombies.size(); i ++){
@@ -1332,7 +1327,6 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		// SIEMPRE DEBE SUCEDER que zombieSpriteToMove != null
 		zombies[zombieSpriteToMove].sprite->runAction( sq );
 	}
-
 }
 
 void PlayScene::showFirstPhase()
