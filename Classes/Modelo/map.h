@@ -64,9 +64,9 @@ public:
   vector<position> queryMovePlayerTo(int x, position end);
   
   /*
-   * Move player x to position end and return a vector of positionss
+   * Move player x to position end
    */
-  void movePlayerTo(int x, position end, user &us);
+  void movePlayerTo(int x, position end);
   /*
    * Returns true if the position p is inside the table
    */

@@ -89,7 +89,9 @@ public:
  * Move the current player to position to.
  */
   void movePlayerTo(position p);
-
+/*
+ * Move the zombie at position prev to position p
+ */
   void moveZombieTo(position prev, position p);
 /*
  * Return the event vector of the movement without moving the player

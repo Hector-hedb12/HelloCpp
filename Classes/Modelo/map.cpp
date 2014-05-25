@@ -36,23 +36,13 @@ void mapGrid::killPlayer(int x){
 	playerVector[x] = position(0,0);
 }
 
-void mapGrid::movePlayerTo(int x, position end, user &us){
+void mapGrid::movePlayerTo(int x, position end){
   position u = playerVector[x];
 
   tile &t1 = getTile(u);
   tile &t2 = getTile(end);
   t1.removePlayer(x);
   t2.addPlayer(x);
-  if(!t2.hasZombie()){
-	  if(t2.hasLife()){
-		  us.increaseLife();
-		  this->setLife(end, false);
-	  }
-	  if(t2.hasBullet()){
-		  us.increaseBullet();
-		  this->setBullet(end, false);
-	  }
-  }
 }
 
 bool mapGrid::isValid(position p){

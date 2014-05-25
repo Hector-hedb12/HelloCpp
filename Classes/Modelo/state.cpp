@@ -184,12 +184,17 @@ vector<position> state::queryMovePlayerTo(position to){
 
 void state::movePlayerTo(position to){
   user &ap = playerVector[currentPlayer];
-  world.movePlayerTo(currentPlayer, to, ap);
+  world.movePlayerTo(currentPlayer, to);
 
   assert(getLeftMoves() > 1);
   ap.setLeftMoves(ap.getLeftMoves() - 1);
 }
-  
+void state::moveZombieTo(position prev, position p){
+	assert(isValidZombie(prev));
+	world.moveZombie(prev, p);
+	movedZombies.insert(p);
+}
+
 int state::getCurrentPlayerLife(){
 	playerVector[currentPlayer].getLife();
 }
