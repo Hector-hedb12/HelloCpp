@@ -15,6 +15,7 @@
  * Class state
  */
 class state{
+public:
   vector<user> playerVector;
   vector<mapCard> mapVector;
   set<position> movedZombies;

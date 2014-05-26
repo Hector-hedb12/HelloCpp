@@ -253,10 +253,9 @@ void PlayScene::setStaticRedDice(CCNode* node) {
 void PlayScene::blueDiceCallback()
 {
 	int result = GameState.rollPlayerDice();
-
 	CCArray * actions = CCArray::createWithCapacity(4);
 	CCFiniteTimeAction * single_action;
-
+	CCLOG("FLAG3\n");
 	single_action = CCCallFuncN::create( this, callfuncN_selector(PlayScene::setMoveBlueDice));
 	actions->addObject(single_action);
 
@@ -274,7 +273,6 @@ void PlayScene::blueDiceCallback()
 	actions->addObject(single_action);
 
 	CCSequence *sq = CCSequence::create(actions);
-
 	blueDices[lastBlueDiceResult]->setVisible(false);
 	lastBlueDiceResult = result;
 	blueDices[lastBlueDiceResult]->runAction( sq );
@@ -419,10 +417,11 @@ void PlayScene::setDices(CCLayer * layer)
 
 void PlayScene::setMap(CCLayer *mLayer)
 {
-	CCSprite* mapCardSprite = CCSprite::create("map/empty_card2.png");
+	CCSprite* mapCardSprite;
 
 	for (int i = 0; i < MAX_MAP_DIM; i++)
 		for (int j = 0; j < MAX_MAP_DIM; j++){
+			mapCardSprite = CCSprite::create("map/empty_card2.png");
 			mapCardSprite->setPosition(mapCardMatrixToAxis(i,j));
 			mLayer->addChild(mapCardSprite);
 		}
@@ -897,6 +896,15 @@ CCPoint PlayScene::axisToTileMatrix(float x, float y){
 	return ccp( (int)(aux_y/PIXELS_TILE) % 3, (int)(aux_x/PIXELS_TILE) % 3);
 }
 
+CCPoint PlayScene::axisToGeneralTileMatrix(float x, float y){
+//	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
+//	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
+	float aux_x = abs( PIXELS_MAP_CARD - x );
+	float aux_y = abs( PIXELS_MAP_CARD + MAX_MAP_DIM * PIXELS_MAP_CARD - y );
+
+	return ccp( (int)(aux_y/PIXELS_TILE), (int)(aux_x/PIXELS_TILE));
+}
+
 CCPoint PlayScene::mapCardMatrixToAxis(int i, int j){
 //	float origen_x = (MAX_MAP_DIM/2)*(-PIXELS_MAP_CARD);
 //	float origen_y = (MAX_MAP_DIM/2)* PIXELS_MAP_CARD;
@@ -1098,6 +1106,11 @@ void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 }
 
 bool PlayScene::canMove(position p) {
+	CCLOG("(%d, %d)\n", p.x, p.y);
+	for (int i = 0; i < possibleMoves.size(); i++) {
+		CCLOG("poss = (%d, %d)\n", possibleMoves[i].x, possibleMoves[i].y);
+	}
+
 	for (int i = 0; i < possibleMoves.size(); i++) {
 		if (possibleMoves[i] == p)
 			return true;
@@ -1130,18 +1143,28 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	}
 
 	CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
-	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-	position p((int) index_tile.x, (int) index_tile.y);
-	p.invT();
+	CCPoint index_tile = axisToGeneralTileMatrix(ptoConvertido.x,ptoConvertido.y);
+	position p((int) index_tile.x - MAPMID, (int) index_tile.y- MAPMID);
 
-	if (possibleMoves.size() == 0) possibleMoves = GameState.getPossibleMoves().first;
+	if (possibleMoves.size() == 0) {
+
+		pair<vector<position>, vector<position> > pa = GameState.getPossibleMoves();
+
+
+		position current = GameState.world.getPlayerPosition(GameState.currentPlayer);
+
+		possibleMoves = pa.first;
+
+		if (possibleMoves.size() == 0)
+			CCLOG("CHINO LOCO %d %d %d %d\n", pa.first.size(), pa.second.size(), current.x, current.y);
+	}
 
 	if (canMove(p) && LANZODADOAZUL && !HAY_PREGUNTA && !HAY_BATALLA)
 	{
 		// desactiva touch
 		WAIT = true;
 
-		CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, index_tile.x, index_tile.y);
+		CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, (int)index_tile.x % 3, (int)index_tile.y % 3);
 
 		if (GameState.getCurrentPlayer() == 0)
 			point.x += (mSprite[GameState.getCurrentPlayer()]->getContentSize().width / 2);

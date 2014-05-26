@@ -27,7 +27,13 @@ mapCard::mapCard(int x, bool end){
   nLife = veMapCards[x][1];
   nBullet = veMapCards[x][2];
   
-  if(!isB){
+  if(isEnd){
+	  for(int i= 0; i < MAPNUMPOS; i++){
+		  for(int j = 0; j < MAPNUMPOS; j++){
+			  grid[i][j].setZombie(true);
+		  }
+	  }
+  }else if(!isB){
     int x, y;
     for(int k = 0; k < 4; k++){
       x = 1 + vx1[k];

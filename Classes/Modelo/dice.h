@@ -10,13 +10,13 @@ int x;
 public:
   dice(int s = 0){
     srand(s);
-    x = rand();
+    x = rand()%6;
   }
   int recent(){
     return x;
   }
   int next(){
-    return rand()%6;
+    return x = rand()%6;
   }  
 };
 

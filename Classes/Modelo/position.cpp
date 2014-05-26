@@ -42,10 +42,12 @@ void position::t(){
   y += MAPMID;
 }
 
+// Siempre MapCard Positions
 void position::invT(){
-  x -= MAPMID;
-  y -= MAPMID;
+  x = x * 3 - MAPMID;
+  y = y * 3 - MAPMID;
 }
+
 
 ostream &operator<<(ostream &os, const position &p) {
   os << "(" << p.x << "," << p.y << ")"; 

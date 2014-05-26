@@ -41,6 +41,7 @@ class mapGrid{
     for(int i = 0; i < 4; i++){
       v = u.next(i);
       if(!getTile(v).isValid() || dfsMoveVisit.count(v) > 0) continue;
+      dfsMoveVisit.insert(v);
       dfsMoveRes.push_back(v);
       if(dfsMove(v, end)){
         return true;

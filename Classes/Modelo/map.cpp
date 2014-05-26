@@ -168,6 +168,7 @@ bool mapGrid::isValidMove(position u, position v){
   tu = getTile(u); tv = getTile(v);
   if((tu.isBuilding() != tv.isBuilding()) && !tu.isDoor() && !tv.isDoor()) return false;
   if(!tv.isValid()) return false;
+  return true;
 }
 vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
   position u, v;
@@ -190,8 +191,8 @@ vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
       v = u.next(i);
       if(!isValidMove(u,v) || visit.count(v) > 0 || (zomb && getTile(v).hasZombie())) continue;
       Q.push(make_pair(v, dv));
-      res.push_back(u);
-      visit.insert(u);
+      res.push_back(v);
+      visit.insert(v);
     }
   }
   return res;
