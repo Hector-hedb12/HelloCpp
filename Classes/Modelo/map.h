@@ -5,13 +5,15 @@
 #include <algorithm>
 #include <vector>
 #include <set>
+#include <queue>
+#include <stack>
+#include <cassert>
 #include "tile.h"
 #include "position.h"
 #include "constant.h"
 #include "user.h"
 #include "mapcard.h"
 
-using namespace constant;
 using namespace std;
 
 /*
@@ -121,7 +123,7 @@ public:
   /*
    * Obtain the posible moves where the zombie can move
    */
-  vector<postion> state::getPossibleZombieMoves(position pos);
+  vector<position> getPossibleZombieMoves(position pos);
 
   /*
    * Get the positions where is able to put objects

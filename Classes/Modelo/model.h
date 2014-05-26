@@ -10,9 +10,6 @@
 #include <stack>
 
 #include "constant.h"
-using namespace constant;
-using namespace std;
-
 #include "dice.h"
 #include "position.h"
 #include "card.h"
@@ -22,7 +19,6 @@ using namespace std;
 #include "map.h"
 #include "state.h"
 
-
-
+using namespace std;
 
 #endif

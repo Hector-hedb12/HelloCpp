@@ -1,3 +1,4 @@
+#include "position.h"
 
 position::position(){
   x = y = 0;

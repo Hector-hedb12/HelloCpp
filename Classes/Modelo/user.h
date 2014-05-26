@@ -2,6 +2,8 @@
 #define  _USER_H_
 
 #include <vector>
+#include <cassert>
+#include "constant.h"
 #include "card.h"
 
 using namespace std;

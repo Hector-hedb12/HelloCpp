@@ -1,3 +1,16 @@
+#ifndef  _STATE_H_
+#define  _STATE_H_
+
+#include <vector>
+#include <algorithm>
+#include "position.h"
+#include "constant.h"
+#include "user.h"
+#include "mapcard.h"
+#include "card.h"
+#include "map.h"
+#include "dice.h"
+
 /*
  * Class state
  */
@@ -191,3 +204,5 @@ public:
   position getCurrentPlayerPosition();
 
 };
+
+#endif

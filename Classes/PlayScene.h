@@ -5,14 +5,14 @@
  *      Author: hector
  */
 
-#ifndef PLAYSCENE_H_
-#define PLAYSCENE_H_
+#ifndef _PLAYSCENE_H_
+#define _PLAYSCENE_H_
 
 #include "cocos2d.h"
 #include "CCLayerPanZoom.h"
 #include "Resources.h"
-#include <vector>
 #include "Modelo/model.h"
+#include <vector>
 
 using namespace std;
 USING_NS_CC;

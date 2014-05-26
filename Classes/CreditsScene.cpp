@@ -6,10 +6,6 @@
  */
 
 #include "CreditsScene.h"
-#include "MenuScene.h"
-#include "Resources.h"
-#include "VisibleRect.h"
-#include "support/CCPointExtension.h"
 
 USING_NS_CC;
 

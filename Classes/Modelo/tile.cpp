@@ -1,3 +1,4 @@
+#include "tile.h"
 
 tile::tile(){
   players.clear();

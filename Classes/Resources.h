@@ -1,12 +1,16 @@
-#ifndef RESOURCES_H_
-#define RESOURCES_H_
+#ifndef _RESOURCES_H_
+#define _RESOURCES_H_
 
 /*
  * Archivo de encabezado que posee la mayoria de las constantes y recursos
  * utilizados a lo largo del proyecto
  */
 
+#include "cocos2d.h"
 #include <string>
+
+USING_NS_CC;
+
 #define FONT_SIZE ( isScreenSizeHD() ? 18 : 16)
 
 static const int PLAY    = 0;

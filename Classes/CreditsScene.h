@@ -2,6 +2,10 @@
 #define __CREDITS_SCENE_H__
 
 #include "cocos2d.h"
+#include "MenuScene.h"
+#include "Resources.h"
+#include "VisibleRect.h"
+#include "support/CCPointExtension.h"
 
 class CreditsScene : public cocos2d::CCLayer
 {

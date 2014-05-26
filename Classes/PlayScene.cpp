@@ -5,7 +5,6 @@
  *      Author: hector
  */
 
-#include "PlayScene.h"
 #include "MenuScene.h"
 #include "VisibleRect.h"
 #include "support/CCPointExtension.h"

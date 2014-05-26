@@ -2,6 +2,8 @@
 #define  _POSITION_H_
 
 #include <iostream>
+#include <cassert>
+#include "constant.h"
 using namespace std;
 
 /*

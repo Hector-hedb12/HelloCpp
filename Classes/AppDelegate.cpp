@@ -5,7 +5,6 @@
  */
 
 #include "AppDelegate.h"
-#include "MenuScene.h"
 
 USING_NS_CC;
 

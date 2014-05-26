@@ -1,13 +1,4 @@
-
-int state::getCurrentPlayerLife(){
-	playerVector[currentPlayer].getLife();
-}
-int state::getCurrentPlayerBullet(){
-	playerVector[currentPlayer].getBullet();
-}
-int state::getCurrentPlayerZombie(){
-	playerVector[currentPlayer].getZombie();
-}
+#include "state.h"
 
 bool state::queryLife(position p){
   return world.getTile(p).hasLife();
@@ -82,11 +73,11 @@ state::state(int nPlayers){
     playerVector.push_back(user());
   }
   for(int i = 0; i < MAP_CARD_MAX; i++){
-	for(int j = 0; j < vNMapcard[i]; j++){
+	for(int j = 0; j < typeMapCards[i]; j++){
 	  mapVector.push_back(mapCard(i));
 	}
   }
-  unsort(mapVector.begin(), mapVector.end());
+  random_shuffle(mapVector.begin(), mapVector.end());
   world.init(nPlayers);
   currentPlayer = 0;
 }
@@ -174,7 +165,7 @@ pair<vector<position>, vector<position> > state::getPossibleMoves(){
   return make_pair(r1,r2);
 }
 
-vector<postion> state::getPossibleZombieMoves(position pos){
+vector<position> state::getPossibleZombieMoves(position pos){
 	return world.getPossibleZombieMoves(pos);
 }
 

@@ -4,7 +4,6 @@
 #include <string>
 using namespace std;
 
-namespace constant{
   const int MAPMAX = 180;
   const int MAPMID = 90;
   const int MAX_MAP_DIM = 30;
@@ -15,18 +14,18 @@ namespace constant{
   const int PLAYER_INIT_ZOMBIES = 0;
 
   const int MAP_CARD_MAX = 5;
-  int vx3[4] = {-3,0,3,0};
-  int vy3[4] = {0,-3,0,3};
-  int vx1[4] = {-1,0,1,0};
-  int vy1[4] = {0,-1,0,1};
-  int vi[4] = {2,3,0,1};
+  const int vx3[4] = {-3,0,3,0};
+  const int vy3[4] = {0,-3,0,3};
+  const int vx1[4] = {-1,0,1,0};
+  const int vy1[4] = {0,-1,0,1};
+  const int vi[4] = {2,3,0,1};
   
   
   /*
    * Especification of the map card
    * {nZombie, nLife, nBullet}
    */
-  int veMapCards[][3] = 
+  const int veMapCards[][3] =
   {
   {0,0,0}, // Plaza Central
   {9,0,0}, // Helipuerto
@@ -48,7 +47,7 @@ namespace constant{
   {2,0,0}  // Horizontal (Recta)
   };
   
-  int typeMapCards[] =  { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,4,4 };
+  const int typeMapCards[] =  { 1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,4,4 };
 
   /*
    * Map Cards constantns
@@ -57,7 +56,7 @@ namespace constant{
    * D => building (enter)
    * B => building
    */
-  char vMapCards[][3][4] =
+  const char vMapCards[][3][4] =
   {
     { // Plaza Central
       "#*#",
@@ -151,7 +150,7 @@ namespace constant{
     }
   };
 
-  string mapPath[] = {
+  const string mapPath[] = {
     "map/center.png",
     "map/center.png",
     "map/center.png",
@@ -171,5 +170,5 @@ namespace constant{
     "map/center.png",
     "map/center.png"
   };
-};
+
 #endif

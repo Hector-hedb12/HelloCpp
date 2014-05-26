@@ -1,9 +1,14 @@
 #ifndef  _MAPCARD_H_
 #define  _MAPCARD_H_
 
+#include <iostream>
+#include <algorithm>
+#include <vector>
 #include "constant.h"
+#include "tile.h"
+#include "position.h"
 
-using namespace constant;
+using namespace std;
 
 /*
  * Class Map Card

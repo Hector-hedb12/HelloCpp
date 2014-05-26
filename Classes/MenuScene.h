@@ -5,10 +5,15 @@
  *      Author: hector
  */
 
-#ifndef MENUSCENE_H_
-#define MENUSCENE_H_
+#ifndef _MENUSCENE_H_
+#define _MENUSCENE_H_
 
 #include "cocos2d.h"
+#include "CreditsScene.h"
+#include "PlayScene.h"
+#include "VisibleRect.h"
+#include "support/CCPointExtension.h"
+
 USING_NS_CC;
 
 class MenuScene : public CCLayer

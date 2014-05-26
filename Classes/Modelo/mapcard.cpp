@@ -1,3 +1,4 @@
+#include "mapcard.h"
 
 mapCard::mapCard(){
   nLife = nBullet = nZombie = 0;

@@ -12,7 +12,13 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
                    ../../Classes/CreditsScene.cpp \
                    ../../Classes/MenuScene.cpp \
                    ../../Classes/PlayScene.cpp \
-                   ../../Classes/VisibleRect.cpp
+                   ../../Classes/VisibleRect.cpp \
+                   ../../Classes/Modelo/map.cpp \
+                   ../../Classes/Modelo/mapcard.cpp \
+                   ../../Classes/Modelo/position.cpp \
+                   ../../Classes/Modelo/state.cpp \
+                   ../../Classes/Modelo/tile.cpp \
+                   ../../Classes/Modelo/user.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
 

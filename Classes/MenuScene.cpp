@@ -6,13 +6,6 @@
  */
 
 #include "MenuScene.h"
-#include "CreditsScene.h"
-#include "PlayScene.h"
-#include "Resources.h"
-#include "VisibleRect.h"
-#include "support/CCPointExtension.h"
-
-USING_NS_CC;
 
 static const int LINE_SPACE = 40;
 static CCPoint s_tCurPos = CCPointZero;

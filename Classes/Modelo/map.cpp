@@ -1,3 +1,4 @@
+#include "map.h"
 
 position mapGrid::getPlayerPosition(int x){
   return playerVector[x];
@@ -28,7 +29,7 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
   dfsMoveRes.clear();
   dfsMoveVisit.clear();
   user empty;
-  dfsMove(u, end, empty, false);
+  dfsMove(u, end);
   return dfsMoveRes;
 }
 
@@ -195,7 +196,7 @@ vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
   }
   return res;
 }
-vector<postion> mapGrid::getPossibleZombieMoves(position pos){
+vector<position> mapGrid::getPossibleZombieMoves(position pos){
 	position v;
 	vector<position> res;
 	for(int i = 0; i < 4; i++){
