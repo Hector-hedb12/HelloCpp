@@ -178,7 +178,7 @@ void state::movePlayerTo(position to){
   user &ap = playerVector[currentPlayer];
   world.movePlayerTo(currentPlayer, to);
 
-  assert(getLeftMoves() > 1);
+  assert(ap.getLeftMoves() > 1);
   ap.setLeftMoves(ap.getLeftMoves() - 1);
 }
 void state::moveZombieTo(position prev, position p){
