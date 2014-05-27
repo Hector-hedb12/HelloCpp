@@ -28,7 +28,7 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
   position u = playerVector[x];
   dfsMoveRes.clear();
   dfsMoveVisit.clear();
-  user empty;
+  dfsMoveVisit.insert(u);
   dfsMove(u, end);
   return dfsMoveRes;
 }
@@ -189,10 +189,12 @@ vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
     if(dv > nMoves) continue;
     for(int i = 0; i < 4; i++){
       v = u.next(i);
-      if(!isValidMove(u,v) || visit.count(v) > 0 || (zomb && getTile(v).hasZombie())) continue;
-      Q.push(make_pair(v, dv));
+      if(!isValidMove(u,v) || visit.count(v) > 0) continue;
       res.push_back(v);
       visit.insert(v);
+
+      if((zomb && getTile(v).hasZombie()))continue;
+      Q.push(make_pair(v, dv));
     }
   }
   return res;
