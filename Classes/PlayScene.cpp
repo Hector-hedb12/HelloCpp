@@ -896,15 +896,6 @@ CCPoint PlayScene::axisToTileMatrix(float x, float y){
 	return ccp( (int)(aux_y/PIXELS_TILE) % 3, (int)(aux_x/PIXELS_TILE) % 3);
 }
 
-CCPoint PlayScene::axisToGeneralTileMatrix(float x, float y){
-//	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
-//	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
-	float aux_x = abs( PIXELS_MAP_CARD - x );
-	float aux_y = abs( PIXELS_MAP_CARD + MAX_MAP_DIM * PIXELS_MAP_CARD - y );
-
-	return ccp( (int)(aux_y/PIXELS_TILE), (int)(aux_x/PIXELS_TILE));
-}
-
 CCPoint PlayScene::mapCardMatrixToAxis(int i, int j){
 //	float origen_x = (MAX_MAP_DIM/2)*(-PIXELS_MAP_CARD);
 //	float origen_y = (MAX_MAP_DIM/2)* PIXELS_MAP_CARD;
@@ -1143,20 +1134,20 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	}
 
 	CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
-	CCPoint index_tile = axisToGeneralTileMatrix(ptoConvertido.x,ptoConvertido.y);
-	position p((int) index_tile.x - MAPMID, (int) index_tile.y- MAPMID);
+	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
+	position p((int) index_cardMap.x, (int) index_cardMap.y);
+	p.invT();
+	p.x = p.x + (index_tile.x - 1);
+	p.y = p.y + (index_tile.y - 1);
 
 	if (possibleMoves.size() == 0) {
 
 		pair<vector<position>, vector<position> > pa = GameState.getPossibleMoves();
 
-
-		position current = GameState.world.getPlayerPosition(GameState.currentPlayer);
-
 		possibleMoves = pa.first;
 
 		if (possibleMoves.size() == 0)
-			CCLOG("CHINO LOCO %d %d %d %d\n", pa.first.size(), pa.second.size(), current.x, current.y);
+			CCLOG("CHINO LOCO %d %d\n", pa.first.size(), pa.second.size());
 	}
 
 	if (canMove(p) && LANZODADOAZUL && !HAY_PREGUNTA && !HAY_BATALLA)
@@ -1164,7 +1155,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		// desactiva touch
 		WAIT = true;
 
-		CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, (int)index_tile.x % 3, (int)index_tile.y % 3);
+		CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, (int)index_tile.x, (int)index_tile.y);
 
 		if (GameState.getCurrentPlayer() == 0)
 			point.x += (mSprite[GameState.getCurrentPlayer()]->getContentSize().width / 2);
@@ -1173,12 +1164,15 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 		point.y += (mSprite[0]->getContentSize().height / 2);
 
+		CCLOG("antes point to event\n");
 		pointToEvent(mSprite[GameState.getCurrentPlayer()]->getPosition(), point, p);
+		CCLOG("despues point to event\n");
 
 		CCArray *actions = CCArray::createWithCapacity(4 * events.size() + 2);
 		CCFiniteTimeAction* single_action;
 
 		for (int i = 0; i < events.size(); i++) {
+			CCLOG("event %d\n",i);
 			single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::setMoveSprite), (void*) &events[i]);
 			actions->addObject(single_action);
 
