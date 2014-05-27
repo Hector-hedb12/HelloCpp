@@ -183,7 +183,6 @@ class PlayScene : public cocos2d::CCLayer
 	   // juego a la interfaz del usuario
 	   CCPoint axisToMapCardMatrix(float x, float y);
 	   CCPoint axisToTileMatrix(float x, float y);
-	   CCPoint axisToGeneralTileMatrix(float x, float y);
 	   CCPoint mapCardMatrixToAxis(int i, int j);
 	   CCPoint tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j);
 
