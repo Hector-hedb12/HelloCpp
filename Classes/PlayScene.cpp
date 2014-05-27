@@ -1265,6 +1265,8 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		p.x = p.x + (tileLocation.x - 1);
 		p.y = p.y + (tileLocation.y - 1);
 
+		CCLOG("p:(%d,%d)",p.x,p.y);
+
 		// si no hay zombie o si  ha sido movido antes
 		if ( !GameState.queryZombie(p) || GameState.isValidZombie(p) )
 		{
