@@ -172,6 +172,7 @@ vector<position> state::getPossibleZombieMoves(position pos){
 
 vector<position> state::queryMovePlayerTo(position to){
   vector<position> ve = world.queryMovePlayerTo(currentPlayer, to);
+  return ve;
 }
 
 void state::movePlayerTo(position to){

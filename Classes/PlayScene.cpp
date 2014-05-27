@@ -678,16 +678,13 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data) {
 
 	GameState.movePlayerTo(d->end_point);
 
-	if ( GameState.queryZombie(d->end_point) ) {
-
-		if (spritebatch != NULL ) {
-			_moveLayer->removeChild(spritebatch);
-			spritebatch = NULL;
-			animatedSprite = NULL;
-		}
-
-		mSprite[GameState.getCurrentPlayer()]->setVisible(true);
+	if (spritebatch != NULL ) {
+		_moveLayer->removeChild(spritebatch);
+		spritebatch = NULL;
+		animatedSprite = NULL;
 	}
+
+	mSprite[GameState.getCurrentPlayer()]->setVisible(true);
 }
 
 
@@ -993,7 +990,7 @@ void PlayScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
 	}
 }
 
-void PlayScene::pointToEvent(CCPoint prevPoint, CCPoint nextPoint, position p)
+void PlayScene::pointToEvent(position p)
 {
 	// Obtenemos el "touch" del usuario y lo enviamos al Modelo para que nos de el
 	// arreglo con los eventos. provisional
@@ -1004,11 +1001,13 @@ void PlayScene::pointToEvent(CCPoint prevPoint, CCPoint nextPoint, position p)
 	Event e;
 	e.movement = PIXELS_TILE;
 
-	for (int i = 1; i < road.size(); i++){
+	CCLOG("pointToEvent: road size %d\n", road.size() );
+	for (int i = 1; i < road.size() && i < 20; i++){
+		CCLOG("pointToEvent %d\n", i);
 		if ( road[i-1].x != road[i].x )
-			e.orientation = 'H';
-		else
 			e.orientation = 'V';
+		else
+			e.orientation = 'H';
 
 		e.end_point = road[i];
 		events.push_back(e);
@@ -1165,7 +1164,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		point.y += (mSprite[0]->getContentSize().height / 2);
 
 		CCLOG("antes point to event\n");
-		pointToEvent(mSprite[GameState.getCurrentPlayer()]->getPosition(), point, p);
+		pointToEvent(p);
 		CCLOG("despues point to event\n");
 
 		CCArray *actions = CCArray::createWithCapacity(4 * events.size() + 2);
@@ -1261,12 +1260,15 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 	{
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-		position p((int) tileLocation.x, (int) tileLocation.y);
+		position p((int) location.x, (int) location.y);
 		p.invT();
+		p.x = p.x + (tileLocation.x - 1);
+		p.y = p.y + (tileLocation.y - 1);
 
 		// si no hay zombie o si  ha sido movido antes
 		if ( !GameState.queryZombie(p) || GameState.isValidZombie(p) )
 		{
+			CCLOG("thirdPhase: si no hay zombie o si  ha sido movido antes\n");
 			WAIT = false;
 			return;
 		}
@@ -1275,7 +1277,10 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 
 		WAIT = false;
 
+		CCLOG("thirdPhase: zombie seleccionado\n");
+
 	} else { // Va a seleccionar a donde lo quiere mover
+		CCLOG("thirdPhase: seleccionado a donde se quiere mover el zombie\n");
 		position prev_pos(prevZombieLocation.x, prevZombieLocation.y);
 		prev_pos.invT();
 
@@ -1288,6 +1293,7 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		// Si hay zombie en el nuevo lugar o no es valido el movimiento --> no se mueve
 		if ( GameState.queryZombie(p) || !canMoveZombie(prev_pos, p) )
 		{
+			CCLOG("thirdPhase: Si hay zombie en el nuevo lugar o no es valido el movimiento\n");
 			WAIT = false;
 			return;
 		}
