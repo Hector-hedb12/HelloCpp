@@ -1268,7 +1268,7 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		CCLOG("p:(%d,%d)",p.x,p.y);
 
 		// si no hay zombie o si  ha sido movido antes
-		if ( !GameState.queryZombie(p) || GameState.isValidZombie(p) )
+		if ( !GameState.isValidZombie(p) )
 		{
 			CCLOG("thirdPhase: si no hay zombie o si  ha sido movido antes\n");
 			WAIT = false;
