@@ -29,6 +29,7 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
   dfsMoveRes.clear();
   dfsMoveVisit.clear();
   dfsMoveVisit.insert(u);
+  dfsMoveRes.push_back(u);
   dfsMove(u, end);
   return dfsMoveRes;
 }

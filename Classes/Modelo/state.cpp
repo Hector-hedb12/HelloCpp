@@ -127,14 +127,14 @@ void state::useCard(int idPlayer, int idCard){
 int state::rollPlayerDice(){
   blueDice.next();
   user &ap = playerVector[currentPlayer];
-  ap.setLeftMoves(blueDice.recent());
+  ap.setLeftMoves(blueDice.recent()+1); // TRANSFORM[1..6]
   return blueDice.recent();
 }
 
 int state::rollZombieDice(){
   redDice.next();
   user &ap = playerVector[currentPlayer];
-  ap.setLeftZombieMoves(redDice.recent());
+  ap.setLeftZombieMoves(redDice.recent()+1);// TRANSFORM[1..6]
   return redDice.recent();
 }
 int state::rollFightDice(){
