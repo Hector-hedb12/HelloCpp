@@ -192,6 +192,7 @@ vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
       if(!isValidMove(u,v) || visit.count(v) > 0) continue;
       res.push_back(v);
       visit.insert(v);
+
       if((zomb && getTile(v).hasZombie()))continue;
       Q.push(make_pair(v, dv));
     }
