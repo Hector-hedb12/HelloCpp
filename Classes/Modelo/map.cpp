@@ -25,13 +25,32 @@ void mapGrid::init(int nPlayers){
 }
 
 vector<position> mapGrid::queryMovePlayerTo(int x, position end){
-  position u = playerVector[x];
-  dfsMoveRes.clear();
-  dfsMoveVisit.clear();
-  dfsMoveVisit.insert(u);
-  dfsMoveRes.push_back(u);
-  dfsMove(u, end);
-  return dfsMoveRes;
+	vector<position> res;
+	set<position> visit;
+	map<position, position> pred;
+	queue<position> Q;
+	position u, v;
+	v = playerVector[x];
+	Q.push(v);
+	visit.insert(v);
+	while(!Q.empty()){
+		u = Q.front();
+		Q.pop();
+		if(u == end) break;
+		for(int i = 0; i < 4; i++){
+			v = u.next(i);
+			if(visit.count(v) > 0 )continue;
+			pred[v] = u;
+		}
+	}
+	v = end;
+	while(v != playerVector[x]){
+		res.push_back(v);
+		v = pred[v];
+	}
+	res.push_back(v);
+	reverse(res.begin(), res.end());
+	return res;
 }
 
 void mapGrid::killPlayer(int x){

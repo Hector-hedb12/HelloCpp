@@ -236,3 +236,7 @@ bool state::isValidZombie(position p){
 	return (movedZombies.count(p) == 0 && queryZombie(p));
 }
 
+bool state::isCurrentPlayerMachine(){
+	return playerVector[currentPlayer].isMachine();
+}
+
