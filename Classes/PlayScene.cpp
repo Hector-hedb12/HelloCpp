@@ -175,7 +175,7 @@ void PlayScene::redDiceCallback()
 
 	if ( !HAY_BATALLA )
 	{
-		 result = GameState.rollZombieDice(); // [0,5]
+		 result = 0;// GameState.rollZombieDice(); // [0,5]
 
 		// Cambiar la subfase
 		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::changeSubPhase), NULL);
@@ -183,7 +183,7 @@ void PlayScene::redDiceCallback()
 
 		NUM_OF_ZOMBIES_TO_MOVE = result + 1;
 	} else {
-		result = GameState.rollFightDice(); // [0,5]
+		result = 0;//GameState.rollFightDice(); // [0,5]
 
 		if ( result < 3 ) {
 
