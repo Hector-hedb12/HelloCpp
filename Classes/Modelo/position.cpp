@@ -43,9 +43,9 @@ void position::t(){
 }
 
 // Siempre MapCard Positions
-void position::invT(){
-  x = x * 3 - MAPMID;
-  y = y * 3 - MAPMID;
+void position::invT(int tx, int ty){
+  x = x * 3 - MAPMID - (1 - tx);
+  y = y * 3 - MAPMID - (1 - ty);
 }
 
 

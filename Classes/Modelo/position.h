@@ -49,7 +49,7 @@ public:
    */
   void t();
 
-  void invT();
+  void invT(int tx, int ty);
   
 };
 
