@@ -676,7 +676,12 @@ void PlayScene::animateSprite(CCNode* sender, void* data) {
 void PlayScene::setStaticSprite(CCNode* sender, void* data) {
 	Event *d =  (Event*) data;
 
+	CCLOG("CurrPlayerPos Before: (%d, %d)\n", GameState.getCurrentPlayerPosition().x, GameState.getCurrentPlayerPosition().y);
+	CCLOG("Se va a mover a: (%d, %d)\n", d->end_point.x, d->end_point.y);
+
 	GameState.movePlayerTo(d->end_point);
+
+	CCLOG("CurrPlayerPos: (%d, %d)\n", GameState.getCurrentPlayerPosition().x, GameState.getCurrentPlayerPosition().y);
 
 	if (spritebatch != NULL ) {
 		_moveLayer->removeChild(spritebatch);
@@ -799,7 +804,7 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 {
 	CCPoint actualLocation = axisToMapCardMatrix(location.x, location.y);
 	position p((int) actualLocation.x, (int) actualLocation.y);
-	p.invT();
+	p.invT(1,1);
 
 	allowedPositions.clear();
 	allowedPositions = GameState.getAllPosibleMapCard(GameState.getLastMapCard());
@@ -999,15 +1004,23 @@ void PlayScene::pointToEvent(position p)
 
 	events.clear();
 	Event e;
-	e.movement = PIXELS_TILE;
 
 	CCLOG("pointToEvent: road size %d\n", road.size() );
 	for (int i = 1; i < road.size() && i < 20; i++){
 		CCLOG("pointToEvent %d\n", i);
-		if ( road[i-1].x != road[i].x )
+		if ( road[i-1].x != road[i].x ) {
 			e.orientation = 'V';
-		else
+			if (road[i-1].x > road[i].x)
+				e.movement = PIXELS_TILE;
+			else
+				e.movement = -PIXELS_TILE;
+		} else {
 			e.orientation = 'H';
+			if (road[i-1].y > road[i].y)
+				e.movement = -PIXELS_TILE;
+			else
+				e.movement = PIXELS_TILE;
+		}
 
 		e.end_point = road[i];
 		events.push_back(e);
@@ -1112,6 +1125,12 @@ bool PlayScene::canMove(position p) {
 bool PlayScene::canMoveZombie(position prev_p, position p) {
 	vector<position> posibles_moves = GameState.getPossibleZombieMoves(prev_p);
 
+	CCLOG("(%d, %d)->(%d, %d)\n", prev_p.x, prev_p.y, p.x, p.y);
+
+	for (int i = 0; i < posibles_moves.size(); i++) {
+		CCLOG("poss = (%d, %d)\n", posibles_moves[i].x, posibles_moves[i].y);
+	}
+
 	for (int i = 0; i < posibles_moves.size(); i++) {
 		if (posibles_moves[i] == p)
 			return true;
@@ -1135,9 +1154,9 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
 	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 	position p((int) index_cardMap.x, (int) index_cardMap.y);
-	p.invT();
-	p.x = p.x + (index_tile.x - 1);
-	p.y = p.y + (index_tile.y - 1);
+	CCLOG("(%d, %d)\n", (int)p.x, (int)p.y);
+	p.invT(index_tile.x,index_tile.y);
+	CCLOG("(%d, %d)\n", (int)p.x, (int)p.y);
 
 	if (possibleMoves.size() == 0) {
 
@@ -1261,9 +1280,7 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		position p((int) location.x, (int) location.y);
-		p.invT();
-		p.x = p.x + (tileLocation.x - 1);
-		p.y = p.y + (tileLocation.y - 1);
+		p.invT(tileLocation.x,tileLocation.y);
 
 		CCLOG("p:(%d,%d)",p.x,p.y);
 
@@ -1283,14 +1300,16 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 
 	} else { // Va a seleccionar a donde lo quiere mover
 		CCLOG("thirdPhase: seleccionado a donde se quiere mover el zombie\n");
-		position prev_pos(prevZombieLocation.x, prevZombieLocation.y);
-		prev_pos.invT();
 
-		CCPoint nLocation = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
-		CCPoint nTileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-		CCPoint axisLocation = tileMatrixToAxis(nLocation.x, nLocation.y, nTileLocation.x, nTileLocation.y);
-		position p(axisLocation.x, axisLocation.y);
-		p.invT();
+		CCPoint nLocation = axisToMapCardMatrix(prevZombieLocation.x,prevZombieLocation.y);
+		CCPoint nTileLocation = axisToTileMatrix(prevZombieLocation.x,prevZombieLocation.y);
+		position prev_pos(nLocation.x, nLocation.y);
+		prev_pos.invT(nTileLocation.x, nTileLocation.y);
+
+		nLocation = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
+		nTileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
+		position p(nLocation.x, nLocation.y);
+		p.invT(nTileLocation.x,nTileLocation.y);
 
 		// Si hay zombie en el nuevo lugar o no es valido el movimiento --> no se mueve
 		if ( GameState.queryZombie(p) || !canMoveZombie(prev_pos, p) )
