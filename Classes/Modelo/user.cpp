@@ -1,8 +1,14 @@
 #include "user.h"
 
-user::user(){
+user::user(bool b){
   init();
+  machine = b;
 }
+
+bool user::isMachine(){
+	return this->machine;
+}
+
 void user::increaseLife(){
   if(nLife < MAX_LIFE){
     nLife++;

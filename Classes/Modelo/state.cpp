@@ -82,6 +82,24 @@ state::state(int nPlayers){
   currentPlayer = 0;
 }
 
+state::state(int na, int nb){
+  for(int i = 0; i < na; i++){
+    playerVector.push_back(user());
+  }
+  for(int i = 0; i < nb; i++){
+	  playerVector.push_back(user(true));
+  }
+  for(int i = 0; i < MAP_CARD_MAX; i++){
+	for(int j = 0; j < typeMapCards[i]; j++){
+	  mapVector.push_back(mapCard(i));
+	}
+  }
+  random_shuffle(mapVector.begin(), mapVector.end());
+  world.init(na+nb);
+  currentPlayer = 0;
+}
+
+
 void state::nextTurn(){
   currentPlayer = (currentPlayer + 1)% playerVector.size();
   movedZombies.clear();

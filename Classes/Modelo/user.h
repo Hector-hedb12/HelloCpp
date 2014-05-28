@@ -14,13 +14,18 @@ class user{
   int nZombie;
   int leftMoves;
   int leftZombieMoves;
+  bool machine;
   vector<card> handCardVector;
   vector<card> tableCardVector;
 public:
   /*
    * Create an empty user
    */
-  user();
+  user(bool b = false);
+  /*
+   * Return true if the user is a machine
+   */
+  bool isMachine();
   /*
    * Increase a life point
    */

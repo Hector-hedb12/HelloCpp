@@ -40,7 +40,7 @@ void mapGrid::killPlayer(int x){
 
 void mapGrid::movePlayerTo(int x, position end){
   position u = playerVector[x];
-
+  playerVector[x] = end;
   tile &t1 = getTile(u);
   tile &t2 = getTile(end);
   t1.removePlayer(x);

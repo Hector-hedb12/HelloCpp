@@ -32,6 +32,10 @@ public:
  * Create a state of nPlayers
  */
   state(int);
+  /*
+   * Create a state of na players alive and nb machines
+   */
+    state(int, int);
 /*
  * Print World
  */  
