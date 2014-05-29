@@ -212,6 +212,7 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
 		for(int i = 0; i < 4; i++){
 			v = u.next(i);
 			if(!isValidMove(u,v) || visit.count(v) > 0) continue;
+			visit.insert(v);
 			pred[v] = u;
 			Q.push(v);
 		}
@@ -234,7 +235,7 @@ vector<position> mapGrid::getPossibleZombieMoves(position pos){
 	vector<position> res;
 	for(int i = 0; i < 4; i++){
 		v = pos.next(i);
-		if(!this->getTile(v).isValid() || this->getTile(v).hasZombie()) continue;
+		if(!isValidMove(pos,v) || this->getTile(v).hasZombie()) continue;
 		res.push_back(v);
 	}
 	return res;
