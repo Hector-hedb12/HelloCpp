@@ -208,6 +208,11 @@ public:
    */
   position getCurrentPlayerPosition();
 
+  /*
+   * Returns true if the current player is a machine
+   */
+  bool isCurrentPlayerMachine();
+
 };
 
 #endif

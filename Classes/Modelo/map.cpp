@@ -1,3 +1,4 @@
+#include <map>
 #include "map.h"
 
 position mapGrid::getPlayerPosition(int x){
@@ -44,6 +45,7 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
 		}
 	}
 	v = end;
+
 	while(v != playerVector[x]){
 		res.push_back(v);
 		v = pred[v];

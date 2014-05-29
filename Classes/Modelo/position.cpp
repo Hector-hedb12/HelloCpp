@@ -24,7 +24,9 @@ bool position::operator<(const position &p) const{
 bool position::operator==(const position &p) const{
   return x == p.x && y == p.y;
 }
-
+bool position::operator!=(const position &p) const{
+	return !(*this == p);
+}
 void position::p(){
   cout << "(" << x << "," << y << ")" << endl; 
 }
