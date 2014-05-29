@@ -45,6 +45,10 @@ public:
    */
   bool operator==(const position &p) const;
   /*
+   * Return true if the pairs are equals
+   */
+  bool operator!=(const position &p) const;
+  /*
    * Transform the pair
    */
   void t();
