@@ -72,12 +72,7 @@ state::state(int nPlayers){
   for(int i = 0; i < nPlayers; i++){
     playerVector.push_back(user());
   }
-  for(int i = 0; i < MAP_CARD_MAX; i++){
-	for(int j = 0; j < typeMapCards[i]; j++){
-	  mapVector.push_back(mapCard(i));
-	}
-  }
-  random_shuffle(mapVector.begin(), mapVector.end());
+  initmapVector();
   world.init(nPlayers);
   currentPlayer = 0;
 }
@@ -89,16 +84,18 @@ state::state(int na, int nb){
   for(int i = 0; i < nb; i++){
 	  playerVector.push_back(user(true));
   }
-  for(int i = 0; i < MAP_CARD_MAX; i++){
-	for(int j = 0; j < typeMapCards[i]; j++){
-	  mapVector.push_back(mapCard(i));
-	}
-  }
-  random_shuffle(mapVector.begin(), mapVector.end());
+  initmapVector();
   world.init(na+nb);
   currentPlayer = 0;
 }
-
+void state::initmapVector(){
+	for(int i = 0; i < MAP_CARD_MAX; i++){
+		for(int j = 0; j < typeMapCards[i]; j++){
+			mapVector.push_back(mapCard(i, i==1));
+		}
+	}
+	random_shuffle(mapVector.begin(), mapVector.end());
+}
 
 void state::nextTurn(){
   currentPlayer = (currentPlayer + 1)% playerVector.size();

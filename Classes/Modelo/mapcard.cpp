@@ -95,7 +95,7 @@ string mapCard::getPath(){
   return path;
 }
 
-void mapCard::rotateR(){
+void mapCard::rotateL(){
   tile g2[MAPNUMPOS][MAPNUMPOS];
   int n = MAPNUMPOS;
   for(int i = 0; i < n; i++){
@@ -109,10 +109,10 @@ void mapCard::rotateR(){
     }
   }
 }
-void mapCard::rotateL(){
-  rotateR();
-  rotateR();
-  rotateR();
+void mapCard::rotateR(){
+  rotateL();
+  rotateL();
+  rotateL();
 }
 void mapCard::print(){
   for(int i = 0; i < 3; i++){

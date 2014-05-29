@@ -36,6 +36,10 @@ public:
    * Create a state of na players alive and nb machines
    */
     state(int, int);
+  /*
+   * Init the map card stack
+   */
+  void initmapVector();
 /*
  * Print World
  */  

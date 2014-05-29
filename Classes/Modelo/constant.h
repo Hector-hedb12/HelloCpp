@@ -64,9 +64,9 @@ using namespace std;
       "#*#"
     },
     { // Helipuerto
-      "#*#",
       "***",
-      "#*#"
+      "***",
+      "***"
     },
     { // Tienda de Excedentes Militares
       "BDB",
