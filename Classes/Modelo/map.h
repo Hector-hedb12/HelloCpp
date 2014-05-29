@@ -7,6 +7,7 @@
 #include <set>
 #include <queue>
 #include <stack>
+#include <cstdio>
 #include <cassert>
 #include "tile.h"
 #include "position.h"
@@ -54,12 +55,12 @@ class mapGrid{
 public:
   
   void print(){
-    for(int i = -6; i <= 6; i++){
-      for(int j = -6; j <= 6; j++){
-        cout << (getTile(i,j).isStreet()?"*":"#");
+      for(int i = -6; i <= 6; i++){
+        for(int j = -6; j <= 6; j++){
+          printf("[%c%c]", (getTile(i,j).isStreet()?'*':'#'), (getTile(i,j).hasZombie()?'Z':' ') ) ;
+        }cout << endl;
       }cout << endl;
     }
-  }
   
   /*
    * Return the vector of positions without moving the player

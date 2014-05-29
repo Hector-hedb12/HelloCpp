@@ -25,35 +25,6 @@ void mapGrid::init(int nPlayers){
   }  
 }
 
-vector<position> mapGrid::queryMovePlayerTo(int x, position end){
-	vector<position> res;
-	set<position> visit;
-	map<position, position> pred;
-	queue<position> Q;
-	position u, v;
-	v = playerVector[x];
-	Q.push(v);
-	visit.insert(v);
-	while(!Q.empty()){
-		u = Q.front();
-		Q.pop();
-		if(u == end) break;
-		for(int i = 0; i < 4; i++){
-			v = u.next(i);
-			if(visit.count(v) > 0 )continue;
-			pred[v] = u;
-		}
-	}
-	v = end;
-
-	while(v != playerVector[x]){
-		res.push_back(v);
-		v = pred[v];
-	}
-	res.push_back(v);
-	reverse(res.begin(), res.end());
-	return res;
-}
 
 void mapGrid::killPlayer(int x){
 	playerVector[x] = position(0,0);
@@ -221,6 +192,43 @@ vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
   }
   return res;
 }
+vector<position> mapGrid::queryMovePlayerTo(int x, position end){
+	vector<position> res;
+	set<position> visit;
+	map<position, position> pred;
+	queue<position> Q;
+	position u, v;
+	v = playerVector[x];
+	Q.push(v);
+	visit.insert(v);
+	bool found = false;
+	while(!Q.empty()){
+		u = Q.front();
+		Q.pop();
+		if(u == end){
+		  found = true;
+		  break;
+		}
+		for(int i = 0; i < 4; i++){
+			v = u.next(i);
+			if(!isValidMove(u,v) || visit.count(v) > 0) continue;
+			pred[v] = u;
+			Q.push(v);
+		}
+	}
+	assert(found);
+	if(!found) return res;
+
+	v = end;
+	while(v != playerVector[x]){
+		res.push_back(v);
+		v = pred[v];
+	}
+	res.push_back(v);
+	reverse(res.begin(), res.end());
+	return res;
+}
+
 vector<position> mapGrid::getPossibleZombieMoves(position pos){
 	position v;
 	vector<position> res;

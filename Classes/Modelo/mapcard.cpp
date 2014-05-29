@@ -1,5 +1,5 @@
 #include "mapcard.h"
-
+#include <cstdio>
 mapCard::mapCard(){
   nLife = nBullet = nZombie = 0;
   isEnd = 0;
@@ -117,8 +117,8 @@ void mapCard::rotateR(){
 void mapCard::print(){
   for(int i = 0; i < 3; i++){
     for(int j = 0; j < 3; j++){
-      cout << (grid[i][j].isStreet()?"*":"#");
+      printf("[%c%c]", (grid[i][j].isStreet()?'*':'#'), (grid[i][j].hasZombie()?'Z':' ') ) ;
     }cout << endl;
-  }
+  }cout << endl;
 }
 
