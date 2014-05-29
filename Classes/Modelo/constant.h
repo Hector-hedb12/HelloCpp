@@ -13,7 +13,7 @@ using namespace std;
   const int PLAYER_INIT_LIFE = 3;
   const int PLAYER_INIT_ZOMBIES = 0;
 
-  const int MAP_CARD_MAX = 1;
+  const int MAP_CARD_MAX = 17;
   const int vx3[4] = {-3,0,3,0};
   const int vy3[4] = {0,-3,0,3};
   const int vx1[4] = {-1,0,1,0};
@@ -47,7 +47,7 @@ using namespace std;
   {2,0,0}  // Horizontal (Recta)
   };
   
-  const int typeMapCards[] =  { 10,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,4,4 };
+  const int typeMapCards[] =  { 0,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,4,4 };
 
   /*
    * Map Cards constantns
@@ -151,24 +151,24 @@ using namespace std;
   };
 
   const string mapPath[] = {
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png",
-    "map/center.png"
+    "map/plaza_central.png",
+    "map/helipuerto.png",
+    "map/tiendaExcedentesMilitar.png",
+    "map/tiendaMonopatines.png",
+    "map/hospital.png",
+    "map/comisaria.png",
+    "map/gasolinera.png",
+    "map/jugueteria.png",
+    "map/farmacia.png",
+    "map/floristeria.png",
+    "map/parque_de_bomberos.png",
+    "map/ferreteria.png",
+    "map/tienda_de_deportes.png",
+    "map/casa_y_jardin.png",
+    "map/esquina.png",
+    "map/cruz.png",
+    "map/t.png",
+    "map/horizontal.png"
   };
 
 #endif
