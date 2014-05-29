@@ -14,6 +14,7 @@
 
 CCScene* PlayScene::scene()
 {
+	CCLOG("Entrando a: CCScene* PlayScene::scene()\n");
     CCScene *scene = CCScene::create();
     PlayScene *layer = PlayScene::create();
     scene->addChild(layer);
@@ -23,6 +24,7 @@ CCScene* PlayScene::scene()
 // on "init" you need to initialize your instance
 bool PlayScene::init()
 {
+	CCLOG("Entrando a: bool PlayScene::init()\n");
     if ( !CCLayer::init() )
     {
         return false;
@@ -125,37 +127,44 @@ bool PlayScene::init()
 
 void PlayScene::mainMenuCallback(CCObject* pSender)
 {
+	CCLOG("Entrando a: void PlayScene::mainMenuCallback(CCObject* pSender)\n");
 	CCScene* pScene = MenuScene::scene();
 	CCDirector::sharedDirector()->replaceScene(pScene);
 }
 
 void PlayScene::incrementLifeMenuCallback(CCObject* pSender)
 {
+	CCLOG("Entrando a: void PlayScene::incrementLifeMenuCallback(CCObject* pSender)\n");
 	modifyPlayerLifes(1);
 }
 
 void PlayScene::decrementLifeMenuCallback(CCObject* pSender)
 {
+	CCLOG("Entrando a: void PlayScene::decrementLifeMenuCallback(CCObject* pSender)\n");
 	modifyPlayerLifes(-1);
 }
 
 void PlayScene::incrementBulletMenuCallback(CCObject* pSender)
 {
+	CCLOG("Entrando a: void PlayScene::incrementBulletMenuCallback(CCObject* pSender)\n");
 	modifyPlayerBullets(1);
 }
 
 void PlayScene::decrementBulletMenuCallback(CCObject* pSender)
 {
+	CCLOG("Entrando a: void PlayScene::decrementBulletMenuCallback(CCObject* pSender)\n");
 	modifyPlayerBullets(-1);
 }
 
 void PlayScene::activateMapCardModeCallback(CCObject* pSender)
 {
+	CCLOG("Entrando a: void PlayScene::activateMapCardModeCallback(CCObject* pSender)\n");
 	if (fase[0]) PUTMAPCARD = true;
 }
 
 void PlayScene::redDiceCallback()
 {
+	CCLOG("Entrando a: void PlayScene::redDiceCallback()\n");
 	int result;
 
 	CCArray * actions = CCArray::createWithCapacity(7);
@@ -175,7 +184,7 @@ void PlayScene::redDiceCallback()
 
 	if ( !HAY_BATALLA )
 	{
-		 result = 0;// GameState.rollZombieDice(); // [0,5]
+		 result = 1;//GameState.rollZombieDice(); // [0,5]
 
 		// Cambiar la subfase
 		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::changeSubPhase), NULL);
@@ -183,7 +192,7 @@ void PlayScene::redDiceCallback()
 
 		NUM_OF_ZOMBIES_TO_MOVE = result + 1;
 	} else {
-		result = 0;//GameState.rollFightDice(); // [0,5]
+		result = GameState.rollFightDice(); // [0,5]
 
 		if ( result < 3 ) {
 
@@ -213,6 +222,7 @@ void PlayScene::redDiceCallback()
 
 void PlayScene::setMoveRedDice(CCNode* node)
 {
+	CCLOG("Entrando a: void PlayScene::setMoveRedDice(CCNode* node)\n");
 	CCSpriteFrameCache* cache = CCSpriteFrameCache::sharedSpriteFrameCache();
 
 	animatedSprite = CCSprite::createWithSpriteFrameName( "movedicered_1.png" );
@@ -240,7 +250,9 @@ void PlayScene::setMoveRedDice(CCNode* node)
 	animatedSprite->setFlipY(false);
 }
 
-void PlayScene::setStaticRedDice(CCNode* node) {
+void PlayScene::setStaticRedDice(CCNode* node)
+{
+	CCLOG("Entrando a: void PlayScene::setStaticRedDice(CCNode* node) \n");
 	if (spritebatch != NULL) {
 		_stayLayer->removeChild(spritebatch);
 		spritebatch = NULL;
@@ -252,6 +264,7 @@ void PlayScene::setStaticRedDice(CCNode* node) {
 
 void PlayScene::blueDiceCallback()
 {
+	CCLOG("Entrando a: void PlayScene::blueDiceCallback() \n");
 	int result = GameState.rollPlayerDice();
 	CCArray * actions = CCArray::createWithCapacity(4);
 	CCFiniteTimeAction * single_action;
@@ -280,6 +293,7 @@ void PlayScene::blueDiceCallback()
 
 void PlayScene::setMoveBlueDice(CCNode* node)
 {
+	CCLOG("Entrando a: void PlayScene::setMoveBlueDice(CCNode* node) \n");
 	CCSpriteFrameCache* cache = CCSpriteFrameCache::sharedSpriteFrameCache();
 
 	animatedSprite = CCSprite::createWithSpriteFrameName( "movediceblue_1.png" );
@@ -307,7 +321,9 @@ void PlayScene::setMoveBlueDice(CCNode* node)
 	animatedSprite->setFlipY(false);
 }
 
-void PlayScene::setStaticBlueDice(CCNode* node) {
+void PlayScene::setStaticBlueDice(CCNode* node)
+{
+	CCLOG("Entrando a: void PlayScene::setStaticBlueDice(CCNode* node)  \n");
 	if (spritebatch != NULL) {
 		_stayLayer->removeChild(spritebatch);
 		spritebatch = NULL;
@@ -323,6 +339,7 @@ void PlayScene::setStaticBlueDice(CCNode* node) {
 
 void PlayScene::setMenuBackMenu(CCLayer *mLayer)
 {
+	CCLOG("Entrando a: void PlayScene::setMenuBackMenu(CCLayer *mLayer)\n");
 	CCLabelTTF* label = CCLabelTTF::create(MAIN_MENU_STRING.c_str(), "Arial", FONT_SIZE);
 	CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(PlayScene::mainMenuCallback));
 
@@ -337,6 +354,7 @@ void PlayScene::setMenuBackMenu(CCLayer *mLayer)
 
 void PlayScene::setOptionsLifeMenu(CCLayer *mLayer)
 {
+	CCLOG("Entrando a: void PlayScene::setOptionsLifeMenu(CCLayer *mLayer)\n");
 	// +++++++++++++++++++++++++++++++++
 	CCLabelTTF* label = CCLabelTTF::create("+", "Arial", FONT_SIZE + 10);
 	CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(PlayScene::incrementLifeMenuCallback));
@@ -364,6 +382,7 @@ void PlayScene::setOptionsLifeMenu(CCLayer *mLayer)
 
 void PlayScene::setOptionsBulletMenu(CCLayer *mLayer)
 {
+	CCLOG("Entrando a: void PlayScene::setOptionsBulletMenu(CCLayer *mLayer)\n");
 	// +++++++++++++++++++++++++++++++++
 	CCLabelTTF* label = CCLabelTTF::create("+", "Arial", FONT_SIZE + 10);
 	CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(PlayScene::incrementBulletMenuCallback));
@@ -391,6 +410,7 @@ void PlayScene::setOptionsBulletMenu(CCLayer *mLayer)
 
 void PlayScene::setDices(CCLayer * layer)
 {
+	CCLOG("Entrando a: void PlayScene::setDices(CCLayer * layer)\n");
 	CCSprite* icon;
 
 	char str[70] = {0};
@@ -417,14 +437,18 @@ void PlayScene::setDices(CCLayer * layer)
 
 void PlayScene::setMap(CCLayer *mLayer)
 {
+	CCLOG("Entrando a: void PlayScene::setMap(CCLayer *mLayer)\n");
 	CCSprite* mapCardSprite;
-
-	for (int i = 0; i < MAX_MAP_DIM; i++)
-		for (int j = 0; j < MAX_MAP_DIM; j++){
-			mapCardSprite = CCSprite::create("map/empty_card2.png");
-			mapCardSprite->setPosition(mapCardMatrixToAxis(i,j));
-			mLayer->addChild(mapCardSprite);
-		}
+	CCPoint zeroPos = mapCardMatrixToAxis(0,0), currPos;
+//	for (int i = 0; i < MAX_MAP_DIM; i++) {
+//		currPos.y = zeroPos.y + PIXELS_MAP_CARD * -i;
+//		for (int j = 0; j < MAX_MAP_DIM; j++){
+//			mapCardSprite = CCSprite::create("map/empty_card2.png");
+//			currPos.x = zeroPos.x + PIXELS_MAP_CARD * j;
+//			mapCardSprite->setPosition(currPos);
+//			mLayer->addChild(mapCardSprite);
+//		}
+//	}
 
 	mapCardSprite = CCSprite::create(mapPath[0].c_str()); // Plaza Central
 	mapCardSprite->setPosition(mapCardMatrixToAxis(MAX_MAP_DIM/2, MAX_MAP_DIM/2));
@@ -433,6 +457,7 @@ void PlayScene::setMap(CCLayer *mLayer)
 
 void PlayScene::setInterface()
 {
+	CCLOG("Entrando a: void PlayScene::setInterface()\n");
 	CCSprite*   icon;
 	CCLabelTTF* label;
 	int off_y = 5;
@@ -529,6 +554,7 @@ void PlayScene::setInterface()
 
 void PlayScene::setPlayerInfo()
 {
+	CCLOG("Entrando a: void PlayScene::setPlayerInfo()\n");
 	CCLabelTTF *label = (CCLabelTTF *) _stayLayer->getChildByTag(TITLE_LABEL_TAG);
 	char info[45];
 	sprintf(info, "Jugador %d", GameState.getCurrentPlayer() + 1);
@@ -541,6 +567,7 @@ void PlayScene::setPlayerInfo()
 
 void PlayScene::modifyPlayerLifes(int num)
 {
+	CCLOG("Entrando a: void PlayScene::modifyPlayerLifes(int num)\n");
 	if (num == 1) GameState.addLife();
 	else if (num == -1) GameState.decreaseLife();
 
@@ -549,6 +576,7 @@ void PlayScene::modifyPlayerLifes(int num)
 
 void PlayScene::modifyPlayerBullets(int num)
 {
+	CCLOG("Entrando a: void PlayScene::modifyPlayerBullets(int num)\n");
 	if (num == 1) GameState.addBullet();
 	else if (num < 0) GameState.decreaseBullet(-num);
 
@@ -557,6 +585,7 @@ void PlayScene::modifyPlayerBullets(int num)
 
 void PlayScene::modifyPlayerZombies()
 {
+	CCLOG("Entrando a: void PlayScene::modifyPlayerZombies()\n");
 	GameState.addZombie();
 
 	modifyScreenZombies();
@@ -564,6 +593,7 @@ void PlayScene::modifyPlayerZombies()
 
 void PlayScene::modifyScreenLifes()
 {
+	CCLOG("Entrando a: void PlayScene::modifyScreenLifes()\n");
 	CCLabelTTF *label = (CCLabelTTF *) _stayLayer->getChildByTag(LIFES_LABEL_TAG);
 	char info[10];
 	sprintf(info, "x %d", GameState.getCurrentPlayerLife());
@@ -573,6 +603,7 @@ void PlayScene::modifyScreenLifes()
 
 void PlayScene::modifyScreenBullets()
 {
+	CCLOG("Entrando a: void PlayScene::modifyScreenBullets()\n");
 	CCLabelTTF *label = (CCLabelTTF *) _stayLayer->getChildByTag(BULLETS_LABEL_TAG);
 	char info[10];
 	sprintf(info, "x %d", GameState.getCurrentPlayerBullet());
@@ -582,6 +613,7 @@ void PlayScene::modifyScreenBullets()
 
 void PlayScene::modifyScreenZombies()
 {
+	CCLOG("Entrando a: void PlayScene::modifyScreenZombies()\n");
 	CCLabelTTF *label = (CCLabelTTF *) _stayLayer->getChildByTag(ZOMBIES_LABEL_TAG);
 	char info[10];
 	sprintf(info, "%d x", GameState.getCurrentPlayerZombie());
@@ -591,6 +623,7 @@ void PlayScene::modifyScreenZombies()
 
 void PlayScene::setSprites(CCLayer* mLayer)
 {
+	CCLOG("Entrando a: void PlayScene::setSprites(CCLayer* mLayer)\n");
 	CCPoint center = mapCardMatrixToAxis(MAX_MAP_DIM/2, MAX_MAP_DIM/2);
 
 	center.y += (mSprite[0]->getContentSize().height / 2);
@@ -611,7 +644,9 @@ void PlayScene::setSprites(CCLayer* mLayer)
 	}
 }
 
-void PlayScene::setMoveSprite(CCNode* sender, void* data) {
+void PlayScene::setMoveSprite(CCNode* sender, void* data)
+{
+	CCLOG("Entrando a: void PlayScene::setMoveSprite(CCNode* sender, void* data) \n");
 	CCSpriteFrameCache* cache = CCSpriteFrameCache::sharedSpriteFrameCache();
 	Event *d =  (Event*) data;
 	string name;
@@ -653,8 +688,9 @@ void PlayScene::setMoveSprite(CCNode* sender, void* data) {
 	animatedSprite->setFlipY(false);
 }
 
-void PlayScene::animateSprite(CCNode* sender, void* data) {
-
+void PlayScene::animateSprite(CCNode* sender, void* data)
+{
+	CCLOG("Entrando a: void PlayScene::animateSprite(CCNode* sender, void* data)  \n");
 	CCFiniteTimeAction* actionMove;
 	Event *d =  (Event*) data;
 	float offX = 0, offY = 0;
@@ -673,7 +709,9 @@ void PlayScene::animateSprite(CCNode* sender, void* data) {
 	animatedSprite->runAction(actionMove);
 }
 
-void PlayScene::setStaticSprite(CCNode* sender, void* data) {
+void PlayScene::setStaticSprite(CCNode* sender, void* data)
+{
+	CCLOG("Entrando a: void PlayScene::setStaticSprite(CCNode* sender, void* data) \n");
 	Event *d =  (Event*) data;
 
 	CCLOG("CurrPlayerPos Before: (%d, %d)\n", GameState.getCurrentPlayerPosition().x, GameState.getCurrentPlayerPosition().y);
@@ -699,7 +737,9 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data) {
 
 
 
-void PlayScene::setMoveZombieSprite(CCNode* sender, void* data) {
+void PlayScene::setMoveZombieSprite(CCNode* sender, void* data)
+{
+	CCLOG("Entrando a: void PlayScene::setMoveZombieSprite(CCNode* sender, void* data)  \n");
 	CCSpriteFrameCache* cache = CCSpriteFrameCache::sharedSpriteFrameCache();
 	Event *d =  (Event*) data;
 	string name;
@@ -751,8 +791,9 @@ void PlayScene::setMoveZombieSprite(CCNode* sender, void* data) {
 	animatedSprite->setFlipY(false);
 }
 
-void PlayScene::animateZombieSprite(CCNode* sender, void* data) {
-
+void PlayScene::animateZombieSprite(CCNode* sender, void* data)
+{
+	CCLOG("Entrando a: void PlayScene::animateZombieSprite(CCNode* sender, void* data) \n");
 	CCFiniteTimeAction* actionMove;
 	Event *d =  (Event*) data;
 	float offX = 0, offY = 0;
@@ -770,7 +811,9 @@ void PlayScene::animateZombieSprite(CCNode* sender, void* data) {
 	animatedSprite->runAction(actionMove);
 }
 
-void PlayScene::setStaticZombieSprite(CCNode* sender, void* data) {
+void PlayScene::setStaticZombieSprite(CCNode* sender, void* data)
+{
+	CCLOG("Entrando a: void PlayScene::setStaticZombieSprite(CCNode* sender, void* data) \n");
 	if (spritebatch != NULL) {
 		_moveLayer->removeChild(spritebatch);
 		spritebatch = NULL;
@@ -789,8 +832,9 @@ void PlayScene::setStaticZombieSprite(CCNode* sender, void* data) {
  * con la rotacion actual
  */
 
-bool PlayScene::isAllowed(position p) {
-
+bool PlayScene::isAllowed(position p)
+{
+	CCLOG("Entrando a: bool PlayScene::isAllowed(position p) \n");
 	for (int i = 0; i < allowedPositions[currCardRotation].size(); i++) {
 		if (allowedPositions[currCardRotation][i] == p)
 			return true;
@@ -802,6 +846,7 @@ bool PlayScene::isAllowed(position p) {
 
 bool PlayScene::putMapCard(CCPoint location, int id)
 {
+	CCLOG("Entrando a: bool PlayScene::putMapCard(CCPoint location, int id)\n");
 	CCPoint actualLocation = axisToMapCardMatrix(location.x, location.y);
 	position p((int) actualLocation.x, (int) actualLocation.y);
 	p.invT(1,1);
@@ -818,12 +863,21 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 	/* provisional DEL MAPA */
 	int fila = (int) actualLocation.x, columna = (int) actualLocation.y;
 
-	GameState.putCardMap(GameState.getLastMapCard(), p);
+	// Se rota la carta y se notifica al modelo
+	mapCard current_mapcard = GameState.getLastMapCard();
 
-	// Se coloca la carta de mapa
+	for (int i = 0; i < currCardRotation; i++)
+		current_mapcard.rotateR();
+
+	GameState.putCardMap(current_mapcard, p);
+
+	// Se coloca la carta de mapa en la interfaz
 	sprite = CCSprite::create(GameState.getLastMapCard().getPath().c_str());
 	sprite->setPosition(mapCardMatrixToAxis(actualLocation.x,actualLocation.y));
+	sprite->setRotation(currCardRotation * 90);
 	_moveLayer->addChild(sprite, 1);
+
+	CCLOG("path putMapCard %s\n", GameState.getLastMapCard().getPath().c_str());
 
 	float bv_offset_x, bv_offset_y, z_offset_y;
 
@@ -879,7 +933,9 @@ bool PlayScene::putMapCard(CCPoint location, int id)
  *     Funciones para llevar a cabo acciones       *
  * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-CCPoint PlayScene::axisToMapCardMatrix(float x, float y){
+CCPoint PlayScene::axisToMapCardMatrix(float x, float y)
+{
+	CCLOG("Entrando a: CCPoint PlayScene::axisToMapCardMatrix(float x, float y)\n");
 //	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
 //	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
 
@@ -889,7 +945,9 @@ CCPoint PlayScene::axisToMapCardMatrix(float x, float y){
 	return ccp(aux_y/PIXELS_MAP_CARD, aux_x/PIXELS_MAP_CARD);
 }
 
-CCPoint PlayScene::axisToTileMatrix(float x, float y){
+CCPoint PlayScene::axisToTileMatrix(float x, float y)
+{
+	CCLOG("Entrando a: CCPoint PlayScene::axisToTileMatrix(float x, float y)\n");
 //	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
 //	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
 	float aux_x = abs( PIXELS_MAP_CARD - x );
@@ -898,7 +956,9 @@ CCPoint PlayScene::axisToTileMatrix(float x, float y){
 	return ccp( (int)(aux_y/PIXELS_TILE) % 3, (int)(aux_x/PIXELS_TILE) % 3);
 }
 
-CCPoint PlayScene::mapCardMatrixToAxis(int i, int j){
+CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)
+{
+	CCLOG("Entrando a: CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)\n");
 //	float origen_x = (MAX_MAP_DIM/2)*(-PIXELS_MAP_CARD);
 //	float origen_y = (MAX_MAP_DIM/2)* PIXELS_MAP_CARD;
 
@@ -908,13 +968,17 @@ CCPoint PlayScene::mapCardMatrixToAxis(int i, int j){
 	return ccp(origen_x + j * PIXELS_MAP_CARD, origen_y + (-i * PIXELS_MAP_CARD) );
 }
 
-CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j){
+CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j)
+{
+	CCLOG("Entrando a: CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j)\n");
 	CCPoint center = mapCardMatrixToAxis(i_mapCard,j_mapCard);
 
 	return ccp(center.x + PIXELS_TILE * (j-1), center.y - PIXELS_TILE * (i-1) );
 }
 
-Event PlayScene::getEventZombieMove(CCPoint prev, CCPoint next){
+Event PlayScene::getEventZombieMove(CCPoint prev, CCPoint next)
+{
+	CCLOG("Entrando a: Event PlayScene::getEventZombieMove(CCPoint prev, CCPoint next)\n");
 	int prev_x = abs( PIXELS_MAP_CARD - prev.x) / PIXELS_TILE;
 	int prev_y = abs( (PIXELS_MAP_CARD + MAX_MAP_DIM * PIXELS_MAP_CARD) - prev.y) / PIXELS_TILE;
 
@@ -943,6 +1007,7 @@ Event PlayScene::getEventZombieMove(CCPoint prev, CCPoint next){
 
 void PlayScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent)
 {
+	CCLOG("Entrando a: void PlayScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent)\n");
 	CCTouch *touch = (CCTouch*) (*pTouches->begin());
 	CCPoint pto = _moveLayer->convertTouchToNodeSpace(touch);
 	CCLOG ("%f %f", pto.x, pto.y);
@@ -953,7 +1018,9 @@ void PlayScene::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent)
 	else singleTouch = false;
 }
 
-void PlayScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
+void PlayScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent)
+{
+	CCLOG("Entrando a: void PlayScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent)\n");
 	_moveLayer->ccTouchesMoved(pTouches, pEvent);
 
     if (touches != 1)
@@ -966,8 +1033,9 @@ void PlayScene::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent){
 	touchDistance += ccpDistance(curTouchPosition, prevTouchPosition);
 }
 
-void PlayScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
-
+void PlayScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent)
+{
+	CCLOG("Entrando a: void PlayScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent)\n");
 	_moveLayer->ccTouchesEnded(pTouches, pEvent);
 
 	if (touches == 1 && singleTouch && touchDistance <= EPSILON_DISTANCE && !WAIT) {
@@ -987,6 +1055,7 @@ void PlayScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent){
 
 void PlayScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
 {
+	CCLOG("Entrando a: void PlayScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)\n");
 	_moveLayer->ccTouchesCancelled(pTouches, pEvent);
 
 	if (touches > 0) touches--;
@@ -997,6 +1066,7 @@ void PlayScene::ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent)
 
 void PlayScene::pointToEvent(position p)
 {
+	CCLOG("Entrando a: void PlayScene::pointToEvent(position p)\n");
 	// Obtenemos el "touch" del usuario y lo enviamos al Modelo para que nos de el
 	// arreglo con los eventos. provisional
 
@@ -1029,11 +1099,13 @@ void PlayScene::pointToEvent(position p)
 
 void PlayScene::activateTouch(CCNode* sender, void* data)
 {
+	CCLOG("Entrando a: void PlayScene::activateTouch(CCNode* sender, void* data)\n");
 	WAIT = false;
 }
 
 void PlayScene::changePhase(CCNode* sender, void* data)
 {
+	CCLOG("Entrando a: void PlayScene::changePhase(CCNode* sender, void* data)\n");
 	currFase = (currFase + 1) % NUM_FASES;
 	currSubFase = 0;
 
@@ -1047,8 +1119,6 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 
 		// Retornar el sprite de la carta a su forma original
 		currCardRotation = 0;
-		CCSprite * sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_SELECTED);
-		sprite->setRotation(0);
 
 		hideThirdPhase();
 		showFirstPhase();
@@ -1073,6 +1143,7 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 
 void PlayScene::changeSubPhase(CCNode* sender, void* data)
 {
+	CCLOG("Entrando a: void PlayScene::changeSubPhase(CCNode* sender, void* data)\n");
 	currSubFase++;
 	CCLabelTTF * label = (CCLabelTTF *) _stayLayer->getChildByTag(SUBTITLE_LABEL_TAG);
 	label->setString(name[currFase][currSubFase].c_str());
@@ -1080,6 +1151,7 @@ void PlayScene::changeSubPhase(CCNode* sender, void* data)
 
 void PlayScene::putSubtitleInformation(CCNode* sender, void* data)
 {
+	CCLOG("Entrando a: void PlayScene::putSubtitleInformation(CCNode* sender, void* data)\n");
 	CCLabelTTF * label = (CCLabelTTF *) _stayLayer->getChildByTag(SUBTITLE_LABEL_TAG);
 	label->setString(msg.c_str());
 }
@@ -1087,6 +1159,7 @@ void PlayScene::putSubtitleInformation(CCNode* sender, void* data)
 // FASES
 void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 {
+	CCLOG("Entrando a: void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)\n");
 	CCSprite * sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_DECK);
 
 	if (!PUTMAPCARD && sprite->boundingBox().containsPoint(pto)) {
@@ -1108,7 +1181,9 @@ void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 	}
 }
 
-bool PlayScene::canMove(position p) {
+bool PlayScene::canMove(position p)
+{
+	CCLOG("Entrando a: bool PlayScene::canMove(position p) \n");
 	CCLOG("(%d, %d)\n", p.x, p.y);
 	for (int i = 0; i < possibleMoves.size(); i++) {
 		CCLOG("poss = (%d, %d)\n", possibleMoves[i].x, possibleMoves[i].y);
@@ -1122,7 +1197,9 @@ bool PlayScene::canMove(position p) {
 	return false;
 }
 
-bool PlayScene::canMoveZombie(position prev_p, position p) {
+bool PlayScene::canMoveZombie(position prev_p, position p)
+{
+	CCLOG("Entrando a: bool PlayScene::canMoveZombie(position prev_p, position p) \n");
 	vector<position> posibles_moves = GameState.getPossibleZombieMoves(prev_p);
 
 	CCLOG("(%d, %d)->(%d, %d)\n", prev_p.x, prev_p.y, p.x, p.y);
@@ -1141,6 +1218,7 @@ bool PlayScene::canMoveZombie(position prev_p, position p) {
 
 void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 {
+	CCLOG("Entrando a: void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido) \n");
 	// El dado azul fue cliqueado
 	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && blueDices[0]->boundingBox().containsPoint(pto))
 	{
@@ -1260,6 +1338,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 {
+	CCLOG("Entrando a: void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido) \n");
 	// El dado rojo fue cliqueado
 	if (!LANZODADOROJO && redDices[0]->boundingBox().containsPoint(pto))
 	{
@@ -1374,13 +1453,15 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 
 void PlayScene::showFirstPhase()
 {
+	CCLOG("Entrando a: void PlayScene::showFirstPhase()\n");
 	_stayLayer->getChildByTag(MAP_CARD_DECK)->setVisible(true);
 	_stayLayer->getChildByTag(MAP_CARD_REVERSE)->setVisible(false);
 }
 
 void PlayScene::hideFirstPhase()
 {
-	_stayLayer->getChildByTag(MAP_CARD_SELECTED)->setVisible(false);
+	CCLOG("Entrando a: void PlayScene::hideFirstPhase()\n");
+	_stayLayer->removeChildByTag(MAP_CARD_SELECTED);
 	_stayLayer->getChildByTag(ROTATE_ICON)->setVisible(false);
 
 	CCSprite * sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_DECK);
@@ -1390,24 +1471,28 @@ void PlayScene::hideFirstPhase()
 
 void PlayScene::showSecondPhase()
 {
+	CCLOG("Entrando a: void PlayScene::showSecondPhase()\n");
 	redDices[lastRedDiceResult]->setVisible(true);
 	blueDices[lastBlueDiceResult]->setVisible(true);
 }
 
 void PlayScene::hideSecondPhase()
 {
+	CCLOG("Entrando a: void PlayScene::hideSecondPhase()\n");
 	blueDices[lastBlueDiceResult]->setVisible(false);
 	redDices[lastRedDiceResult]->setVisible(false);
 }
 
 void PlayScene::showThirdPhase()
 {
+	CCLOG("Entrando a: void PlayScene::showThirdPhase()\n");
 	redDices[lastRedDiceResult]->setVisible(true);
 	blueDices[lastBlueDiceResult]->setVisible(true);
 }
 
 void PlayScene::hideThirdPhase()
 {
+	CCLOG("Entrando a: void PlayScene::hideThirdPhase()\n");
 	blueDices[lastBlueDiceResult]->setVisible(false);
 	redDices[lastRedDiceResult]->setVisible(false);
 }
@@ -1415,6 +1500,7 @@ void PlayScene::hideThirdPhase()
 
 void PlayScene::setPickMapCard()
 {
+	CCLOG("Entrando a: void PlayScene::setPickMapCard()\n");
 	// Mazo
 	CCSprite* sprite;
 	sprite = CCSprite::create("mazo.png");
@@ -1447,6 +1533,7 @@ void PlayScene::setPickMapCard()
 
 void PlayScene::initFlipXCallback(CCObject* target)
 {
+	CCLOG("Entrando a: void PlayScene::initFlipXCallback(CCObject* target)\n");
 	CCSprite * reversed_sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_REVERSE);
 	// Aqui el chino deberia dar el id de la carta seleccionada (generada random)
 	// y sacar con el id el path: arreglo[id].path
@@ -1454,6 +1541,7 @@ void PlayScene::initFlipXCallback(CCObject* target)
 
 	reversed_sprite->setVisible(true);
 	CCSprite * sprite = CCSprite::create(card.getPath().c_str());
+	CCLOG("path flip %s\n", card.getPath().c_str());
 
     // 110 y 300
 	sprite->setScale(reversed_sprite->getContentSize().width/PIXELS_MAP_CARD);
@@ -1474,6 +1562,7 @@ void PlayScene::initFlipXCallback(CCObject* target)
 
 void PlayScene::show_mapCard_selected(CCNode* node)
 {
+	CCLOG("Entrando a: void PlayScene::show_mapCard_selected(CCNode* node)\n");
 	CCSprite * icon = (CCSprite *) _stayLayer->getChildByTag(ROTATE_ICON);
 	icon->setVisible(true);
 
@@ -1500,10 +1589,11 @@ void PlayScene::show_mapCard_selected(CCNode* node)
 
 void PlayScene::rotate_mapCard()
 {
+	CCLOG("Entrando a: void PlayScene::rotate_mapCard()\n");
 	currCardRotation = (currCardRotation + 1) % 4;
 
 	CCSprite * sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_SELECTED);
-	CCRotateTo* rotate_action = CCRotateTo::create(2, 90 * currCardRotation);
+	CCRotateTo* rotate_action = CCRotateTo::create(1, 90 * currCardRotation);
 	sprite->runAction(CCSequence::create(rotate_action,
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL),
 			NULL));
@@ -1511,6 +1601,7 @@ void PlayScene::rotate_mapCard()
 
 void PlayScene::setBackgrounds()
 {
+	CCLOG("Entrando a: void PlayScene::setBackgrounds()\n");
 	float h;
 	CCLabelTTF * label = (CCLabelTTF *) _stayLayer->getChildByTag(TITLE_LABEL_TAG);
 	h = label->getContentSize().height;
@@ -1529,6 +1620,7 @@ void PlayScene::setBackgrounds()
 
 void PlayScene::checkBattle(CCNode* sender, void* data)
 {
+	CCLOG("Entrando a: void PlayScene::checkBattle(CCNode* sender, void* data)\n");
 	if ( GameState.queryZombie() )
 	{
 		HAY_BATALLA = true;
@@ -1541,6 +1633,7 @@ void PlayScene::checkBattle(CCNode* sender, void* data)
 
 void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 {
+	CCLOG("Entrando a: void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)\n");
 	CCPoint point;
 	CCPoint ij_cardMap = axisToMapCardMatrix(mSprite[GameState.getCurrentPlayer()]->getPositionX(), mSprite[GameState.getCurrentPlayer()]->getPositionY());
 	CCPoint ij_tile = axisToTileMatrix(mSprite[GameState.getCurrentPlayer()]->getPositionX(), mSprite[GameState.getCurrentPlayer()]->getPositionY());
@@ -1593,6 +1686,7 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 
 void PlayScene::winBattle(CCNode* sender, void * data)
 {
+	CCLOG("Entrando a: void PlayScene::winBattle(CCNode* sender, void * data)\n");
 	msg = "Has ganado...";
 	putSubtitleInformation(NULL, NULL);
 
@@ -1675,11 +1769,13 @@ void PlayScene::winBattle(CCNode* sender, void * data)
 
 void PlayScene::removeSprite(CCNode* sender, void * data)
 {
+	CCLOG("Entrando a: void PlayScene::removeSprite(CCNode* sender, void * data)\n");
 	_moveLayer->removeChild(sender);
 }
 
 void PlayScene::loseBattleAndDie(CCNode* sender)
 {
+	CCLOG("Entrando a: void PlayScene::loseBattleAndDie(CCNode* sender)\n");
 	msg = "Has perdido ...";
 	putSubtitleInformation(NULL, NULL);
 	HAY_BATALLA = false;
@@ -1710,6 +1806,7 @@ void PlayScene::loseBattleAndDie(CCNode* sender)
 
 void PlayScene::continueBattle(CCNode* sender)
 {
+	CCLOG("Entrando a: void PlayScene::continueBattle(CCNode* sender)\n");
 	msg = "Toma una decisión ...";
 	putSubtitleInformation(NULL, NULL);
 
@@ -1724,8 +1821,9 @@ void PlayScene::continueBattle(CCNode* sender)
 	HAY_PREGUNTA = true;
 }
 
-void PlayScene::gameOver() {
-
+void PlayScene::gameOver()
+{
+	CCLOG("Entrando a: void PlayScene::gameOver() \n");
 	this->removeChild(_moveLayer);
 	this->removeChild(_stayLayer);
 
