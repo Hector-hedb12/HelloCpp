@@ -35,6 +35,9 @@ static const int QUESTION_LABEL_TAG = 886;
 static const int QUESTION_LIFE_ICON_TAG = 887;
 static const int QUESTION_BULLET_ICON_TAG = 888;
 
+static const int SELECTED_ZOMBIE_TAG = 889;
+static const int SELECTED_PLAYER_TAG = 890;
+
 // Dimensiones utilizadas para calculos del mapa y sus imagenes
 static float PIXELS_MAP_CARD;
 static float PIXELS_TILE;
@@ -98,6 +101,14 @@ class PlayScene : public cocos2d::CCLayer
 	   void activateMapCardModeCallback(CCObject* pSender);
 
 	private:
+	   // Utilizado para mostrar al usario el Zombie/Player seleccionado:
+
+	   CCSize boxTileSize;
+	   CCLayerColor *boxTile;
+	   vector<CCLayerColor*> boxTileAdded;
+
+	   // FIN: Utilizado para mostrar al usario el Zombie/Player seleccionado:
+
 	   // Estado del juego
 	   state GameState;
 
@@ -165,6 +176,8 @@ class PlayScene : public cocos2d::CCLayer
 	   bool putMapCard(CCPoint location, int id);
 	   bool canMove(position location);
 	   bool canMoveZombie(position prev_p, position p);
+	   void removeZombieBox();
+	   void removePlayerBox();
 
 	   // Funciones utilizadas para modificar el estado del jugador
 	   void modifyPlayerLifes(int num);
@@ -181,6 +194,7 @@ class PlayScene : public cocos2d::CCLayer
 
 	   // Funciones auxiliares para manejar las transformaciones del modelo del
 	   // juego a la interfaz del usuario
+	   position relativeTileToAbsoluteTile(int mx, int my, int tx, int ty);
 	   CCPoint axisToMapCardMatrix(float x, float y);
 	   CCPoint axisToTileMatrix(float x, float y);
 	   CCPoint mapCardMatrixToAxis(int i, int j);

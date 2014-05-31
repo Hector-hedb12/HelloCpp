@@ -52,9 +52,9 @@ public:
    * Transform the pair
    */
   void t();
-
-  void invT(int tx, int ty);
   
+  void invT();
+
 };
 
 #endif

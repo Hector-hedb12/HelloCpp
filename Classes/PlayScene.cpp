@@ -27,10 +27,12 @@ bool PlayScene::init()
 	CCLOG("Entrando a: bool PlayScene::init()\n");
     if ( !CCLayer::init() )
     {
+    	CCLOG("NOOOOO\n");
         return false;
     }
-
+    CCLOG("Antes el estado\n");
     GameState = state(NUM_OF_PLAYER);
+    CCLOG("Cree el estado\n");
 
     CCSprite * mapCardSprite = CCSprite::create(mapPath[0].c_str());
     PIXELS_MAP_CARD = mapCardSprite->getTextureRect().size.height;
@@ -331,6 +333,26 @@ void PlayScene::setStaticBlueDice(CCNode* node)
 	}
 
 	blueDices[lastBlueDiceResult]->setVisible(true);
+
+	// Muestra en la interfaz los posibles movimientos del player:
+	CCPoint point;
+	possibleMoves = GameState.getPossibleMoves().first;
+
+	for (int i = 0; i < possibleMoves.size(); i++) {
+		boxTile = CCLayerColor::create(ccc4(0, 119, 255, 0));
+
+		possibleMoves[i].t();
+
+		point = tileMatrixToAxis(possibleMoves[i].x/3, possibleMoves[i].y/3, possibleMoves[i].x%3, possibleMoves[i].y%3);
+
+		boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
+		boxTile->setContentSize(boxTileSize);
+		boxTile->setOpacity((GLubyte)(140));
+
+		boxTileAdded.push_back(boxTile);
+		_moveLayer->addChild(boxTile, 1);
+	}
+	// FIN: Muestra en la interfaz los posibles movimientos del player
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -848,8 +870,7 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 {
 	CCLOG("Entrando a: bool PlayScene::putMapCard(CCPoint location, int id)\n");
 	CCPoint actualLocation = axisToMapCardMatrix(location.x, location.y);
-	position p((int) actualLocation.x, (int) actualLocation.y);
-	p.invT(1,1);
+	position p = relativeTileToAbsoluteTile(actualLocation.x, actualLocation.y, 1, 1);
 
 	allowedPositions.clear();
 	allowedPositions = GameState.getAllPosibleMapCard(GameState.getLastMapCard());
@@ -864,7 +885,7 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 	int fila = (int) actualLocation.x, columna = (int) actualLocation.y;
 
 	// Se rota la carta y se notifica al modelo
-	mapCard current_mapcard = GameState.getLastMapCard();
+	mapCard &current_mapcard = GameState.getLastMapCard();
 
 	for (int i = 0; i < currCardRotation; i++)
 		current_mapcard.rotateR();
@@ -911,14 +932,14 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 			if (currTile.hasBullet()) {
 				element.sprite = CCSprite::create("bulletIcon.png");
 				element.sprite->setPosition(ccp(actualLocation.x + bv_offset_x, actualLocation.y + bv_offset_y));
-				_moveLayer->addChild(element.sprite,1);
+				_moveLayer->addChild(element.sprite,2);
 				bullets.push_back(element);
 			}
 
 			if (currTile.hasLife()) {
 				element.sprite = CCSprite::create("lifeIcon.png");
 				element.sprite->setPosition(ccp(actualLocation.x + bv_offset_x, actualLocation.y + bv_offset_y));
-				_moveLayer->addChild(element.sprite,1);
+				_moveLayer->addChild(element.sprite,2);
 				lifes.push_back(element);
 			}
 		}
@@ -932,6 +953,14 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
  *     Funciones para llevar a cabo acciones       *
  * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+position PlayScene::relativeTileToAbsoluteTile(int mx, int my, int tx, int ty)
+{
+  int x = mx * 3 - MAPMID - (1 - tx);
+  int y = my * 3 - MAPMID - (1 - ty);
+
+  return position(x,y);
+}
 
 CCPoint PlayScene::axisToMapCardMatrix(float x, float y)
 {
@@ -1071,13 +1100,15 @@ void PlayScene::pointToEvent(position p)
 	// arreglo con los eventos. provisional
 
 	vector<position> road = GameState.queryMovePlayerTo(p);
-
+	CCLOG("Luego de query\n");
 	events.clear();
 	Event e;
 
 	CCLOG("pointToEvent: road size %d\n", road.size() );
+	CCLOG("road (%d, %d)\n", road[0].x, road[0].y);
 	for (int i = 1; i < road.size() && i < 20; i++){
 		CCLOG("pointToEvent %d\n", i);
+		CCLOG("road (%d, %d)\n", road[i].x, road[i].y);
 		if ( road[i-1].x != road[i].x ) {
 			e.orientation = 'V';
 			if (road[i-1].x > road[i].x)
@@ -1190,6 +1221,7 @@ bool PlayScene::canMove(position p)
 	}
 
 	for (int i = 0; i < possibleMoves.size(); i++) {
+		possibleMoves[i].invT();
 		if (possibleMoves[i] == p)
 			return true;
 	}
@@ -1222,28 +1254,35 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	// El dado azul fue cliqueado
 	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && blueDices[0]->boundingBox().containsPoint(pto))
 	{
+		// Muestra en la interfaz el player a mover:
+		boxTileSize = CCSizeMake(PIXELS_TILE, PIXELS_TILE);
+	    boxTile = CCLayerColor::create(ccc4(185, 32, 32, 0));
+
+	    position p = GameState.getCurrentPlayerPosition();
+	    p.t();
+
+	    CCPoint point = tileMatrixToAxis(p.x/3, p.y/3, p.x%3, p.y%3);
+
+	    boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
+	    boxTile->setContentSize(boxTileSize);
+	    boxTile->setOpacity((GLubyte)(140));
+	    _moveLayer->addChild(boxTile, 1, SELECTED_PLAYER_TAG);
+	    // FIN: Muestra en la interfaz el player a mover
+
 		// desactiva touch
 		WAIT = true;
 		blueDiceCallback();
+
 		LANZODADOAZUL = true;
 		return;
 	}
 
 	CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
 	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-	position p((int) index_cardMap.x, (int) index_cardMap.y);
-	CCLOG("(%d, %d)\n", (int)p.x, (int)p.y);
-	p.invT(index_tile.x,index_tile.y);
-	CCLOG("(%d, %d)\n", (int)p.x, (int)p.y);
+	position p = relativeTileToAbsoluteTile(index_cardMap.x, index_cardMap.y, index_tile.x,index_tile.y);
 
 	if (possibleMoves.size() == 0) {
-
-		pair<vector<position>, vector<position> > pa = GameState.getPossibleMoves();
-
-		possibleMoves = pa.first;
-
-		if (possibleMoves.size() == 0)
-			CCLOG("CHINO LOCO %d %d\n", pa.first.size(), pa.second.size());
+		CCLOG("CHINO LOCO possibleMoves.size() == 0 \n");
 	}
 
 	if (canMove(p) && LANZODADOAZUL && !HAY_PREGUNTA && !HAY_BATALLA)
@@ -1296,6 +1335,8 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		CCSequence *sq = CCSequence::create(actions);
 
 		mSprite[GameState.getCurrentPlayer()]->runAction( sq );
+
+		removePlayerBox();
 	}
 
 	if ( HAY_BATALLA && !HAY_PREGUNTA && redDices[0]->boundingBox().containsPoint(pto))
@@ -1336,6 +1377,19 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	}
 }
 
+void PlayScene::removePlayerBox()
+{
+	// Se remueven los child que muestran al usuario el player seleleccionado
+	// y a donde se puede mover
+	_moveLayer->removeChildByTag(SELECTED_PLAYER_TAG);
+
+    for (int i = 0; i < boxTileAdded.size(); i++) {
+	    _moveLayer->removeChild(boxTileAdded[i]);
+    }
+
+    boxTileAdded.clear();
+}
+
 void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 {
 	CCLOG("Entrando a: void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido) \n");
@@ -1358,8 +1412,7 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 	{
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-		position p((int) location.x, (int) location.y);
-		p.invT(tileLocation.x,tileLocation.y);
+		position p = relativeTileToAbsoluteTile(location.x, location.y, tileLocation.x,tileLocation.y);
 
 		CCLOG("p:(%d,%d)",p.x,p.y);
 
@@ -1375,20 +1428,54 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 
 		WAIT = false;
 
+		// Muetsra en la interfaz el zombie seleccionado:
+		boxTileSize = CCSizeMake(PIXELS_TILE, PIXELS_TILE);
+	    boxTile = CCLayerColor::create(ccc4(185, 32, 32, 0));
+	    boxTile->setPosition(ccp(prevZombieLocation.x-boxTileSize.width/2, prevZombieLocation.y-boxTileSize.height/2));
+	    boxTile->setContentSize(boxTileSize);
+	    boxTile->setOpacity((GLubyte)(140));
+	    _moveLayer->addChild(boxTile, 1, SELECTED_ZOMBIE_TAG);
+
+	    // Muestra en la interfaz a donde se puede mover el zombie seleccionado:
+	    vector<position> posibles_moves = GameState.getPossibleZombieMoves(p);
+	    CCPoint point;
+	    for (int i = 0; i < posibles_moves.size(); i++) {
+		    boxTile = CCLayerColor::create(ccc4(0, 119, 255, 0));
+
+		    posibles_moves[i].t();
+
+		    point = tileMatrixToAxis(posibles_moves[i].x/3, posibles_moves[i].y/3, posibles_moves[i].x%3, posibles_moves[i].y%3);
+
+		    boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
+		    boxTile->setContentSize(boxTileSize);
+		    boxTile->setOpacity((GLubyte)(140));
+
+		    boxTileAdded.push_back(boxTile);
+		    _moveLayer->addChild(boxTile, 1);
+	    }
+
+
 		CCLOG("thirdPhase: zombie seleccionado\n");
 
-	} else { // Va a seleccionar a donde lo quiere mover
+	} else if (LANZODADOROJO && prevZombieLocation.x != -1 && prevZombieLocation.y != -1) { // Va a seleccionar a donde lo quiere mover
 		CCLOG("thirdPhase: seleccionado a donde se quiere mover el zombie\n");
 
 		CCPoint nLocation = axisToMapCardMatrix(prevZombieLocation.x,prevZombieLocation.y);
 		CCPoint nTileLocation = axisToTileMatrix(prevZombieLocation.x,prevZombieLocation.y);
-		position prev_pos(nLocation.x, nLocation.y);
-		prev_pos.invT(nTileLocation.x, nTileLocation.y);
+		position prev_pos = relativeTileToAbsoluteTile(nLocation.x, nLocation.y, nTileLocation.x,nTileLocation.y);
 
 		nLocation = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		nTileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-		position p(nLocation.x, nLocation.y);
-		p.invT(nTileLocation.x,nTileLocation.y);
+		position p = relativeTileToAbsoluteTile(nLocation.x, nLocation.y, nTileLocation.x,nTileLocation.y);
+
+		// De-seleccion de zombie
+		if ( p == prev_pos ){
+			prevZombieLocation.x = -1;
+			prevZombieLocation.y = -1;
+			removeZombieBox();
+			WAIT = false;
+			return;
+		}
 
 		// Si hay zombie en el nuevo lugar o no es valido el movimiento --> no se mueve
 		if ( GameState.queryZombie(p) || !canMoveZombie(prev_pos, p) )
@@ -1448,7 +1535,25 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 
 		// SIEMPRE DEBE SUCEDER que zombieSpriteToMove != null
 		zombies[zombieSpriteToMove].sprite->runAction( sq );
+
+		removeZombieBox();
+
+	} else {
+		WAIT = false;
 	}
+}
+
+void PlayScene::removeZombieBox()
+{
+	// Se remueven los child que muestran al usuario el zombie seleleccionado
+	// y a donde se puede mover
+	_moveLayer->removeChildByTag(SELECTED_ZOMBIE_TAG);
+
+    for (int i = 0; i < boxTileAdded.size(); i++) {
+	    _moveLayer->removeChild(boxTileAdded[i]);
+    }
+
+    boxTileAdded.clear();
 }
 
 void PlayScene::showFirstPhase()
@@ -1615,7 +1720,6 @@ void PlayScene::setBackgrounds()
     box->setPosition(ccp(VisibleRect::top().x-boxSize.width/2, VisibleRect::top().y-h));
     box->setContentSize(boxSize);
     box->setOpacity((GLubyte)(140));
-    _stayLayer->addChild(box, 1);
 }
 
 void PlayScene::checkBattle(CCNode* sender, void* data)

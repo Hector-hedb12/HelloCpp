@@ -40,16 +40,14 @@ position position::next(int a){
 
 
 void position::t(){
-  x += MAPMID;
-  y += MAPMID;
+  x += MAPMID+1;
+  y += MAPMID+1;
 }
 
-// Siempre MapCard Positions
-void position::invT(int tx, int ty){
-  x = x * 3 - MAPMID - (1 - tx);
-  y = y * 3 - MAPMID - (1 - ty);
+void position::invT(){
+  x -= (MAPMID+1);
+  y -= (MAPMID+1);
 }
-
 
 ostream &operator<<(ostream &os, const position &p) {
   os << "(" << p.x << "," << p.y << ")"; 
