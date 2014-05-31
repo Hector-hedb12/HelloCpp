@@ -1865,7 +1865,7 @@ void PlayScene::winBattle(CCNode* sender, void * data)
 	point = _moveLayer->convertToNodeSpace( _stayLayer->getChildByTag(ZOMBIE_ICON_TAG)->getPosition() );
 	actions->addObject(CCMoveTo::create(1, point));
 
-	if (GameState.getCurrentPlayerZombie() + 1 == ZOMBIES_TO_WIN) {
+	if (GameState.getCurrentPlayerZombie() + 1 == ZOMBIES_TO_WIN || GameState.currentPlayerOverHeliport()) {
 		actions->addObject(CCCallFunc::create( this, callfunc_selector(PlayScene::gameOver)));
 	} else {
 		if ( LANZODADOAZUL ) {

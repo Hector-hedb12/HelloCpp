@@ -1,4 +1,5 @@
 #include "user.h"
+#include <cstdlib>
 
 user::user(bool b){
   init();
