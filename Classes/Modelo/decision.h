@@ -26,7 +26,7 @@ class decision{
 		return res;
 	}
 
-
+public:
 	position movement(state gs){
 		position res;
 		machine &us;
@@ -35,12 +35,15 @@ class decision{
 		bool endCard;
 		pair<vector<position>,vector<position> > pa;
 
+		assert(gs.getCurrentPlayerInstance().isMachine());
+		us  = (machine &)gs.getCurrentPlayerInstance();
+
 		endCard = gs.world.hasEndCard();
 
 
 		pa = gs.getPossibleMoves();
 		pa.first.push_back(gs.getCurrentPlayerPosition());
-		us  = (machine &)gs.getCurrentPlayerInstance();
+
 		strategy st = us.getMoveStrategy();
 
 		res = pa.first[0];
@@ -69,6 +72,23 @@ class decision{
 			}
 		}
 		return res;
+	}
+
+
+	position putmapcard(state gs, int player = -1){
+		if(player == -1) player = gs.getCurrentPlayer();
+
+		vector<vector<position> > ve = gs.getAllPosibleMapCard(gs.lastMapCard);
+		vector<int>vi;
+		for(int i = 0; i < 4; i++) vi.push_back(i);
+		random_sort(vi.begin(), vi.end());
+		for(int i = 0; i < 4; i++){
+			if(ve[vi[i]].empty()) continue;
+
+		}
+
+
+
 	}
 
 

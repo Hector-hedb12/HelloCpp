@@ -84,4 +84,7 @@ machine::machine(){
 	this->ismachine = true;
 	init();
 }
+strategy machine::getMoveStrategy(){
+	return stm;
+}
 

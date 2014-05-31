@@ -9,7 +9,6 @@ class dice{
 int x;
 public:
   dice(int s = 0){
-    srand(s);
     x = rand()%6;
   }
   int recent(){

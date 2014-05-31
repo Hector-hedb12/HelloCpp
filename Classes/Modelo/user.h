@@ -108,9 +108,7 @@ class machine:public user{
 	move_strategy stm;
 public:
 	machine();
-	strategy getMoveStrategy(){
-		return stm;
-	}
+	strategy getMoveStrategy();
 };
 
 
