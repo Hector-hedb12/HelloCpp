@@ -49,6 +49,10 @@ class mapCard{
    */
   bool isBuildingCard();
   /*
+   * Returns true if the map card is the heliport
+   */
+  bool isEndCard();
+  /*
    * Returns the tile at position p
    */
   tile &getTile(position p);

@@ -83,6 +83,9 @@ void mapCard::insertRandomZombie(int n){
 bool mapCard::isBuildingCard(){
   return isBuilding;
 }
+bool mapCard::isEndCard(){
+	return this->isEnd;
+}
 
 tile &mapCard::getTile(position p){
   return grid[p.x+1][p.y+1];

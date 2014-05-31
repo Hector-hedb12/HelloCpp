@@ -5,16 +5,18 @@
 #include <cassert>
 #include "constant.h"
 #include "card.h"
+#include "strategy.h"
 
 using namespace std;
 
 class user{
+protected:
   int nLife;
   int nBullet;
   int nZombie;
   int leftMoves;
   int leftZombieMoves;
-  bool machine;
+  bool ismachine;
   vector<card> handCardVector;
   vector<card> tableCardVector;
 public:
@@ -100,5 +102,16 @@ public:
    */
   void die();
 };
+
+
+class machine:public user{
+	move_strategy stm;
+public:
+	machine();
+	strategy getMoveStrategy(){
+		return stm;
+	}
+};
+
 
 #endif

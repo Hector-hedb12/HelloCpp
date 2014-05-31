@@ -82,7 +82,7 @@ state::state(int na, int nb){
     playerVector.push_back(user());
   }
   for(int i = 0; i < nb; i++){
-	  playerVector.push_back(user(true));
+	  playerVector.push_back(machine());
   }
   initmapVector();
   world.init(na+nb);
@@ -235,5 +235,9 @@ bool state::isValidZombie(position p){
 
 bool state::isCurrentPlayerMachine(){
 	return playerVector[currentPlayer].isMachine();
+}
+
+user &state::getCurrentPlayerInstance(){
+	return this->playerVector[this->currentPlayer];
 }
 

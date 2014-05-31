@@ -6,7 +6,6 @@ position mapGrid::getPlayerPosition(int x){
 }
 
 void mapGrid::init(int nPlayers){
-
   for(int i = -1; i <= 1; i++){
     tile &t = getTile(i,0);
     t.setValid(1);
@@ -23,6 +22,7 @@ void mapGrid::init(int nPlayers){
   for(int i = 0; i < 4; i++){
     freeMapCardPosition.insert(position(vx3[i], vy3[i]));
   }  
+  hasHeliport = false;
 }
 
 
@@ -74,7 +74,10 @@ void mapGrid::insertMapCard(mapCard ma, position pos){
     if(!isValid(x2) || getTile(x2).isValid()) continue;
     freeMapCardPosition.insert(x2);
   }
-  
+  if(ma.isEndCard()){
+	  this->hasHeliport = true;
+	  endPosition = pos;
+  }
   
   
   
@@ -269,4 +272,35 @@ bool mapGrid::moveZombie(position u, position v){
   return true;
 }
 
+bool mapGrid::hasEndCard(){
+  return hasHeliport;
+}
 
+
+map<position,int> mapGrid::getDistances(position p){
+	vector<int> res;
+	set<position> visit;
+	map<position, int> dist;
+	queue<position> Q;
+	position u, v;
+	int du;
+	v = p;
+	Q.push(v);
+	visit.insert(v);
+	dist[v] = 0;
+	while(!Q.empty()){
+		u = Q.front();
+		du = dist[u];
+		Q.pop();
+
+		for(int i = 0; i < 4; i++){
+			v = u.next(i);
+			if(!isValidMove(u,v) || visit.count(v) > 0) continue;
+			visit.insert(v);
+			dist[v] = du+1;
+			Q.push(v);
+		}
+	}
+
+	return dist;
+}

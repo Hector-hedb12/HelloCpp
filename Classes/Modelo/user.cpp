@@ -2,11 +2,11 @@
 
 user::user(bool b){
   init();
-  machine = b;
+  ismachine = b;
 }
 
 bool user::isMachine(){
-	return this->machine;
+	return this->ismachine;
 }
 
 void user::increaseLife(){
@@ -79,3 +79,9 @@ void user::die(){
   nLife = PLAYER_INIT_LIFE;
   nZombie = nZombie/2;
 }
+
+machine::machine(){
+	this->ismachine = true;
+	init();
+}
+

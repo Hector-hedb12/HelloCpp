@@ -217,6 +217,11 @@ public:
    */
   bool isCurrentPlayerMachine();
 
+  /*
+   * Returns the instance of the current player
+   */
+  user &getCurrentPlayerInstance();
+
 };
 
 #endif
