@@ -83,8 +83,29 @@ void user::die(){
 machine::machine(){
 	this->ismachine = true;
 	init();
+	selectStrategy();
 }
 strategy machine::getMoveStrategy(){
 	return stm;
 }
 
+void machine::die(){
+	user::die();
+	selectStrategy();
+}
+
+void machine::selectStrategy(){
+	int lc, bc, zc, pc, hc, dc;
+	int maxst = 5;
+	vector<moveStrategy> vs;
+	if(nLife < 5){
+		vs.push_back(strategyGetResources());
+	}else{
+		vs.push_back(strategyGetBullets());
+	}
+	vs.push_back(strategyGetZombie());
+	vs.push_back(strategyBotherPlayer());
+
+	this->stm = vs[rand()%vs.size()];
+	this->stm.init();
+}

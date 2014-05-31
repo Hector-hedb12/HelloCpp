@@ -105,10 +105,12 @@ public:
 
 
 class machine:public user{
-	move_strategy stm;
+	moveStrategy stm;
 public:
 	machine();
+	void die();
 	strategy getMoveStrategy();
+	void selectStrategy();
 };
 
 

@@ -15,7 +15,7 @@ class strategy{
 
 };
 
-class move_strategy:public strategy{
+class moveStrategy:public strategy{
 protected:
 	static vector<double> dv;
 
@@ -48,17 +48,17 @@ protected:
 	}
 
 public:
-	move_strategy(int l = 1, int b= 1, int z= 1, int p = 0, int h = 1, int d = -1){
-		c_l = l;
-		c_b = b;
-		c_z = z;
-		c_p = p;
-		c_h = h;
-		c_d = d;
+	moveStrategy(){
+		init();
 	}
-
-
-	void init();
+	void init(){
+		c_l = 1;
+		c_b = 1;
+		c_z = 1;
+		c_p = 0;
+		c_h = 1;
+		c_d = -1;
+	}
 	double f(map<int,int> ml,map<int,int>mb,map<int,int>mz,
 			map<int,int>mp, map<int,int>mh, map<int,int> md){
 		return c_l*d(ml) + c_b*d(mb) + c_z*d(mz) + c_p*d(mp) + c_h*d(mh) + c_d*d(md);
@@ -67,5 +67,49 @@ public:
 };
 
 
+
+class strategyBotherPlayer: public moveStrategy{
+	void init(){
+		c_l = 10;
+		c_b = 10;
+		c_z = 2;
+		c_p = 20;
+		c_h = 50;
+		c_d = 0;
+	}
+};
+
+class strategyGetZombie: public moveStrategy{
+	void init(){
+		c_l = 10;
+		c_b = 10;
+		c_z = 20;
+		c_p = -1;
+		c_h = 1;
+		c_d = -5;
+	}
+};
+
+class strategyGetResources: public moveStrategy{
+	void init(){
+		c_l = 20;
+		c_b = 20;
+		c_z = -3;
+		c_p = -3;
+		c_h = 100;
+		c_d = 0;
+	}
+};
+
+class strategyGetBullets: public moveStrategy{
+	void init(){
+		c_l = 3;
+		c_b = 20;
+		c_z = -3;
+		c_p = -3;
+		c_h = 100;
+		c_d = 0;
+	}
+};
 
 #endif /* STRATEGY_H_ */

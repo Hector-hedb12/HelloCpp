@@ -27,7 +27,7 @@ class decision{
 	}
 
 public:
-	position movement(state gs){
+	position movement(state &gs){
 		position res;
 		machine &us;
 		map<position,int> dist, dor;
@@ -48,7 +48,7 @@ public:
 
 		res = pa.first[0];
 		double maxf = -1e9;
-
+		double cf;
 		dor =getDistances(gs.getCurrentPlayerPosition());
 
 		for(int i = 0; i < pa.first.size(); i++){
@@ -67,29 +67,58 @@ public:
 			}
 			dd[dor[pa.first[i]]]++;
 			/* End Calculate distances */
-			if(maxf < st.f(dl, db, dz, dp, dh, dd)){
+			cf = st.f(dl, db, dz, dp, dh, dd);
+			if(maxf < cf){
 				res = pa.first[i];
+				maxf = cf;
 			}
 		}
 		return res;
 	}
 
 
-	position putmapcard(state gs, int player = -1){
+	position putmapcard(state &gs, int player = -1){
 		if(player == -1) player = gs.getCurrentPlayer();
 
+
 		vector<vector<position> > ve = gs.getAllPosibleMapCard(gs.lastMapCard);
-		vector<int>vi;
-		for(int i = 0; i < 4; i++) vi.push_back(i);
-		random_sort(vi.begin(), vi.end());
-		for(int i = 0; i < 4; i++){
-			if(ve[vi[i]].empty()) continue;
+		position cur = gs.getCurrentPlayerPosition();
+		position res;
+		if(gs.lastMapCard.isEndCard()){
+			int mindist = 1e9;
+			int dist;
 
+			for(int j = 0; j < ve[0].size(); j++){
+				dist = cur.distManhattan(ve[0][j]);
+				if(mindist > dist){
+					res = ve[0][j];
+					mindist = dist;
+				}
+			}
+
+		}else{
+			vector<int>vi;
+			for(int i = 0; i < 4; i++) vi.push_back(i);
+			random_sort(vi.begin(), vi.end());
+			for(int i = 0; i < 4; i++){
+				if(ve[vi[i]].empty()) continue;
+				res = ve[vi[i]][rand()%ve[vi[i]].size()];
+				break;
+			}
 		}
-
-
-
+		return res;
 	}
+
+	bool selectLife(state &gs){
+		int lif,bul,dic;
+		lif = gs.getCurrentPlayerLife();
+		bul = gs.getCurrentPlayerBullet();
+		dic = gs.getLastRollFightDice();
+		if((lif == 0) || (dic == 3 && bul > 0)) return false;
+		if((bul == 0) || (dic == 1 && lif > 0)) return true;
+		return (rand%2 == 0);
+	}
+
 
 
 };

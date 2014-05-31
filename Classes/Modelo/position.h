@@ -48,6 +48,12 @@ public:
    * Return true if the pairs are equals
    */
   bool operator!=(const position &p) const;
+
+  /*
+   * Returns the manhattan distance between this and p
+   */
+  int distManhattan(const position &p) const;
+
   /*
    * Transform the pair
    */
