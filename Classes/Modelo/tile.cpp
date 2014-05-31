@@ -32,6 +32,14 @@ bool tile::isEnd(){
 bool tile::isValid(){
   return valid;
 }
+
+void tile::setId(int i){
+	id = i;
+}
+int tile::getId(){
+	return id;
+}
+
 bool tile::hasZombie(){
   return zombie;
 }

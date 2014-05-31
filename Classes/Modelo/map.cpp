@@ -22,7 +22,14 @@ void mapGrid::init(int nPlayers){
   for(int i = 0; i < 4; i++){
     freeMapCardPosition.insert(position(vx3[i], vy3[i]));
   }  
+  for(int i = -1; i <= 1; i++){
+	  for(int j = -1; j <= 1; j++){
+		  getTile(i,j).setId(idCounter);
+	  }
+  }
+
   hasHeliport = false;
+  idCounter = 1;
 }
 
 
@@ -63,9 +70,10 @@ void mapGrid::insertMapCard(mapCard ma, position pos){
       if(getTile(u).hasZombie()) zombieSet.insert(u);
       if(getTile(u).hasLife()) lifeSet.insert(u);
       if(getTile(u).hasBullet()) bulletSet.insert(u);
+      getTile(u).setId(idCounter);
     }
   }
-  
+  idCounter++;
   
   for(int k = 0; k < 4; k++){
     position x1 = position(vx1[k], vy1[k]) + pos;
@@ -164,8 +172,10 @@ bool mapGrid::isValidMove(position u, position v){
   tu = getTile(u); tv = getTile(v);
   if((tu.isBuilding() != tv.isBuilding()) && !tu.isDoor() && !tv.isDoor()) return false;
   if(!tv.isValid()) return false;
+  if(tu.isBuilding() && tv.isBuilding() && tu.getId() != tv.getId()) return false;
   return true;
 }
+
 vector<position> mapGrid::getPossibleMoves(position p, int nMoves, bool zomb){
   position u, v;
   int du, dv;

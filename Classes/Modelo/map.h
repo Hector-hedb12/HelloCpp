@@ -24,7 +24,7 @@ using namespace std;
 class mapGrid{
   tile grid[MAPMAX][MAPMAX]; // map Grid matrix
   bool hasHeliport;
-
+  int idCounter;
 public:
   set<position> freeMapCardPosition; // Set of free positions for map cards
   set<position> lifeSet; // Life points positions set

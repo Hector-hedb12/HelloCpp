@@ -15,6 +15,7 @@ class tile{
   bool building;
   bool door;
   bool end;
+  int id;
   set<int> players;
 public:
   /*
@@ -89,6 +90,15 @@ public:
    * remove the player p from the tile
    */
   void removePlayer(int p);
+  /*
+   * Returns the tile id
+   */
+  int getId();
+  /*
+   * Set the tile Id
+   */
+  void setId(int i);
+
 };
 
 #endif
