@@ -94,9 +94,9 @@ using namespace std;
       "#*#"
     },
     { // Jugueteria
-      "BDB",
-      "D**",
-      "B*#"
+      "BBD",
+      "B**",
+      "D*#"
     },
     { // Farmacia
       "BDB",

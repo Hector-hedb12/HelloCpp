@@ -345,6 +345,8 @@ void PlayScene::setStaticBlueDice(CCNode* node)
 
 		point = tileMatrixToAxis(possibleMoves[i].x/3, possibleMoves[i].y/3, possibleMoves[i].x%3, possibleMoves[i].y%3);
 
+		possibleMoves[i].invT();
+
 		boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
 		boxTile->setContentSize(boxTileSize);
 		boxTile->setOpacity((GLubyte)(140));
@@ -875,6 +877,15 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 	allowedPositions.clear();
 	allowedPositions = GameState.getAllPosibleMapCard(GameState.getLastMapCard());
 
+	// Si no hay cartas en el mazo
+	if ( allowedPositions[0].size() == 0 &&
+	     allowedPositions[1].size() == 0 &&
+	     allowedPositions[2].size() == 0 &&
+	     allowedPositions[3].size() == 0   )
+	{
+		return true;
+	}
+
 	if (!isAllowed(p)) {
 		return false;
 	}
@@ -1221,7 +1232,6 @@ bool PlayScene::canMove(position p)
 	}
 
 	for (int i = 0; i < possibleMoves.size(); i++) {
-		possibleMoves[i].invT();
 		if (possibleMoves[i] == p)
 			return true;
 	}

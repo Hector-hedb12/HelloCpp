@@ -53,7 +53,7 @@ void mapCard::insertRandomLB(int x, int y){
   vector<position> ve;
   for(int i = 0; i < MAPNUMPOS; i++){
     for(int j = 0; j < MAPNUMPOS; j++){
-      if(grid[i][j].isValid()) ve.push_back(position(i,j));
+      if(grid[i][j].isValid() && grid[i][j].isBuilding()) ve.push_back(position(i,j));
     }
   }
   random_shuffle(ve.begin(), ve.end());
@@ -71,7 +71,7 @@ void mapCard::insertRandomZombie(int n){
   vector<position> ve;
   for(int i = 0; i < MAPNUMPOS; i++){
     for(int j = 0; j < MAPNUMPOS; j++){
-      if(grid[i][j].isValid()) ve.push_back(position(i,j));
+      if(grid[i][j].isValid() && grid[i][j].isBuilding()) ve.push_back(position(i,j));
     }
   }
   random_shuffle(ve.begin(), ve.end());
