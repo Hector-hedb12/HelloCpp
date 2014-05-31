@@ -177,6 +177,8 @@ class PlayScene : public cocos2d::CCLayer
 	   bool canMove(position location);
 	   bool canMoveZombie(position prev_p, position p);
 	   void removeZombieBox();
+	   void showCurrPlayerBox();
+	   void addPlayerBox();
 	   void removePlayerBox();
 
 	   // Funciones utilizadas para modificar el estado del jugador
@@ -234,9 +236,10 @@ class PlayScene : public cocos2d::CCLayer
 	   void show_mapCard_selected(CCNode* node);
 	   void rotate_mapCard();
 
-	   // Meotodos relacionados con una batalla:
+	   // Metodos relacionados con una batalla:
 	   void putSubtitleInformation(CCNode* sender, void* data);
 	   void checkBattle(CCNode* sender, void* data);
+	   void checkLeftMoves(CCNode* sender, void* data);
 	   void winBattle(CCNode* sender, void * data);
 	   void removeSprite(CCNode* sender, void * data);
 	   void checkLifeAndBullet(CCNode* sender, void* data);

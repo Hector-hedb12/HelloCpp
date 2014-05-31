@@ -334,27 +334,11 @@ void PlayScene::setStaticBlueDice(CCNode* node)
 
 	blueDices[lastBlueDiceResult]->setVisible(true);
 
-	// Muestra en la interfaz los posibles movimientos del player:
 	CCPoint point;
 	possibleMoves = GameState.getPossibleMoves().first;
 
-	for (int i = 0; i < possibleMoves.size(); i++) {
-		boxTile = CCLayerColor::create(ccc4(0, 119, 255, 0));
-
-		possibleMoves[i].t();
-
-		point = tileMatrixToAxis(possibleMoves[i].x/3, possibleMoves[i].y/3, possibleMoves[i].x%3, possibleMoves[i].y%3);
-
-		possibleMoves[i].invT();
-
-		boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
-		boxTile->setContentSize(boxTileSize);
-		boxTile->setOpacity((GLubyte)(140));
-
-		boxTileAdded.push_back(boxTile);
-		_moveLayer->addChild(boxTile, 1);
-	}
-	// FIN: Muestra en la interfaz los posibles movimientos del player
+	// Se muestran las posibilidades en la interfaz
+	addPlayerBox();
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -752,6 +736,10 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data)
 	}
 
 	mSprite[GameState.getCurrentPlayer()]->setVisible(true);
+
+	//OJO no seguro
+	if (!GameState.queryZombie())
+		checkLifeAndBullet(NULL, NULL);
 }
 
 
@@ -877,12 +865,13 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 	allowedPositions.clear();
 	allowedPositions = GameState.getAllPosibleMapCard(GameState.getLastMapCard());
 
-	// Si no hay cartas en el mazo
+	// Si la carta no puede ser colocada
 	if ( allowedPositions[0].size() == 0 &&
 	     allowedPositions[1].size() == 0 &&
 	     allowedPositions[2].size() == 0 &&
 	     allowedPositions[3].size() == 0   )
 	{
+		PUTMAPCARD = false;
 		return true;
 	}
 
@@ -1151,8 +1140,6 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 	currFase = (currFase + 1) % NUM_FASES;
 	currSubFase = 0;
 
-	msg = name[currFase][currSubFase];
-	putSubtitleInformation(NULL,NULL);
 
 	if (currFase == 0) {
 		// Cambio de Jugador
@@ -1163,8 +1150,17 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 		currCardRotation = 0;
 
 		hideThirdPhase();
+
+		// Pila de cartas vacia
+		if (GameState.mapStackEmpty())
+			currFase = (currFase + 1) % NUM_FASES;
+
 		showFirstPhase();
 	}
+
+	// En este punto se tiene certeza de la fase que sigue
+	msg = name[currFase][currSubFase];
+	putSubtitleInformation(NULL,NULL);
 
 	if (currFase == 1) {
 		possibleMoves.clear();
@@ -1181,6 +1177,7 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 		hideSecondPhase();
 		showThirdPhase();
 	}
+
 }
 
 void PlayScene::changeSubPhase(CCNode* sender, void* data)
@@ -1264,20 +1261,8 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	// El dado azul fue cliqueado
 	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && blueDices[0]->boundingBox().containsPoint(pto))
 	{
-		// Muestra en la interfaz el player a mover:
-		boxTileSize = CCSizeMake(PIXELS_TILE, PIXELS_TILE);
-	    boxTile = CCLayerColor::create(ccc4(185, 32, 32, 0));
-
-	    position p = GameState.getCurrentPlayerPosition();
-	    p.t();
-
-	    CCPoint point = tileMatrixToAxis(p.x/3, p.y/3, p.x%3, p.y%3);
-
-	    boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
-	    boxTile->setContentSize(boxTileSize);
-	    boxTile->setOpacity((GLubyte)(140));
-	    _moveLayer->addChild(boxTile, 1, SELECTED_PLAYER_TAG);
-	    // FIN: Muestra en la interfaz el player a mover
+		// Se muestra el jugador que va a tomar turno
+		showCurrPlayerBox();
 
 		// desactiva touch
 		WAIT = true;
@@ -1291,14 +1276,11 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 	position p = relativeTileToAbsoluteTile(index_cardMap.x, index_cardMap.y, index_tile.x,index_tile.y);
 
-	if (possibleMoves.size() == 0) {
-		CCLOG("CHINO LOCO possibleMoves.size() == 0 \n");
-	}
-
-	if (canMove(p) && LANZODADOAZUL && !HAY_PREGUNTA && !HAY_BATALLA)
+	if (!HAY_BATALLA && LANZODADOAZUL && !HAY_PREGUNTA && canMove(p))
 	{
 		// desactiva touch
 		WAIT = true;
+		possibleMoves.clear();
 
 		CCPoint point = tileMatrixToAxis(index_cardMap.x, index_cardMap.y, (int)index_tile.x, (int)index_tile.y);
 
@@ -1385,6 +1367,47 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		}
 
 	}
+}
+
+void PlayScene::showCurrPlayerBox() {
+	// Muestra en la interfaz el player a mover:
+	boxTileSize = CCSizeMake(PIXELS_TILE, PIXELS_TILE);
+	boxTile = CCLayerColor::create(ccc4(185, 32, 32, 0));
+
+	position p = GameState.getCurrentPlayerPosition();
+	p.t();
+
+	CCPoint point = tileMatrixToAxis(p.x/3, p.y/3, p.x%3, p.y%3);
+
+	boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
+	boxTile->setContentSize(boxTileSize);
+	boxTile->setOpacity((GLubyte)(140));
+	_moveLayer->addChild(boxTile, 1, SELECTED_PLAYER_TAG);
+	// FIN: Muestra en la interfaz el player a mover
+}
+
+void PlayScene::addPlayerBox()
+{
+	// Muestra en la interfaz los posibles movimientos del player:
+	CCPoint point;
+
+	for (int i = 0; i < possibleMoves.size(); i++) {
+		boxTile = CCLayerColor::create(ccc4(0, 119, 255, 0));
+
+		possibleMoves[i].t();
+
+		point = tileMatrixToAxis(possibleMoves[i].x/3, possibleMoves[i].y/3, possibleMoves[i].x%3, possibleMoves[i].y%3);
+
+		possibleMoves[i].invT();
+
+		boxTile->setPosition(ccp(point.x-boxTileSize.width/2, point.y-boxTileSize.height/2));
+		boxTile->setContentSize(boxTileSize);
+		boxTile->setOpacity((GLubyte)(140));
+
+		boxTileAdded.push_back(boxTile);
+		_moveLayer->addChild(boxTile, 1);
+	}
+	// FIN: Muestra en la interfaz los posibles movimientos del player
 }
 
 void PlayScene::removePlayerBox()
@@ -1652,8 +1675,8 @@ void PlayScene::initFlipXCallback(CCObject* target)
 	CCSprite * reversed_sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_REVERSE);
 	// Aqui el chino deberia dar el id de la carta seleccionada (generada random)
 	// y sacar con el id el path: arreglo[id].path
-	mapCard card = GameState.pickMapCard();
 
+	mapCard card = GameState.pickMapCard();
 	reversed_sprite->setVisible(true);
 	CCSprite * sprite = CCSprite::create(card.getPath().c_str());
 	CCLOG("path flip %s\n", card.getPath().c_str());
@@ -1742,6 +1765,25 @@ void PlayScene::checkBattle(CCNode* sender, void* data)
 		putSubtitleInformation(NULL, NULL);
 	} else if ( LANZODADOAZUL ) {
 		checkLifeAndBullet(NULL, NULL);
+		checkLeftMoves(NULL, NULL);
+	}
+}
+
+void PlayScene::checkLeftMoves(CCNode* sender, void* data)
+{
+	CCLOG("Entrando a: void PlayScene::checkLeftMoves()\n");
+	if (possibleMoves.size() == 0) {
+		possibleMoves = GameState.getPossibleMoves().first;
+
+		// No hay movimientos restantes
+		if (possibleMoves.size() == 0) {
+			changePhase(NULL, NULL);
+			return;
+		}
+
+		// Se coloca la interfaz del usuario
+		showCurrPlayerBox();
+		addPlayerBox();
 	}
 }
 
@@ -1761,7 +1803,6 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 				point = _moveLayer->convertToNodeSpace( _stayLayer->getChildByTag(LIFE_ICON_TAG)->getPosition() );
 
 				lifes[i].sprite->runAction(CCSequence::create(CCMoveTo::create(1, point),
-						                      CCCallFuncND::create( this, callfuncND_selector(PlayScene::changePhase), NULL),
 	                                          CCCallFuncN::create( this, callfuncN_selector(PlayScene::removeSprite)),
 						                      NULL));
 
@@ -1781,7 +1822,6 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 				point = _moveLayer->convertToNodeSpace( _stayLayer->getChildByTag(BULLET_ICON_TAG)->getPosition() );
 
 				bullets[i].sprite->runAction(CCSequence::create(CCMoveTo::create(1, point),
-						                        CCCallFuncND::create( this, callfuncND_selector(PlayScene::changePhase), NULL),
 	                                            CCCallFuncN::create( this, callfuncN_selector(PlayScene::removeSprite)),
 						                        NULL));
 
@@ -1793,8 +1833,6 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 		modifyPlayerBullets(1);
 		bullets.pop_back();
 
-	} else {
-		changePhase(NULL,NULL);
 	}
 }
 
@@ -1809,7 +1847,7 @@ void PlayScene::winBattle(CCNode* sender, void * data)
 	CCPoint ij_cardMap = axisToMapCardMatrix(mSprite[GameState.getCurrentPlayer()]->getPositionX(), mSprite[GameState.getCurrentPlayer()]->getPositionY());
 	CCPoint ij_tile = axisToTileMatrix(mSprite[GameState.getCurrentPlayer()]->getPositionX(), mSprite[GameState.getCurrentPlayer()]->getPositionY());
 	CCPoint point;
-	CCArray * actions = CCArray::createWithCapacity(7);
+	CCArray * actions = CCArray::createWithCapacity(8);
 	CCSprite * sprite;
 
 	for (int i = 0; i < zombies.size(); i++) {
@@ -1822,42 +1860,7 @@ void PlayScene::winBattle(CCNode* sender, void * data)
 		}
 	}
 
-	for (int i = 0; i < lifes.size(); i++) {
-		if ( lifes[i].mapCard_i == (int)ij_cardMap.x &&  lifes[i].mapCard_j == (int)ij_cardMap.y &&
-				lifes[i].tile_i == (int)ij_tile.x &&  lifes[i].tile_j == (int)ij_tile.y) {
-
-			point = _moveLayer->convertToNodeSpace( _stayLayer->getChildByTag(LIFE_ICON_TAG)->getPosition() );
-
-			lifes[i].sprite->runAction(CCSequence::create(CCMoveTo::create(1, point),
-                                          CCCallFuncN::create( this, callfuncN_selector(PlayScene::removeSprite)),
-					                      NULL));
-
-			lifes[i] = lifes[lifes.size()-1];
-			break;
-		}
-	}
-
-	for (int i = 0; i < bullets.size(); i++) {
-		if ( bullets[i].mapCard_i == (int)ij_cardMap.x &&  bullets[i].mapCard_j == (int)ij_cardMap.y &&
-				bullets[i].tile_i == (int)ij_tile.x &&  bullets[i].tile_j == (int)ij_tile.y) {
-			point = _moveLayer->convertToNodeSpace( _stayLayer->getChildByTag(BULLET_ICON_TAG)->getPosition() );
-
-			bullets[i].sprite->runAction(CCSequence::create(CCMoveTo::create(1, point),
-                                          CCCallFuncN::create( this, callfuncN_selector(PlayScene::removeSprite)),
-					                      NULL));
-
-			bullets[i] = bullets[bullets.size()-1];
-			break;
-		}
-	}
-
-	if ( GameState.queryZombie() && GameState.queryBullet() ) {
-		modifyPlayerBullets(1);
-		bullets.pop_back();
-	} else if ( GameState.queryZombie() && GameState.queryLife() ) {
-		modifyPlayerLifes(1);
-		lifes.pop_back();
-	}
+	checkLifeAndBullet(NULL, NULL);
 
 	point = _moveLayer->convertToNodeSpace( _stayLayer->getChildByTag(ZOMBIE_ICON_TAG)->getPosition() );
 	actions->addObject(CCMoveTo::create(1, point));
@@ -1866,7 +1869,7 @@ void PlayScene::winBattle(CCNode* sender, void * data)
 		actions->addObject(CCCallFunc::create( this, callfunc_selector(PlayScene::gameOver)));
 	} else {
 		if ( LANZODADOAZUL ) {
-			actions->addObject(CCCallFuncND::create( this, callfuncND_selector(PlayScene::changePhase), NULL));
+			actions->addObject(CCCallFuncN::create( this, callfuncN_selector(PlayScene::checkLeftMoves)));
 		} else {
 			msg = name[1][0];
 			actions->addObject(CCCallFuncND::create( this, callfuncND_selector(PlayScene::putSubtitleInformation), NULL));
