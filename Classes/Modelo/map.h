@@ -9,6 +9,7 @@
 #include <stack>
 #include <cstdio>
 #include <cassert>
+#include <map>
 #include "tile.h"
 #include "position.h"
 #include "constant.h"
@@ -22,38 +23,18 @@ using namespace std;
  */
 class mapGrid{
   tile grid[MAPMAX][MAPMAX]; // map Grid matrix
+  bool hasHeliport;
+
+public:
   set<position> freeMapCardPosition; // Set of free positions for map cards
   set<position> lifeSet; // Life points positions set
   set<position> bulletSet; // Bullet positions set
   set<position> zombieSet; // Zombies positions set
   vector<position> playerVector; // players positions vector
-  
-  /*
-   * DFS auxiliar function
-   */
-  vector<position> dfsMoveRes;
-  set<position> dfsMoveVisit;
-  bool dfsMove(position u, position end){
-    if(u == end){
-      return true;
-    }
-    
-    position v;
-    for(int i = 0; i < 4; i++){
-      v = u.next(i);
-      if(!getTile(v).isValid() || dfsMoveVisit.count(v) > 0) continue;
-      dfsMoveVisit.insert(v);
-      dfsMoveRes.push_back(v);
-      if(dfsMove(v, end)){
-        return true;
-      }
-      dfsMoveRes.pop_back();
-    }
-    return false;
-  }
-  
+  position endPosition;
+
 public:
-  
+
   void print(){
       for(int i = -6; i <= 6; i++){
         for(int j = -6; j <= 6; j++){
@@ -67,6 +48,12 @@ public:
    */
   vector<position> queryMovePlayerTo(int x, position end);
   
+  /*
+   * Return the distance from the position p to all the rest of positions
+   */
+  map<position,int> getDistances(position p);
+
+
   /*
    * Move player x to position end
    */
@@ -148,6 +135,10 @@ public:
    * Move player to the origin position
    */
   void killPlayer(int x);
+  /*
+   * Returns true if the map grid contains the heliport
+   */
+  bool hasEndCard();
 
 };
 #endif

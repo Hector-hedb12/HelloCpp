@@ -217,6 +217,18 @@ public:
    */
   bool isCurrentPlayerMachine();
 
+  /*
+   * Returns the instance of the current player
+   */
+  user &getCurrentPlayerInstance();
+  /*
+   * Returns true if the map stack is empty
+   */
+  bool mapStackEmpty();
+  /*
+   * Returns true if the current player is over the heliport
+   */
+  bool currentPlayerOverHeliport();
 };
 
 #endif

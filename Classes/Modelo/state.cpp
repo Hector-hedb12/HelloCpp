@@ -1,4 +1,5 @@
 #include "state.h"
+#include <cstdlib>
 
 bool state::queryLife(position p){
   return world.getTile(p).hasLife();
@@ -69,6 +70,7 @@ void state::killcurrentPlayer(){
 
 
 state::state(int nPlayers){
+	srand(time(0));
   for(int i = 0; i < nPlayers; i++){
     playerVector.push_back(user());
   }
@@ -78,11 +80,12 @@ state::state(int nPlayers){
 }
 
 state::state(int na, int nb){
+	srand(time(0));
   for(int i = 0; i < na; i++){
     playerVector.push_back(user());
   }
   for(int i = 0; i < nb; i++){
-	  playerVector.push_back(user(true));
+	  playerVector.push_back(machine());
   }
   initmapVector();
   world.init(na+nb);
@@ -235,5 +238,15 @@ bool state::isValidZombie(position p){
 
 bool state::isCurrentPlayerMachine(){
 	return playerVector[currentPlayer].isMachine();
+}
+
+user &state::getCurrentPlayerInstance(){
+	return this->playerVector[this->currentPlayer];
+}
+bool state::mapStackEmpty(){
+	return this->mapVector.empty();
+}
+bool state::currentPlayerOverHeliport(){
+	return world.hasEndCard() && (world.endPosition == this->getCurrentPlayerPosition());
 }
 
