@@ -15,7 +15,7 @@ class tile{
   bool building;
   bool door;
   bool end;
-  int id;
+  char id;
   set<int> players;
 public:
   /*
@@ -93,7 +93,7 @@ public:
   /*
    * Returns the tile id
    */
-  int getId();
+  char getId();
   /*
    * Set the tile Id
    */

@@ -12,7 +12,9 @@
 #include "CCLayerPanZoom.h"
 #include "Resources.h"
 #include "Modelo/model.h"
+#include "PopupLayer.h"
 #include <vector>
+#include <set>
 
 using namespace std;
 USING_NS_CC;
@@ -37,6 +39,8 @@ static const int QUESTION_BULLET_ICON_TAG = 888;
 
 static const int SELECTED_ZOMBIE_TAG = 889;
 static const int SELECTED_PLAYER_TAG = 890;
+
+static const int CONTINUAR_LABEL_TAG = 891;
 
 // Dimensiones utilizadas para calculos del mapa y sus imagenes
 static float PIXELS_MAP_CARD;
@@ -90,6 +94,7 @@ class PlayScene : public cocos2d::CCLayer
 
 	   // Callbacks:
 	   // Funciones que manejan
+	   void skipMenuCallback(CCObject* pSender);
 	   void mainMenuCallback(CCObject* pSender);
 	   void moveSpriteMenuCallback(CCObject* pSender);
 	   void incrementLifeMenuCallback(CCObject* pSender);
@@ -248,6 +253,10 @@ class PlayScene : public cocos2d::CCLayer
 
 	   // FIN DEL JUEGO
 	   void gameOver();
+
+	   // popup:
+	   void popUpbuttonCallback(CCNode *pNode);
+	   void popupLayer(CCNode* sender, void * data);
 
 };
 

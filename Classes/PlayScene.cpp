@@ -127,6 +127,16 @@ bool PlayScene::init()
  *           Funciones Callbacks                   *
  * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+void PlayScene::skipMenuCallback(CCObject* pSender)
+{
+	if (currFase == 1)
+		removePlayerBox();
+	if (currFase == 2)
+		removeZombieBox();
+
+	changePhase(NULL, NULL);
+}
+
 void PlayScene::mainMenuCallback(CCObject* pSender)
 {
 	CCLOG("Entrando a: void PlayScene::mainMenuCallback(CCObject* pSender)\n");
@@ -262,6 +272,9 @@ void PlayScene::setStaticRedDice(CCNode* node)
 	}
 
 	redDices[lastRedDiceResult]->setVisible(true);
+
+	if ( !HAY_BATALLA )
+		_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(true);
 }
 
 void PlayScene::blueDiceCallback()
@@ -339,6 +352,8 @@ void PlayScene::setStaticBlueDice(CCNode* node)
 
 	// Se muestran las posibilidades en la interfaz
 	addPlayerBox();
+
+	_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(true);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -558,6 +573,19 @@ void PlayScene::setInterface()
 	label->setVisible(false);
 	_stayLayer->addChild(label, 2);
 
+	// Boton de Skip movimiento de zombie o player:
+
+	label = CCLabelTTF::create("Continuar", "Arial", FONT_SIZE);
+	CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(PlayScene::skipMenuCallback));
+
+	itemLabel->setPosition(ccp(VisibleRect::right().x - label->getContentSize().width/2 - 8,
+			                   VisibleRect::right().y - label->getContentSize().height));
+
+    CCMenu* pMenu = CCMenu::create(itemLabel, NULL);
+    pMenu->setPosition(CCPointZero);
+    pMenu->setVisible(false);
+    pMenu->setTag(CONTINUAR_LABEL_TAG);
+    _stayLayer->addChild(pMenu, 2);
 }
 
 void PlayScene::setPlayerInfo()
@@ -738,8 +766,13 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data)
 	mSprite[GameState.getCurrentPlayer()]->setVisible(true);
 
 	//OJO no seguro
-	if (!GameState.queryZombie())
+	if (!GameState.queryZombie()) {
 		checkLifeAndBullet(NULL, NULL);
+
+		// Chequear fin de juego
+		if (GameState.currentPlayerOverHeliport())
+			gameOver();
+	}
 }
 
 
@@ -861,19 +894,6 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 	CCLOG("Entrando a: bool PlayScene::putMapCard(CCPoint location, int id)\n");
 	CCPoint actualLocation = axisToMapCardMatrix(location.x, location.y);
 	position p = relativeTileToAbsoluteTile(actualLocation.x, actualLocation.y, 1, 1);
-
-	allowedPositions.clear();
-	allowedPositions = GameState.getAllPosibleMapCard(GameState.getLastMapCard());
-
-	// Si la carta no puede ser colocada
-	if ( allowedPositions[0].size() == 0 &&
-	     allowedPositions[1].size() == 0 &&
-	     allowedPositions[2].size() == 0 &&
-	     allowedPositions[3].size() == 0   )
-	{
-		PUTMAPCARD = false;
-		return true;
-	}
 
 	if (!isAllowed(p)) {
 		return false;
@@ -1619,6 +1639,8 @@ void PlayScene::hideSecondPhase()
 	CCLOG("Entrando a: void PlayScene::hideSecondPhase()\n");
 	blueDices[lastBlueDiceResult]->setVisible(false);
 	redDices[lastRedDiceResult]->setVisible(false);
+
+	_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(false);
 }
 
 void PlayScene::showThirdPhase()
@@ -1626,6 +1648,8 @@ void PlayScene::showThirdPhase()
 	CCLOG("Entrando a: void PlayScene::showThirdPhase()\n");
 	redDices[lastRedDiceResult]->setVisible(true);
 	blueDices[lastBlueDiceResult]->setVisible(true);
+
+	// CCMessageBox("hola!","chao");
 }
 
 void PlayScene::hideThirdPhase()
@@ -1633,6 +1657,8 @@ void PlayScene::hideThirdPhase()
 	CCLOG("Entrando a: void PlayScene::hideThirdPhase()\n");
 	blueDices[lastBlueDiceResult]->setVisible(false);
 	redDices[lastRedDiceResult]->setVisible(false);
+
+	_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(false);
 }
 
 
@@ -1677,6 +1703,11 @@ void PlayScene::initFlipXCallback(CCObject* target)
 	// y sacar con el id el path: arreglo[id].path
 
 	mapCard card = GameState.pickMapCard();
+
+	// Obtener posibles posiciones
+	allowedPositions.clear();
+	allowedPositions = GameState.getAllPosibleMapCard(GameState.getLastMapCard());
+
 	reversed_sprite->setVisible(true);
 	CCSprite * sprite = CCSprite::create(card.getPath().c_str());
 	CCLOG("path flip %s\n", card.getPath().c_str());
@@ -1714,9 +1745,17 @@ void PlayScene::show_mapCard_selected(CCNode* node)
     sprite = (CCSprite * ) _stayLayer->getChildByTag(MAP_CARD_REVERSE);
 	sprite->setPosition(ccp(VisibleRect::leftBottom().x + sprite->getContentSize().width/2 + 10,
 							VisibleRect::leftBottom().y + sprite->getContentSize().height/2 + 10));
+
+	// Si la carta no puede ser colocada
+	bool cantBePlaced = allowedPositions[0].size() == 0 &&
+						allowedPositions[1].size() == 0 &&
+						allowedPositions[2].size() == 0 &&
+						allowedPositions[3].size() == 0;
+
 	sprite->runAction(CCSequence::create(camera,
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL),
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::changeSubPhase), NULL),
+			(cantBePlaced ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::popupLayer)) : NULL),
 			NULL));
 
 	sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_DECK);
@@ -1960,4 +1999,25 @@ void PlayScene::gameOver()
 	setMenuBackMenu(_gameOverLayer);
 
 	this->addChild(_gameOverLayer);
+}
+
+
+void PlayScene::popupLayer(CCNode* sender, void * data)
+{
+    PopupLayer* pl = PopupLayer::create("map/popupBackground.png");
+
+    pl->setContentSize(CCSizeMake(300, 250));
+    pl->setTitle("Carta sin lugar");
+    pl->setContentText("La carta de mapa no puede ser colocada en el mapa.", 20, 60, 250);
+
+    pl->setCallbackFunc(this, callfuncN_selector(PlayScene::popUpbuttonCallback));
+
+    pl->addButton("map/buttonBackground.png", "map/buttonBackground.png", "Continuar", 1);
+
+    this->addChild(pl);
+}
+
+void PlayScene::popUpbuttonCallback(CCNode *pNode)
+{
+    changePhase(NULL,NULL);
 }

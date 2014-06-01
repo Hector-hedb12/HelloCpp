@@ -1,5 +1,8 @@
 #include "state.h"
 #include <cstdlib>
+#include "cocos2d.h"
+
+USING_NS_CC;
 
 bool state::queryLife(position p){
   return world.getTile(p).hasLife();
@@ -68,9 +71,8 @@ void state::killcurrentPlayer(){
   // MOVER JUGADOR AL INICIOO EN EL MAPA
 }
 
-
 state::state(int nPlayers){
-	srand(time(0));
+  srand(time(0));
   for(int i = 0; i < nPlayers; i++){
     playerVector.push_back(user());
   }

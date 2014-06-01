@@ -36,7 +36,7 @@ bool tile::isValid(){
 void tile::setId(int i){
 	id = i;
 }
-int tile::getId(){
+char tile::getId(){
 	return id;
 }
 

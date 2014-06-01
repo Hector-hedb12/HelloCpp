@@ -21,13 +21,14 @@ void mapGrid::init(int nPlayers){
   }
   for(int i = 0; i < 4; i++){
     freeMapCardPosition.insert(position(vx3[i], vy3[i]));
-  }  
+  }
+  /*
+  idCounter = 0;
   for(int i = -1; i <= 1; i++){
 	  for(int j = -1; j <= 1; j++){
 		  getTile(i,j).setId(idCounter);
 	  }
-  }
-
+  }*/
   hasHeliport = false;
   idCounter = 1;
 }
