@@ -11,6 +11,7 @@
 #include <cmath>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
+#include "SimpleAudioEngine.h"
 
 CCScene* PlayScene::scene()
 {
@@ -284,7 +285,6 @@ void PlayScene::blueDiceCallback()
 	int result = GameState.rollPlayerDice();
 	CCArray * actions = CCArray::createWithCapacity(4);
 	CCFiniteTimeAction * single_action;
-	CCLOG("FLAG3\n");
 	single_action = CCCallFuncN::create( this, callfuncN_selector(PlayScene::setMoveBlueDice));
 	actions->addObject(single_action);
 
@@ -786,6 +786,9 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data)
 void PlayScene::setMoveZombieSprite(CCNode* sender, void* data)
 {
 	CCLOG("Entrando a: void PlayScene::setMoveZombieSprite(CCNode* sender, void* data)  \n");
+
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("sounds/zombie_walk.wav");
+
 	CCSpriteFrameCache* cache = CCSpriteFrameCache::sharedSpriteFrameCache();
 	Event *d =  (Event*) data;
 	string name;
@@ -920,6 +923,9 @@ bool PlayScene::putMapCard(CCPoint location)
 	sprite->setRotation(currCardRotation * 90);
 	_moveLayer->addChild(sprite, 1);
 
+	// Se eliminan los box de las posibles posiciones de un mapcard
+	removeMapCardBox();
+
 	CCLOG("path putMapCard %s\n", GameState.getLastMapCard().getPath().c_str());
 
 	float bv_offset_x, bv_offset_y, z_offset_y;
@@ -940,6 +946,7 @@ bool PlayScene::putMapCard(CCPoint location)
 	Element element;
 	element.mapCard_i = fila;
 	element.mapCard_j = columna;
+
 
 	// Se colocan los elementos que tiene (zombies, vidas, balas):
 	CCPoint actualLocation;
@@ -1099,9 +1106,10 @@ void PlayScene::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent)
     	CCTouch * touch = (CCTouch *) (*pTouches->begin());
     	CCPoint ptoConvertido = _moveLayer->convertTouchToNodeSpace(touch);
 
-    	if      (currFase == 0) firstPhase(touch->getLocation(), ptoConvertido);
-    	else if (currFase == 1) secondPhase(touch->getLocation(), ptoConvertido);
-    	else if (currFase == 2) thirdPhase(touch->getLocation(), ptoConvertido);
+    	if (!GameState.isCurrentPlayerMachine())
+			if      (currFase == 0) firstPhase(touch->getLocation(), ptoConvertido);
+			else if (currFase == 1) secondPhase(touch->getLocation(), ptoConvertido);
+			else if (currFase == 2) thirdPhase(touch->getLocation(), ptoConvertido);
 
 	}
 
@@ -1220,6 +1228,13 @@ void PlayScene::changeSubPhase(CCNode* sender, void* data)
 	currSubFase++;
 	CCLabelTTF * label = (CCLabelTTF *) _stayLayer->getChildByTag(SUBTITLE_LABEL_TAG);
 	label->setString(name[currFase][currSubFase].c_str());
+
+	// Si es la maquina se juega la fase automaticamente
+	if (GameState.isCurrentPlayerMachine()) {
+			if      (currFase == 0) firstPhase(ccp(-1, -1), ccp(-1, -1));
+			else if (currFase == 1) secondPhase(ccp(-1, -1), ccp(-1, -1));
+			else if (currFase == 2) thirdPhase(ccp(-1, -1), ccp(-1, -1));
+	}
 }
 
 void PlayScene::putSubtitleInformation(CCNode* sender, void* data)
@@ -1311,7 +1326,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 {
 	CCLOG("Entrando a: void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido) \n");
 	// El dado azul fue cliqueado
-	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && blueDices[0]->boundingBox().containsPoint(pto))
+	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && (blueDices[0]->boundingBox().containsPoint(pto) || GameState.isCurrentPlayerMachine()))
 	{
 		// Se muestra el jugador que va a tomar turno
 		showCurrPlayerBox();
@@ -1324,12 +1339,23 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		return;
 	}
 
-	CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
-	CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-	position p = relativeTileToAbsoluteTile(index_cardMap.x, index_cardMap.y, index_tile.x,index_tile.y);
-
-	if (!HAY_BATALLA && LANZODADOAZUL && !HAY_PREGUNTA && canMove(p))
+	if (!HAY_BATALLA && LANZODADOAZUL && !HAY_PREGUNTA)
 	{
+		CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
+		CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
+		position p;
+		if (!GameState.isCurrentPlayerMachine()) // Juega el usuario
+		{
+			p = relativeTileToAbsoluteTile(index_cardMap.x, index_cardMap.y, index_tile.x,index_tile.y);
+			if (!canMove(p)) return;
+		} else // Juega la maquina
+		{
+			CCLOG("Creo que\n");
+			decision d;
+			p = d.movement(GameState);
+			CCLOG("es aqui\n");
+		}
+
 		// desactiva touch
 		WAIT = true;
 		possibleMoves.clear();
@@ -1391,11 +1417,11 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		return;
 	}
 
-	CCSprite * life, * bullet;
-	life = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG);
-	bullet = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG);
-
 	if ( HAY_PREGUNTA ) {
+		CCSprite * life, * bullet;
+		life = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG);
+		bullet = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG);
+
 		if (life->boundingBox().containsPoint(pto) && GameState.getCurrentPlayerLife() > 0) {
 			modifyPlayerLifes(-1);
 
@@ -1788,11 +1814,9 @@ void PlayScene::show_mapCard_selected(CCNode* node)
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL),
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::changeSubPhase), NULL),
 			(cantBePlaced ?
-					(GameState.isCurrentPlayerMachine() ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::changePhase)) :
-														  CCCallFuncN::create( this, callfuncN_selector(PlayScene::popupLayer)))
-														  :
-				    (GameState.isCurrentPlayerMachine() ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::callFirstPhase)) :
-				    									  NULL)
+					(GameState.isCurrentPlayerMachine() ? NULL :
+														  CCCallFuncN::create( this, callfuncN_selector(PlayScene::popupLayer))) :
+														  NULL
 			),
 			NULL));
 
@@ -1956,6 +1980,9 @@ void PlayScene::checkLifeAndBullet(CCNode* sender, void* data)
 void PlayScene::winBattle(CCNode* sender, void * data)
 {
 	CCLOG("Entrando a: void PlayScene::winBattle(CCNode* sender, void * data)\n");
+
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playEffect("sounds/zombie_die.wav");
+
 	msg = "Has ganado...";
 	putSubtitleInformation(NULL, NULL);
 

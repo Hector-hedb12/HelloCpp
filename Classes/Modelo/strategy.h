@@ -17,9 +17,9 @@ class strategy{
 
 class moveStrategy:public strategy{
 protected:
-	static vector<double> dv;
+	vector<double> dv;
 
-	static double fac(int i){
+	double fac(int i){
 		int siz = dv.size();
 		if(siz == 0){
 			dv.push_back(1);
