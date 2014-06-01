@@ -28,6 +28,14 @@ class decision{
 		return res;
 	}
 
+	vector<position> stov(set<position> se){
+		vector<position> res;
+		for(set<position>::iterator it = se.begin(); it != se.end(); it++){
+			res.push_back(*it);
+		}
+		return res;
+	}
+
 public:
 	/*
 	 * Return the position where the player should move after rolling the dice
@@ -87,17 +95,18 @@ public:
 	/*
 	 * Return the position where the player should put the last map card picked up
 	 */
-	position putmapcard(state &gs, int player = -1){
+	pair<int,position> putmapcard(state &gs, int player = -1){
 		if(player == -1) player = gs.getCurrentPlayer();
 		position playerp = gs.world.playerVector[player];
 
 		vector<vector<position> > ve = gs.getAllPosibleMapCard(gs.lastMapCard);
 		position cur = playerp;
 		position res;
+		int resrot;
 		if(gs.lastMapCard.isEndCard()){
 			int mindist = 1e9;
 			int dist;
-
+			resrot = 0;
 			for(int j = 0; j < ve[0].size(); j++){
 				dist = cur.distManhattan(ve[0][j]);
 				if(mindist > dist){
@@ -113,10 +122,11 @@ public:
 			for(int i = 0; i < 4; i++){
 				if(ve[vi[i]].empty()) continue;
 				res = ve[vi[i]][rand()%ve[vi[i]].size()];
+				resrot = i;
 				break;
 			}
 		}
-		return res;
+		return make_pair(resrot,res);
 	}
 	/*
 	 * Return True if you must select life
@@ -134,6 +144,8 @@ public:
 
 	pair<position, position> moveZombie(state &gs, int player = -1){
 		if(player == -1) player = gs.getCurrentPlayer();
+		vector<position> ve = stov(gs.world.zombieSet);
+
 	}
 
 
