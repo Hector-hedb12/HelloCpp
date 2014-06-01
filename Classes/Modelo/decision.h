@@ -176,7 +176,6 @@ public:
 			dh = gs.world.getDistances(gs.world.endPosition);
 		}
 
-
 		for(int k = 0; k < res.size(); k++){
 			map<int,int> mi, mu, mh;
 			if(gs.world.hasEndCard()){
@@ -193,14 +192,8 @@ public:
 			vector<position> vm = gs.getPossibleZombieMoves(res[k]);
 		}
 
-
 		return true;
 	}
-
-
 };
-
-
-
 
 #endif /* DECISION_H_ */
