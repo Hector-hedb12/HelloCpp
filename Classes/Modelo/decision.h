@@ -17,7 +17,9 @@
 #include <string>
 
 class decision{
-
+	/*
+	 * Return a sparce vector with the sum of the distances of every element in se.
+	 */
 	map<position,int> getmap(set<position> se, map<position, int> dist){
 		map<position, int> res;
 		for(set<position>::iterator it = se.begin(); it != se.end(); it++){
@@ -27,7 +29,13 @@ class decision{
 	}
 
 public:
-	position movement(state &gs){
+	/*
+	 * Return the position where the player should move after rolling the dice
+	 */
+	position movement(state &gs, int player = -1){
+		if(player == -1) player = gs.getCurrentPlayer();
+		position playerp = gs.world.playerVector[player];
+
 		position res;
 		machine &us;
 		map<position,int> dist, dor;
@@ -42,14 +50,14 @@ public:
 
 
 		pa = gs.getPossibleMoves();
-		pa.first.push_back(gs.getCurrentPlayerPosition());
+		pa.first.push_back(playerp);
 
 		strategy st = us.getMoveStrategy();
 
 		res = pa.first[0];
 		double maxf = -1e9;
 		double cf;
-		dor =getDistances(gs.getCurrentPlayerPosition());
+		dor =getDistances(playerp);
 
 		for(int i = 0; i < pa.first.size(); i++){
 			/* Calculate distances */
@@ -76,13 +84,15 @@ public:
 		return res;
 	}
 
-
+	/*
+	 * Return the position where the player should put the last map card picked up
+	 */
 	position putmapcard(state &gs, int player = -1){
 		if(player == -1) player = gs.getCurrentPlayer();
-
+		position playerp = gs.world.playerVector[player];
 
 		vector<vector<position> > ve = gs.getAllPosibleMapCard(gs.lastMapCard);
-		position cur = gs.getCurrentPlayerPosition();
+		position cur = playerp;
 		position res;
 		if(gs.lastMapCard.isEndCard()){
 			int mindist = 1e9;
@@ -108,7 +118,10 @@ public:
 		}
 		return res;
 	}
-
+	/*
+	 * Return True if you must select life
+	 * Return False if you must select bullet
+	 */
 	bool selectLife(state &gs){
 		int lif,bul,dic;
 		lif = gs.getCurrentPlayerLife();
@@ -119,6 +132,9 @@ public:
 		return (rand%2 == 0);
 	}
 
+	pair<position, position> moveZombie(state &gs, int player = -1){
+		if(player == -1) player = gs.getCurrentPlayer();
+	}
 
 
 };

@@ -279,7 +279,9 @@ vector<position> mapGrid::getPosibleObjectPositions(){
 
 bool mapGrid::moveZombie(position u, position v){
   assert(getTile(u).hasZombie() && !getTile(v).hasZombie());
+  zombieSet.erase(u);
   getTile(u).setZombie(false);
+  zombieSet.insert(v);
   getTile(v).setZombie(true);
   return true;
 }
