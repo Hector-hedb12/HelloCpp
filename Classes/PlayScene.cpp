@@ -38,6 +38,8 @@ bool PlayScene::init()
     PIXELS_MAP_CARD = mapCardSprite->getTextureRect().size.height;
     PIXELS_TILE = PIXELS_MAP_CARD/3.0;
 
+    boxMapCardSize = CCSizeMake(PIXELS_MAP_CARD, PIXELS_MAP_CARD);
+
     for (int i = 0; i < NUM_OF_PLAYER; i++)
     	mSprite[i] = CCSprite::create(PATH_PLAYER_SPRITE[i].c_str());
 
@@ -1762,6 +1764,42 @@ void PlayScene::show_mapCard_selected(CCNode* node)
 	sprite->runAction(CCFadeOut::create(1));
 
     PUTMAPCARD = true;
+
+    addMapCardBox();
+}
+
+void PlayScene::addMapCardBox()
+{
+	// Muestra en la interfaz las posibles posiciones del mapCard
+	CCPoint point;
+
+	for (int i = 0; i < allowedPositions[currCardRotation].size(); i++) {
+		boxTile = CCLayerColor::create(ccc4(0, 119, 255, 0));
+
+		allowedPositions[currCardRotation][i].t();
+
+		point = tileMatrixToAxis(allowedPositions[currCardRotation][i].x/3, allowedPositions[currCardRotation][i].y/3, allowedPositions[currCardRotation][i].x%3, allowedPositions[currCardRotation][i].y%3);
+
+		allowedPositions[currCardRotation][i].invT();
+
+		boxTile->setPosition(ccp(point.x-boxMapCardSize.width/2, point.y-boxMapCardSize.height/2));
+		boxTile->setContentSize(boxMapCardSize);
+		boxTile->setOpacity((GLubyte)(140));
+
+		boxTileAdded.push_back(boxTile);
+		_moveLayer->addChild(boxTile, 1);
+	}
+	// FIN: Muestra en la interfaz las posibles posiciones del mapCard
+}
+
+void PlayScene::removeMapCardBox()
+{
+	// Se remueven los child que muestran posibles posiciones del mapcard
+    for (int i = 0; i < boxTileAdded.size(); i++) {
+	    _moveLayer->removeChild(boxTileAdded[i]);
+    }
+
+    boxTileAdded.clear();
 }
 
 void PlayScene::rotate_mapCard()
@@ -1774,6 +1812,9 @@ void PlayScene::rotate_mapCard()
 	sprite->runAction(CCSequence::create(rotate_action,
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL),
 			NULL));
+
+	removeMapCardBox();
+	addMapCardBox();
 }
 
 void PlayScene::setBackgrounds()
