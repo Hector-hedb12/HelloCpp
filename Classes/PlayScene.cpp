@@ -198,6 +198,7 @@ void PlayScene::redDiceCallback()
 
 	if ( !HAY_BATALLA )
 	{
+		CCLOG ("No hay batalla\n");
 		 result = 1;//GameState.rollZombieDice(); // [0,5]
 
 		// Cambiar la subfase
@@ -998,7 +999,7 @@ position PlayScene::relativeTileToAbsoluteTile(int mx, int my, int tx, int ty)
 
 CCPoint PlayScene::axisToMapCardMatrix(float x, float y)
 {
-	CCLOG("Entrando a: CCPoint PlayScene::axisToMapCardMatrix(float x, float y)\n");
+//	CCLOG("Entrando a: CCPoint PlayScene::axisToMapCardMatrix(float x, float y)\n");
 //	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
 //	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
 
@@ -1010,7 +1011,7 @@ CCPoint PlayScene::axisToMapCardMatrix(float x, float y)
 
 CCPoint PlayScene::axisToTileMatrix(float x, float y)
 {
-	CCLOG("Entrando a: CCPoint PlayScene::axisToTileMatrix(float x, float y)\n");
+//	CCLOG("Entrando a: CCPoint PlayScene::axisToTileMatrix(float x, float y)\n");
 //	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
 //	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
 	float aux_x = abs( PIXELS_MAP_CARD - x );
@@ -1021,7 +1022,7 @@ CCPoint PlayScene::axisToTileMatrix(float x, float y)
 
 CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)
 {
-	CCLOG("Entrando a: CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)\n");
+//	CCLOG("Entrando a: CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)\n");
 //	float origen_x = (MAX_MAP_DIM/2)*(-PIXELS_MAP_CARD);
 //	float origen_y = (MAX_MAP_DIM/2)* PIXELS_MAP_CARD;
 
@@ -1033,7 +1034,7 @@ CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)
 
 CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j)
 {
-	CCLOG("Entrando a: CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j)\n");
+//	CCLOG("Entrando a: CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j)\n");
 	CCPoint center = mapCardMatrixToAxis(i_mapCard,j_mapCard);
 
 	return ccp(center.x + PIXELS_TILE * (j-1), center.y - PIXELS_TILE * (i-1) );
@@ -1216,7 +1217,6 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 	// Si es la maquina se juega la fase automaticamente
 	if (GameState.isCurrentPlayerMachine()) {
 			if      (currFase == 0) firstPhase(ccp(-1, -1), ccp(-1, -1));
-			else if (currFase == 1) secondPhase(ccp(-1, -1), ccp(-1, -1));
 			else if (currFase == 2) thirdPhase(ccp(-1, -1), ccp(-1, -1));
 	}
 
@@ -1232,7 +1232,7 @@ void PlayScene::changeSubPhase(CCNode* sender, void* data)
 	// Si es la maquina se juega la fase automaticamente
 	if (GameState.isCurrentPlayerMachine()) {
 			if      (currFase == 0) firstPhase(ccp(-1, -1), ccp(-1, -1));
-			else if (currFase == 1) secondPhase(ccp(-1, -1), ccp(-1, -1));
+			else if (currFase == 1) {CCLOG("Se llama second en changeSub\n");secondPhase(ccp(-1, -1), ccp(-1, -1));}
 			else if (currFase == 2) thirdPhase(ccp(-1, -1), ccp(-1, -1));
 	}
 }
@@ -1328,6 +1328,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	// El dado azul fue cliqueado
 	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && (blueDices[0]->boundingBox().containsPoint(pto) || GameState.isCurrentPlayerMachine()))
 	{
+		CCLOG("A lanzar el dado\n");
 		// Se muestra el jugador que va a tomar turno
 		showCurrPlayerBox();
 
@@ -1341,6 +1342,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 	if (!HAY_BATALLA && LANZODADOAZUL && !HAY_PREGUNTA)
 	{
+		CCLOG("A moverse\n");
 		CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
 		CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		position p;
@@ -1350,9 +1352,11 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 			if (!canMove(p)) return;
 		} else // Juega la maquina
 		{
+			CCLOG ("Decision de maquina\n");
 			decision d;
 			p = d.movement(GameState);
 			if (p == GameState.getCurrentPlayerPosition()) {
+				CCLOG("Decidio quedarse, se cambia fase\n");
 				removePlayerBox();
 				changePhase(NULL, NULL);
 				return;
@@ -1414,6 +1418,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 	if ( HAY_BATALLA && !HAY_PREGUNTA && (redDices[0]->boundingBox().containsPoint(pto) || GameState.isCurrentPlayerMachine()))
 	{
+		CCLOG("Hay Batalla\n");
 		// desactiva touch
 		WAIT = true;
 		redDiceCallback();
@@ -1421,6 +1426,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	}
 
 	if ( HAY_PREGUNTA ) {
+		CCLOG("Hay Pregunta\n");
 		CCSprite * life, * bullet;
 		life = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG);
 		bullet = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG);
@@ -1437,6 +1443,9 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 			_stayLayer->getChildByTag(QUESTION_LABEL_TAG)->setVisible(false);
 			_stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG)->setVisible(false);
 			_stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG)->setVisible(false);
+
+			if (GameState.isCurrentPlayerMachine())
+				{CCLOG("Se llama second en secondphase\n");secondPhase(ccp(-1, -1), ccp(-1,-1));}
 
 		} else if ((bullet->boundingBox().containsPoint(pto) || (isMachine && !selectLife))
 				&& GameState.getCurrentPlayerBullet() + lastRedDiceResult >= 3) {
@@ -1527,14 +1536,16 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 	WAIT = true;
 	CCPoint location, tileLocation;
 
+	if (LANZODADOROJO && GameState.isCurrentPlayerMachine()) {
+		CCLOG("Ya se lanzo el dado rojo, voy a salir\n");
+		changePhase(NULL, NULL); // Provisional
+		WAIT = false;
+		return;
+	}
+
 	// Se verifica si el toque es para seleccionar el zombie a mover:
 	if (LANZODADOROJO && prevZombieLocation.x == -1 && prevZombieLocation.y == -1)
 	{
-		if (GameState.isCurrentPlayerMachine()) {
-			changePhase(NULL, NULL); // Provisional
-			WAIT = false;
-			return;
-		}
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		position p = relativeTileToAbsoluteTile(location.x, location.y, tileLocation.x,tileLocation.y);
@@ -1919,13 +1930,13 @@ void PlayScene::checkBattle(CCNode* sender, void* data)
 		msg = "A batallar ! Lanza el dado rojo";
 		putSubtitleInformation(NULL, NULL);
 
-		if (GameState.isCurrentPlayerMachine())
-			secondPhase(ccp(-1,-1), ccp(-1,-1));
-
 	} else if ( LANZODADOAZUL ) {
 		checkLifeAndBullet(NULL, NULL);
 		checkLeftMoves(NULL, NULL);
 	}
+
+	if (GameState.isCurrentPlayerMachine() && currFase == 1)
+		{CCLOG("Se llama second en checkBattle\n");secondPhase(ccp(-1,-1), ccp(-1,-1));}
 }
 
 void PlayScene::checkLeftMoves(CCNode* sender, void* data)
@@ -1945,7 +1956,7 @@ void PlayScene::checkLeftMoves(CCNode* sender, void* data)
 		addPlayerBox();
 
 		if (GameState.isCurrentPlayerMachine())
-			secondPhase(ccp(-1, -1), ccp(-1, -1));
+			{CCLOG("Se llama second en checkLeft\n");secondPhase(ccp(-1, -1), ccp(-1, -1));}
 	}
 }
 
@@ -2038,6 +2049,8 @@ void PlayScene::winBattle(CCNode* sender, void * data)
 		} else {
 			msg = name[1][0];
 			actions->addObject(CCCallFuncND::create( this, callfuncND_selector(PlayScene::putSubtitleInformation), NULL));
+			if (GameState.isCurrentPlayerMachine())
+				actions->addObject(CCCallFuncN::create( this, callfuncN_selector(PlayScene::callSecondPhase)));
 		}
 
 		zombies.pop_back();
@@ -2073,7 +2086,6 @@ void PlayScene::loseBattleAndDie(CCNode* sender)
 	float distance = mSprite[GameState.getCurrentPlayer()]->getPosition().getDistance(point);
 	mSprite[GameState.getCurrentPlayer()]->runAction(CCSequence::create(CCMoveTo::create(distance/VELOCITY_SPRITE_MOVEMENT, point),
 			CCCallFuncN::create( this, callfuncN_selector(PlayScene::changePhase)),
-			CCCallFuncN::create( this, callfuncN_selector(PlayScene::changePhase)),
 			NULL));
 
 //	_moveLayer->runAction(CCFollow::create(mSprite[GameState.getCurrentPlayer()],
@@ -2103,7 +2115,7 @@ void PlayScene::continueBattle(CCNode* sender)
 	HAY_PREGUNTA = true;
 
 	if (GameState.isCurrentPlayerMachine())
-		secondPhase(ccp(-1,-1), ccp(-1,-1));
+		{CCLOG("Se llama second en continueBattle\n");secondPhase(ccp(-1,-1), ccp(-1,-1));}
 }
 
 void PlayScene::gameOver()
