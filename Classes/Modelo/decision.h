@@ -124,7 +124,7 @@ public:
 			for(int i = 0; i < 4; i++){
 				if(ve[vi[i]].empty()) continue;
 				res = ve[vi[i]][rand()%ve[vi[i]].size()];
-				resrot = i;
+				resrot = vi[i];
 				break;
 			}
 		}
@@ -146,7 +146,19 @@ public:
 
 	pair<position, position> moveZombie(state &gs, int player = -1){
 		if(player == -1) player = gs.getCurrentPlayer();
-		vector<position> ve = stov(gs.world.zombieSet);
+		set<position> se = gs.world.zombieSet;
+		vector<position> res;
+		for(set<position>::iterator it = se.begin(); it != se.end(); it++){
+			if(!gs.isValidZombie(*it)) continue;
+			vector<position> vm = gs.getPossibleZombieMoves(*it);
+			if(vm.empty())continue;
+			res.push_back(*it);
+		}
+		vector<map<position, int> > distv;
+		for(int i = 0; i < gs.world.playerVector.size(); i++){
+			distv.push_back(gs.world.getDistances(gs.world.playerVector[i]));
+		}
+
 
 	}
 
