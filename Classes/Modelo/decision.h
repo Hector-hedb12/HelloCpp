@@ -51,8 +51,8 @@ public:
 		bool endCard;
 		pair<vector<position>,vector<position> > pa;
 
-		assert(gs.getCurrentPlayerInstance().isMachine());
-		machine &us  = (machine &)gs.getCurrentPlayerInstance();
+		assert(gs.playerVector[player].isMachine());
+		user &us  = (gs.playerVector[player]);
 
 		endCard = gs.world.hasEndCard();
 
@@ -60,7 +60,7 @@ public:
 		pa = gs.getPossibleMoves();
 		pa.first.push_back(playerp);
 
-		moveStrategy st = us.getMoveStrategy();
+		strategy &st = us.getStrategy();
 
 		res = pa.first[0];
 		double maxf = -1e9;
@@ -101,6 +101,9 @@ public:
 		if(player == -1) player = gs.getCurrentPlayer();
 		position playerp = gs.world.playerVector[player];
 
+		assert(gs.playerVector[player].isMachine());
+
+
 		vector<vector<position> > ve = gs.getAllPosibleMapCard(gs.lastMapCard);
 		position cur = playerp;
 		position res;
@@ -134,7 +137,12 @@ public:
 	 * Return True if you must select life
 	 * Return False if you must select bullet
 	 */
-	bool selectLife(state &gs){
+	bool selectLife(state &gs, int player = -1){
+		if(player == -1) player = gs.getCurrentPlayer();
+
+		assert(gs.playerVector[player].isMachine());
+
+
 		int lif,bul,dic;
 		lif = gs.getCurrentPlayerLife();
 		bul = gs.getCurrentPlayerBullet();
@@ -144,9 +152,11 @@ public:
 		return (rand()%2 == 0);
 	}
 
-	pair<position, position> moveZombie(state &gs, int player = -1){
+	bool moveZombie(state &gs, pair<position, position> &out, int player = -1){
 		if(player == -1) player = gs.getCurrentPlayer();
+		assert(gs.playerVector[player].isMachine());
 		set<position> se = gs.world.zombieSet;
+
 		vector<position> res;
 		for(set<position>::iterator it = se.begin(); it != se.end(); it++){
 			if(!gs.isValidZombie(*it)) continue;
@@ -154,12 +164,37 @@ public:
 			if(vm.empty())continue;
 			res.push_back(*it);
 		}
+		if(res.empty()) return false;
 		vector<map<position, int> > distv;
+		map<position,int> dh;
+
 		for(int i = 0; i < gs.world.playerVector.size(); i++){
 			distv.push_back(gs.world.getDistances(gs.world.playerVector[i]));
 		}
 
+		if(gs.world.hasEndCard()){
+			dh = gs.world.getDistances(gs.world.endPosition);
+		}
 
+
+		for(int k = 0; k < res.size(); k++){
+			map<int,int> mi, mu, mh;
+			if(gs.world.hasEndCard()){
+				mh[dh[res[k]]]++;
+			}
+
+			for(int i = 0; i < gs.world.playerVector.size(); i++){
+				if(i == player){
+					mi[distv[i][res[k]]]++;
+				}else{
+					mu[distv[i][res[k]]]++;
+				}
+			}
+			vector<position> vm = gs.getPossibleZombieMoves(res[k]);
+		}
+
+
+		return true;
 	}
 
 

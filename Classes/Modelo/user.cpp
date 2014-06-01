@@ -4,6 +4,9 @@
 user::user(bool b){
   init();
   ismachine = b;
+  if(ismachine){
+	  selectStrategy();
+  }
 }
 
 bool user::isMachine(){
@@ -79,34 +82,29 @@ void user::die(){
   nBullet = PLAYER_INIT_BULLET;
   nLife = PLAYER_INIT_LIFE;
   nZombie = nZombie/2;
+  if(this->ismachine){
+	  selectStrategy();
+  }
 }
 
-machine::machine(){
-	this->ismachine = true;
-	init();
-	selectStrategy();
-}
-moveStrategy machine::getMoveStrategy(){
+strategy& user::getStrategy(){
 	return stm;
 }
 
-void machine::die(){
-	user::die();
-	selectStrategy();
-}
 
-void machine::selectStrategy(){
+
+void user::selectStrategy(){
 	int lc, bc, zc, pc, hc, dc;
 	int maxst = 5;
-	vector<moveStrategy> vs;
+	vector<int> vs;
 	if(nLife < 5){
-		vs.push_back(strategyGetResources());
+		vs.push_back(3);
 	}else{
-		vs.push_back(strategyGetBullets());
+		vs.push_back(4);
 	}
-	vs.push_back(strategyGetZombie());
-	vs.push_back(strategyBotherPlayer());
+	vs.push_back(1);
+	vs.push_back(2);
 
-	this->stm = vs[rand()%vs.size()];
-	this->stm.init();
+	this->stm = strategy(vs[rand()%vs.size()]);
+
 }

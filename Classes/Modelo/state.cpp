@@ -1,8 +1,6 @@
 #include "state.h"
 #include <cstdlib>
-#include "cocos2d.h"
 
-USING_NS_CC;
 
 bool state::queryLife(position p){
   return world.getTile(p).hasLife();
@@ -83,10 +81,10 @@ void state::init(int nPlayers){
 void state::init(int na, int nb){
 	playerVector.clear();
   for(int i = 0; i < na; i++){
-    playerVector.push_back(user());
+    playerVector.push_back(user(false));
   }
   for(int i = 0; i < nb; i++){
-	  playerVector.push_back(machine());
+	  playerVector.push_back(user(true));
   }
   init();
 }

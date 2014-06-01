@@ -17,8 +17,12 @@ protected:
   int leftMoves;
   int leftZombieMoves;
   bool ismachine;
+
   vector<card> handCardVector;
   vector<card> tableCardVector;
+
+  strategy stm;
+
 public:
   /*
    * Create an empty user
@@ -101,17 +105,12 @@ public:
    * Init the user after get killed
    */
   void die();
+
+  strategy& getStrategy();
+  void selectStrategy();
 };
 
 
-class machine:public user{
-	moveStrategy stm;
-public:
-	machine();
-	void die();
-	moveStrategy getMoveStrategy();
-	void selectStrategy();
-};
 
 
 #endif
