@@ -109,6 +109,7 @@ class PlayScene : public cocos2d::CCLayer
 	   // Utilizado para mostrar al usario el Zombie/Player seleccionado:
 
 	   CCSize boxTileSize;
+	   CCSize boxMapCardSize;
 	   CCLayerColor *boxTile;
 	   vector<CCLayerColor*> boxTileAdded;
 
@@ -185,6 +186,8 @@ class PlayScene : public cocos2d::CCLayer
 	   void showCurrPlayerBox();
 	   void addPlayerBox();
 	   void removePlayerBox();
+	   void addMapCardBox();
+	   void removeMapCardBox();
 
 	   // Funciones utilizadas para modificar el estado del jugador
 	   void modifyPlayerLifes(int num);

@@ -31,11 +31,15 @@ public:
 /*
  * Create a state of nPlayers
  */
-  state(int);
+  void init(int);
   /*
    * Create a state of na players alive and nb machines
    */
-    state(int, int);
+  void init(int, int);
+  /*
+   * Init the common variables
+   */
+  void init();
   /*
    * Init the map card stack
    */
