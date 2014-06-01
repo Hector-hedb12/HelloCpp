@@ -19,6 +19,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
                    ../../Classes/Modelo/state.cpp \
                    ../../Classes/Modelo/tile.cpp \
                    ../../Classes/Modelo/user.cpp \
+                   ../../Classes/Modelo/strategy.cpp \
                    ../../Classes/PopupLayer.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
