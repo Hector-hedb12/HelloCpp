@@ -1350,10 +1350,13 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 			if (!canMove(p)) return;
 		} else // Juega la maquina
 		{
-			CCLOG("Creo que\n");
 			decision d;
 			p = d.movement(GameState);
-			CCLOG("es aqui\n");
+			if (p == GameState.getCurrentPlayerPosition()) {
+				removePlayerBox();
+				changePhase(NULL, NULL);
+				return;
+			}
 		}
 
 		// desactiva touch
@@ -1409,7 +1412,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		removePlayerBox();
 	}
 
-	if ( HAY_BATALLA && !HAY_PREGUNTA && redDices[0]->boundingBox().containsPoint(pto))
+	if ( HAY_BATALLA && !HAY_PREGUNTA && (redDices[0]->boundingBox().containsPoint(pto) || GameState.isCurrentPlayerMachine()))
 	{
 		// desactiva touch
 		WAIT = true;
@@ -1422,7 +1425,12 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		life = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG);
 		bullet = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG);
 
-		if (life->boundingBox().containsPoint(pto) && GameState.getCurrentPlayerLife() > 0) {
+		decision d;
+		bool isMachine = GameState.isCurrentPlayerMachine();
+		bool selectLife = d.selectLife(GameState);
+
+		if ((life->boundingBox().containsPoint(pto) || (isMachine && selectLife))
+				&& GameState.getCurrentPlayerLife() > 0) {
 			modifyPlayerLifes(-1);
 
 			HAY_PREGUNTA = false;
@@ -1430,7 +1438,8 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 			_stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG)->setVisible(false);
 			_stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG)->setVisible(false);
 
-		} else if (bullet->boundingBox().containsPoint(pto) && GameState.getCurrentPlayerBullet() + lastRedDiceResult >= 3) {
+		} else if ((bullet->boundingBox().containsPoint(pto) || (isMachine && !selectLife))
+				&& GameState.getCurrentPlayerBullet() + lastRedDiceResult >= 3) {
 			modifyPlayerBullets(lastRedDiceResult - 3);
 			redDices[lastRedDiceResult]->setVisible(false);
 			lastRedDiceResult = 3;
@@ -1505,7 +1514,7 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 {
 	CCLOG("Entrando a: void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido) \n");
 	// El dado rojo fue cliqueado
-	if (!LANZODADOROJO && redDices[0]->boundingBox().containsPoint(pto))
+	if (!LANZODADOROJO && (redDices[0]->boundingBox().containsPoint(pto) || GameState.isCurrentPlayerMachine()))
 	{
 		// desactiva touch
 		WAIT = true;
@@ -1521,6 +1530,11 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 	// Se verifica si el toque es para seleccionar el zombie a mover:
 	if (LANZODADOROJO && prevZombieLocation.x == -1 && prevZombieLocation.y == -1)
 	{
+		if (GameState.isCurrentPlayerMachine()) {
+			changePhase(NULL, NULL); // Provisional
+			WAIT = false;
+			return;
+		}
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		position p = relativeTileToAbsoluteTile(location.x, location.y, tileLocation.x,tileLocation.y);
@@ -1904,6 +1918,10 @@ void PlayScene::checkBattle(CCNode* sender, void* data)
 		HAY_BATALLA = true;
 		msg = "A batallar ! Lanza el dado rojo";
 		putSubtitleInformation(NULL, NULL);
+
+		if (GameState.isCurrentPlayerMachine())
+			secondPhase(ccp(-1,-1), ccp(-1,-1));
+
 	} else if ( LANZODADOAZUL ) {
 		checkLifeAndBullet(NULL, NULL);
 		checkLeftMoves(NULL, NULL);
@@ -1925,6 +1943,9 @@ void PlayScene::checkLeftMoves(CCNode* sender, void* data)
 		// Se coloca la interfaz del usuario
 		showCurrPlayerBox();
 		addPlayerBox();
+
+		if (GameState.isCurrentPlayerMachine())
+			secondPhase(ccp(-1, -1), ccp(-1, -1));
 	}
 }
 
@@ -2080,6 +2101,9 @@ void PlayScene::continueBattle(CCNode* sender)
 		_stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG)->setVisible(true);
 
 	HAY_PREGUNTA = true;
+
+	if (GameState.isCurrentPlayerMachine())
+		secondPhase(ccp(-1,-1), ccp(-1,-1));
 }
 
 void PlayScene::gameOver()
