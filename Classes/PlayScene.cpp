@@ -27,11 +27,10 @@ bool PlayScene::init()
 	CCLOG("Entrando a: bool PlayScene::init()\n");
     if ( !CCLayer::init() )
     {
-    	CCLOG("NOOOOO\n");
         return false;
     }
     CCLOG("Antes el estado\n");
-    GameState.init(NUM_OF_PLAYER);
+    GameState.init(NUM_OF_USERS, NUM_OF_MACHINES);
     CCLOG("Cree el estado\n");
 
     CCSprite * mapCardSprite = CCSprite::create(mapPath[0].c_str());
@@ -891,20 +890,17 @@ bool PlayScene::isAllowed(position p)
 }
 
 
-bool PlayScene::putMapCard(CCPoint location, int id)
+bool PlayScene::putMapCard(CCPoint location)
 {
 	CCLOG("Entrando a: bool PlayScene::putMapCard(CCPoint location, int id)\n");
-	CCPoint actualLocation = axisToMapCardMatrix(location.x, location.y);
-	position p = relativeTileToAbsoluteTile(actualLocation.x, actualLocation.y, 1, 1);
-
+	position p = position(location.x, location.y);
+	CCLOG("Lugar a poner el mapCard (%d, %d)\n", p.x, p.y);
 	if (!isAllowed(p)) {
 		return false;
 	}
 
 	CCSprite* sprite;
-	// mapCards[id].path
-	/* provisional DEL MAPA */
-	int fila = (int) actualLocation.x, columna = (int) actualLocation.y;
+	int fila, columna;
 
 	// Se rota la carta y se notifica al modelo
 	mapCard &current_mapcard = GameState.getLastMapCard();
@@ -914,9 +910,12 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 
 	GameState.putCardMap(current_mapcard, p);
 
+	// Se cambia el sistema de referencia
+	p.t();
+
 	// Se coloca la carta de mapa en la interfaz
 	sprite = CCSprite::create(GameState.getLastMapCard().getPath().c_str());
-	sprite->setPosition(mapCardMatrixToAxis(actualLocation.x,actualLocation.y));
+	sprite->setPosition(mapCardMatrixToAxis(p.x / 3, p.y / 3));
 	sprite->setRotation(currCardRotation * 90);
 	_moveLayer->addChild(sprite, 1);
 
@@ -933,11 +932,15 @@ bool PlayScene::putMapCard(CCPoint location, int id)
 	bv_offset_x = -PIXELS_TILE/2 + sprite->getContentSize().width/2 + 5;
 	bv_offset_y = -PIXELS_TILE/2 + sprite->getContentSize().height/2 + 5;
 
+	fila = p.x;
+	columna = p.y;
+
 	Element element;
 	element.mapCard_i = fila;
 	element.mapCard_j = columna;
 
 	// Se colocan los elementos que tiene (zombies, vidas, balas):
+	CCPoint actualLocation;
 	for (int i = 0; i < MAPNUMPOS; i++){
 		element.tile_i = i;
 		for (int j = 0; j < MAPNUMPOS; j++){
@@ -1200,6 +1203,13 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 		showThirdPhase();
 	}
 
+	// Si es la maquina se juega la fase automaticamente
+	if (GameState.isCurrentPlayerMachine()) {
+			if      (currFase == 0) firstPhase(ccp(-1, -1), ccp(-1, -1));
+			else if (currFase == 1) secondPhase(ccp(-1, -1), ccp(-1, -1));
+			else if (currFase == 2) thirdPhase(ccp(-1, -1), ccp(-1, -1));
+	}
+
 }
 
 void PlayScene::changeSubPhase(CCNode* sender, void* data)
@@ -1223,7 +1233,7 @@ void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 	CCLOG("Entrando a: void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)\n");
 	CCSprite * sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_DECK);
 
-	if (!PUTMAPCARD && sprite->boundingBox().containsPoint(pto)) {
+	if (!PUTMAPCARD && (GameState.isCurrentPlayerMachine() || sprite->boundingBox().containsPoint(pto))) {
 		WAIT = true;
 		initFlipXCallback(NULL);
 	}
@@ -1236,9 +1246,26 @@ void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 		if (sprite->boundingBox().containsPoint(pto)) {
 			WAIT = true;
 			rotate_mapCard();
-		} else
-			if (putMapCard(ptoConvertido, 0)) // provisional 0 debe ser id de carta
+		} else {
+
+			CCPoint p; // Donde será colocada la carta
+
+			if (!GameState.isCurrentPlayerMachine()) // Juega el usuario
+			{
+				CCPoint actualLocation = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
+				position pos = relativeTileToAbsoluteTile((int) actualLocation.x, (int) actualLocation.y, 1, 1);
+				p = ccp(pos.x, pos.y);
+			} else // Juega la maquina
+			{
+				decision d;
+				pair<int, position> choise = d.putmapcard(GameState);
+				currCardRotation = choise.first;
+				p = ccp(choise.second.x, choise.second.y);
+			}
+
+			if (putMapCard(p))
 				changePhase(NULL, NULL);
+		}
 	}
 }
 

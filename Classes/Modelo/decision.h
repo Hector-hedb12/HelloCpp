@@ -15,13 +15,14 @@
 #include <cstdio>
 #include <iostream>
 #include <string>
-
+#include <map>
+#include <algorithm>
 class decision{
 	/*
 	 * Return a sparce vector with the sum of the distances of every element in se.
 	 */
-	map<position,int> getmap(set<position> se, map<position, int> dist){
-		map<position, int> res;
+	map<int,int> getmap(set<position> se, map<position, int> dist){
+		map<int, int> res;
 		for(set<position>::iterator it = se.begin(); it != se.end(); it++){
 			res[dist[*it]]++;
 		}
@@ -45,14 +46,13 @@ public:
 		position playerp = gs.world.playerVector[player];
 
 		position res;
-		machine &us;
 		map<position,int> dist, dor;
 		map<int,int> dl,db,dz,dp, dh, dd;
 		bool endCard;
 		pair<vector<position>,vector<position> > pa;
 
 		assert(gs.getCurrentPlayerInstance().isMachine());
-		us  = (machine &)gs.getCurrentPlayerInstance();
+		machine &us  = (machine &)gs.getCurrentPlayerInstance();
 
 		endCard = gs.world.hasEndCard();
 
@@ -60,20 +60,21 @@ public:
 		pa = gs.getPossibleMoves();
 		pa.first.push_back(playerp);
 
-		strategy st = us.getMoveStrategy();
+		moveStrategy st = us.getMoveStrategy();
 
 		res = pa.first[0];
 		double maxf = -1e9;
 		double cf;
-		dor =getDistances(playerp);
+
+		dor =gs.world.getDistances(playerp);
 
 		for(int i = 0; i < pa.first.size(); i++){
 			/* Calculate distances */
 			dp.clear(); dl.clear(); db.clear(); dz.clear(); dh.clear(); dd.clear();
-			dist = getDistances(pa.first[i]);
-			for(int i = 0; i < gs.world.playerVector.size(); i++){
-				if(i == gs.getCurrentPlayer()) continue;
-				dp[dist[gs.world.playerVector[i]]]++;
+			dist = gs.world.getDistances(pa.first[i]);
+			for(int j = 0; j < gs.world.playerVector.size(); j++){
+				if(j == gs.getCurrentPlayer()) continue;
+				dp[dist[gs.world.playerVector[j]]]++;
 			}
 			dl = getmap(gs.world.lifeSet, dist);
 			db = getmap(gs.world.bulletSet, dist);
@@ -83,6 +84,7 @@ public:
 			}
 			dd[dor[pa.first[i]]]++;
 			/* End Calculate distances */
+
 			cf = st.f(dl, db, dz, dp, dh, dd);
 			if(maxf < cf){
 				res = pa.first[i];
@@ -118,7 +120,7 @@ public:
 		}else{
 			vector<int>vi;
 			for(int i = 0; i < 4; i++) vi.push_back(i);
-			random_sort(vi.begin(), vi.end());
+			random_shuffle(vi.begin(), vi.end());
 			for(int i = 0; i < 4; i++){
 				if(ve[vi[i]].empty()) continue;
 				res = ve[vi[i]][rand()%ve[vi[i]].size()];
@@ -139,7 +141,7 @@ public:
 		dic = gs.getLastRollFightDice();
 		if((lif == 0) || (dic == 3 && bul > 0)) return false;
 		if((bul == 0) || (dic == 1 && lif > 0)) return true;
-		return (rand%2 == 0);
+		return (rand()%2 == 0);
 	}
 
 	pair<position, position> moveZombie(state &gs, int player = -1){

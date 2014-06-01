@@ -12,6 +12,7 @@
 #include "CCLayerPanZoom.h"
 #include "Resources.h"
 #include "Modelo/model.h"
+#include "Modelo/decision.h"
 #include "PopupLayer.h"
 #include <vector>
 #include <set>
@@ -179,7 +180,7 @@ class PlayScene : public cocos2d::CCLayer
 	   void setStaticZombieSprite(CCNode* sender, void* data);
 	   void setDices(CCLayer * layer);
 	   bool isAllowed(position location);
-	   bool putMapCard(CCPoint location, int id);
+	   bool putMapCard(CCPoint location);
 	   bool canMove(position location);
 	   bool canMoveZombie(position prev_p, position p);
 	   void removeZombieBox();

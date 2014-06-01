@@ -29,6 +29,8 @@ static bool isScreenSizeHD() {
 }
 
 static const int NUM_OF_PLAYER = 2;
+static const int NUM_OF_USERS = 1;
+static const int NUM_OF_MACHINES = 1;
 static const int VELOCITY_SPRITE_MOVEMENT = 100.0;
 static const std::string PATH_PLAYER_SPRITE[] = {"sprite/player_d.png","sprite/player_d.png"};
 static const int UP = 0;

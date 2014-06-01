@@ -86,7 +86,7 @@ machine::machine(){
 	init();
 	selectStrategy();
 }
-strategy machine::getMoveStrategy(){
+moveStrategy machine::getMoveStrategy(){
 	return stm;
 }
 

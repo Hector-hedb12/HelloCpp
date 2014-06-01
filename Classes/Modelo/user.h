@@ -109,7 +109,7 @@ class machine:public user{
 public:
 	machine();
 	void die();
-	strategy getMoveStrategy();
+	moveStrategy getMoveStrategy();
 	void selectStrategy();
 };
 
