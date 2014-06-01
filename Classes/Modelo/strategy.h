@@ -73,12 +73,12 @@ public:
 			c_h = 1;
 			c_d = -1;
 		}else if(x == 1){ // bother player
-			c_l = 10;
-			c_b = 10;
-			c_z = 2;
+			c_l = 20;
+			c_b = 20;
+			c_z = 30;
 			c_p = 20;
-			c_h = 50;
-			c_d = 0;
+			c_h = 100;
+			c_d = 1;
 		}else if(x == 2){ // kill zombies
 			c_l = 20;
 			c_b = 20;
