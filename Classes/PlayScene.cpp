@@ -882,6 +882,7 @@ bool PlayScene::isAllowed(position p)
 {
 	CCLOG("Entrando a: bool PlayScene::isAllowed(position p) \n");
 	for (int i = 0; i < allowedPositions[currCardRotation].size(); i++) {
+		CCLOG("Allow (%d, %d)\n", allowedPositions[currCardRotation][i].x, allowedPositions[currCardRotation][i].y);
 		if (allowedPositions[currCardRotation][i] == p)
 			return true;
 	}
@@ -932,8 +933,9 @@ bool PlayScene::putMapCard(CCPoint location)
 	bv_offset_x = -PIXELS_TILE/2 + sprite->getContentSize().width/2 + 5;
 	bv_offset_y = -PIXELS_TILE/2 + sprite->getContentSize().height/2 + 5;
 
-	fila = p.x;
-	columna = p.y;
+	// Obteniendo la fila y columna del mapCard nuevo
+	fila = p.x / 3;
+	columna = p.y / 3;
 
 	Element element;
 	element.mapCard_i = fila;
@@ -1261,6 +1263,7 @@ void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 				pair<int, position> choise = d.putmapcard(GameState);
 				currCardRotation = choise.first;
 				p = ccp(choise.second.x, choise.second.y);
+				CCLOG("La Decision tomada fue (%d, %d) con rotacion %d\n", (int)p.x, (int)p.y, currCardRotation);
 			}
 
 			if (putMapCard(p))
@@ -1784,7 +1787,13 @@ void PlayScene::show_mapCard_selected(CCNode* node)
 	sprite->runAction(CCSequence::create(camera,
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL),
 			CCCallFuncND::create( this, callfuncND_selector(PlayScene::changeSubPhase), NULL),
-			(cantBePlaced ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::popupLayer)) : NULL),
+			(cantBePlaced ?
+					(GameState.isCurrentPlayerMachine() ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::changePhase)) :
+														  CCCallFuncN::create( this, callfuncN_selector(PlayScene::popupLayer)))
+														  :
+				    (GameState.isCurrentPlayerMachine() ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::callFirstPhase)) :
+				    									  NULL)
+			),
 			NULL));
 
 	sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_DECK);
@@ -1793,6 +1802,7 @@ void PlayScene::show_mapCard_selected(CCNode* node)
     PUTMAPCARD = true;
 
     addMapCardBox();
+
 }
 
 void PlayScene::addMapCardBox()
@@ -2088,4 +2098,20 @@ void PlayScene::popupLayer(CCNode* sender, void * data)
 void PlayScene::popUpbuttonCallback(CCNode *pNode)
 {
     changePhase(NULL,NULL);
+}
+
+// LLamadas para la maquina
+void PlayScene::callFirstPhase(CCNode* sender, void * data)
+{
+	firstPhase(ccp(-1, -1), ccp(-1, -1));
+}
+
+void PlayScene::callSecondPhase(CCNode* sender, void * data)
+{
+	secondPhase(ccp(-1, -1), ccp(-1, -1));
+}
+
+void PlayScene::callThirdPhase(CCNode* sender, void * data)
+{
+	thirdPhase(ccp(-1, -1), ccp(-1, -1));
 }
