@@ -262,6 +262,11 @@ class PlayScene : public cocos2d::CCLayer
 	   void popUpbuttonCallback(CCNode *pNode);
 	   void popupLayer(CCNode* sender, void * data);
 
+	   // LLamadas para la maquina
+	   void callFirstPhase(CCNode* sender, void * data);
+	   void callSecondPhase(CCNode* sender, void * data);
+	   void callThirdPhase(CCNode* sender, void * data);
+
 };
 
 #endif /* PLAYSCENE_H_ */
