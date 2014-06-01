@@ -147,8 +147,8 @@ public:
 		lif = gs.getCurrentPlayerLife();
 		bul = gs.getCurrentPlayerBullet();
 		dic = gs.getLastRollFightDice();
-		if((lif == 0) || (dic == 3 && bul > 0)) return false;
-		if((bul == 0) || (dic == 1 && lif > 0)) return true;
+		if((lif == 0) || (dic == 2 && bul > 0)) return false;
+		if((bul == 0) || (dic == 0 && lif > 0)) return true;
 		return (rand()%2 == 0);
 	}
 
