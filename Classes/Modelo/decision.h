@@ -147,8 +147,8 @@ public:
 		lif = gs.getCurrentPlayerLife();
 		bul = gs.getCurrentPlayerBullet();
 		dic = gs.getLastRollFightDice();
-		if((lif == 0) || (dic == 3 && bul > 0)) return false;
-		if((bul == 0) || (dic == 1 && lif > 0)) return true;
+		if((lif == 0) || (dic == 2 && bul > 0)) return false;
+		if((bul == 0) || (dic == 0 && lif > 0)) return true;
 		return (rand()%2 == 0);
 	}
 
@@ -157,14 +157,17 @@ public:
 		assert(gs.playerVector[player].isMachine());
 		set<position> se = gs.world.zombieSet;
 
-		vector<position> res;
+		user &us  = (gs.playerVector[player]);
+		strategy &st = us.getStrategy();
+
+		vector<position> vzombie;
 		for(set<position>::iterator it = se.begin(); it != se.end(); it++){
 			if(!gs.isValidZombie(*it)) continue;
 			vector<position> vm = gs.getPossibleZombieMoves(*it);
 			if(vm.empty())continue;
-			res.push_back(*it);
+			vzombie.push_back(*it);
 		}
-		if(res.empty()) return false;
+		if(vzombie.empty()) return false;
 		vector<map<position, int> > distv;
 		map<position,int> dh;
 
@@ -175,23 +178,29 @@ public:
 		if(gs.world.hasEndCard()){
 			dh = gs.world.getDistances(gs.world.endPosition);
 		}
-
-		for(int k = 0; k < res.size(); k++){
+		vector<pair<double, pair<position, position> > > vres;
+		double gh;
+		for(int k = 0; k < vzombie.size(); k++){
 			map<int,int> mi, mu, mh;
 			if(gs.world.hasEndCard()){
-				mh[dh[res[k]]]++;
+				mh[dh[vzombie[k]]]++;
 			}
 
 			for(int i = 0; i < gs.world.playerVector.size(); i++){
 				if(i == player){
-					mi[distv[i][res[k]]]++;
+					mi[distv[i][vzombie[k]]]++;
 				}else{
-					mu[distv[i][res[k]]]++;
+					mu[distv[i][vzombie[k]]]++;
 				}
 			}
-			vector<position> vm = gs.getPossibleZombieMoves(res[k]);
+			vector<position> vm = gs.getPossibleZombieMoves(vzombie[k]);
+			for(int i = 0; i < vm.size(); i++){
+				gh = st.g(mi, mu, mh);
+				vres.push_back(make_pair(gh,make_pair(vzombie[k], vm[i])));
+			}
 		}
-
+		sort(vres.begin(), vres.end());
+		out = vres.back().second;
 		return true;
 	}
 };
