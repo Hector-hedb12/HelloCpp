@@ -71,29 +71,37 @@ void state::killcurrentPlayer(){
   // MOVER JUGADOR AL INICIOO EN EL MAPA
 }
 
-state::state(int nPlayers){
-  srand(time(0));
+void state::init(int nPlayers){
+
+  playerVector.clear();
   for(int i = 0; i < nPlayers; i++){
     playerVector.push_back(user());
   }
-  initmapVector();
-  world.init(nPlayers);
-  currentPlayer = 0;
+  init();
 }
 
-state::state(int na, int nb){
-	srand(time(0));
+void state::init(int na, int nb){
+	playerVector.clear();
   for(int i = 0; i < na; i++){
     playerVector.push_back(user());
   }
   for(int i = 0; i < nb; i++){
 	  playerVector.push_back(machine());
   }
-  initmapVector();
-  world.init(na+nb);
-  currentPlayer = 0;
+  init();
 }
+
+void state::init(){
+	srand(time(0));
+	initmapVector();
+	world.init(playerVector.size());
+	currentPlayer = 0;
+	movedZombies.clear();
+	// LIMPIAR PILA: pile.clear();
+}
+
 void state::initmapVector(){
+	mapVector.clear();
 	for(int i = 0; i < MAP_CARD_MAX; i++){
 		for(int j = 0; j < typeMapCards[i]; j++){
 			mapVector.push_back(mapCard(i, i==1));

@@ -6,6 +6,20 @@ position mapGrid::getPlayerPosition(int x){
 }
 
 void mapGrid::init(int nPlayers){
+	this->hasHeliport = false;
+	this->idCounter = 0;
+  for(int i = 0; i < MAPMAX; i++){
+	  for(int j = 0; j < MAPMAX; j++){
+		  grid[i][j] = tile();
+	  }
+  }
+  this->freeMapCardPosition.clear();
+  this->lifeSet.clear();
+  this->bulletSet.clear();
+  this->zombieSet.clear();
+  playerVector.clear();
+
+
   for(int i = -1; i <= 1; i++){
     tile &t = getTile(i,0);
     t.setValid(1);
@@ -108,7 +122,7 @@ vector<position> mapGrid::getPossibleMapCard(mapCard ma){
   }*/
   
   vector<position> res;
-  position u,v, w;
+  position u,v;
   
   for(set<position>::iterator it = freeMapCardPosition.begin(); it != freeMapCardPosition.end(); it++){
     u = *it;

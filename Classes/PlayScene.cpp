@@ -31,7 +31,7 @@ bool PlayScene::init()
         return false;
     }
     CCLOG("Antes el estado\n");
-    GameState = state(NUM_OF_PLAYER);
+    GameState.init(NUM_OF_PLAYER);
     CCLOG("Cree el estado\n");
 
     CCSprite * mapCardSprite = CCSprite::create(mapPath[0].c_str());
