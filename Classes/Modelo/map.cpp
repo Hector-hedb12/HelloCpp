@@ -22,15 +22,16 @@ void mapGrid::init(int nPlayers){
   for(int i = 0; i < 4; i++){
     freeMapCardPosition.insert(position(vx3[i], vy3[i]));
   }
-  /*
+
   idCounter = 0;
   for(int i = -1; i <= 1; i++){
 	  for(int j = -1; j <= 1; j++){
 		  getTile(i,j).setId(idCounter);
 	  }
-  }*/
-  hasHeliport = false;
+  }
   idCounter = 1;
+  hasHeliport = false;
+
 }
 
 
@@ -107,7 +108,7 @@ vector<position> mapGrid::getPossibleMapCard(mapCard ma){
   }*/
   
   vector<position> res;
-  position u,v;
+  position u,v, w;
   
   for(set<position>::iterator it = freeMapCardPosition.begin(); it != freeMapCardPosition.end(); it++){
     u = *it;
@@ -118,8 +119,8 @@ vector<position> mapGrid::getPossibleMapCard(mapCard ma){
     for(int k = 0; k < 4; k++){
       
       v = position(u.x+vx3[k]+vx1[vi[k]], u.y+vy3[k]+vy1[vi[k]]);
-      if(!getTile(v).isValid()) continue;
-      
+      w = position(u.x+vx3[k], u.y+vy3[k]);
+      if(!getTile(w).isValid()) continue; // if center is invalid no map card
       if(getTile(v).isStreet() != p[k]){
         q = false;
         break;
