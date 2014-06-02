@@ -194,13 +194,16 @@ public:
 				}
 			}
 			vector<position> vm = gs.getPossibleZombieMoves(vzombie[k]);
+			vm.push_back(vzombie[k]);
 			for(int i = 0; i < vm.size(); i++){
 				gh = st.g(mi, mu, mh);
 				vres.push_back(make_pair(gh,make_pair(vzombie[k], vm[i])));
 			}
 		}
 		sort(vres.begin(), vres.end());
+
 		out = vres.back().second;
+		if(out.first == out.second) return false;
 		return true;
 	}
 };
