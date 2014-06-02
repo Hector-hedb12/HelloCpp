@@ -243,6 +243,7 @@ vector<position> mapGrid::queryMovePlayerTo(int x, position end){
 			if(!isValidMove(u,v) || visit.count(v) > 0) continue;
 			visit.insert(v);
 			pred[v] = u;
+			if(getTile(v).hasZombie())continue;
 			Q.push(v);
 		}
 	}
