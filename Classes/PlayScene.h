@@ -238,6 +238,7 @@ class PlayScene : public cocos2d::CCLayer
 	   void hideSecondPhase();
 	   void showThirdPhase();
 	   void hideThirdPhase();
+	   void showContinueButton(CCNode* sender, void * data);
 
 	   // Metodos relacionados con elegir carta de mapa:
 	   void setPickMapCard();
@@ -262,11 +263,9 @@ class PlayScene : public cocos2d::CCLayer
 	   void popUpbuttonCallback(CCNode *pNode);
 	   void popupLayer(CCNode* sender, void * data);
 
-	   // LLamadas para la maquina
-	   void callFirstPhase(CCNode* sender, void * data);
+	   // Funciones relacionadas con la maquina
 	   void callSecondPhase(CCNode* sender, void * data);
 	   void callThirdPhase(CCNode* sender, void * data);
-
 };
 
 #endif /* PLAYSCENE_H_ */

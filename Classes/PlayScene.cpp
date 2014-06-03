@@ -8,10 +8,10 @@
 #include "MenuScene.h"
 #include "VisibleRect.h"
 #include "support/CCPointExtension.h"
+#include "SimpleAudioEngine.h"
 #include <cmath>
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
-#include "SimpleAudioEngine.h"
 
 CCScene* PlayScene::scene()
 {
@@ -199,7 +199,7 @@ void PlayScene::redDiceCallback()
 	if ( !HAY_BATALLA )
 	{
 		CCLOG ("No hay batalla\n");
-		 result = 1;//GameState.rollZombieDice(); // [0,5]
+		 result = GameState.rollZombieDice(); // [0,5]
 
 		// Cambiar la subfase
 		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::changeSubPhase), NULL);
@@ -277,7 +277,7 @@ void PlayScene::setStaticRedDice(CCNode* node)
 	redDices[lastRedDiceResult]->setVisible(true);
 
 	if ( !HAY_BATALLA )
-		_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(true);
+		showContinueButton(NULL, NULL);
 }
 
 void PlayScene::blueDiceCallback()
@@ -355,7 +355,7 @@ void PlayScene::setStaticBlueDice(CCNode* node)
 	// Se muestran las posibilidades en la interfaz
 	addPlayerBox();
 
-	_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(true);
+	showContinueButton(NULL, NULL);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -901,6 +901,8 @@ bool PlayScene::putMapCard(CCPoint location)
 	position p = position(location.x, location.y);
 	CCLOG("Lugar a poner el mapCard (%d, %d)\n", p.x, p.y);
 	if (!isAllowed(p)) {
+		if (GameState.isCurrentPlayerMachine()) return true;
+
 		return false;
 	}
 
@@ -1206,6 +1208,7 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 		hideFirstPhase();
 		showSecondPhase();
 		checkBattle(NULL,NULL);
+		CCLOG("Sali de checkBattle de changePhase\n");
 	}
 
 	if (currFase == 2) {
@@ -1380,7 +1383,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		pointToEvent(p);
 		CCLOG("despues point to event\n");
 
-		CCArray *actions = CCArray::createWithCapacity(4 * events.size() + 2);
+		CCArray *actions = CCArray::createWithCapacity(4 * events.size() + 3);
 		CCFiniteTimeAction* single_action;
 
 		for (int i = 0; i < events.size(); i++) {
@@ -1401,6 +1404,10 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL);
 		actions->addObject(single_action);
 
+		// mostrar boton de continuar
+		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL);
+		actions->addObject(single_action);
+
 		/*
 		 * Quedamos en que el arreglo de eventos tendria eventos hasta encontrarse con un zombie para
 		 * batallar o hasta llegar al punto final del movimiento (en caso de que no haya batalla)
@@ -1410,6 +1417,9 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		actions->addObject(single_action);
 
 		CCSequence *sq = CCSequence::create(actions);
+
+		// Se oculta el boton de continuar
+		_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(false);
 
 		mSprite[GameState.getCurrentPlayer()]->runAction( sq );
 
@@ -1434,10 +1444,13 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		decision d;
 		bool isMachine = GameState.isCurrentPlayerMachine();
 		bool selectLife = d.selectLife(GameState);
-
-		if ((life->boundingBox().containsPoint(pto) || (isMachine && selectLife))
+		bool onlyLife = GameState.getCurrentPlayerBullet() + lastRedDiceResult < 3;
+		if ((life->boundingBox().containsPoint(pto) || (isMachine && selectLife) || onlyLife)
 				&& GameState.getCurrentPlayerLife() > 0) {
 			modifyPlayerLifes(-1);
+
+			msg = "Lanza el dado rojo de nuevo";
+			putSubtitleInformation(NULL, NULL);
 
 			HAY_PREGUNTA = false;
 			_stayLayer->getChildByTag(QUESTION_LABEL_TAG)->setVisible(false);
@@ -1536,15 +1549,8 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 	WAIT = true;
 	CCPoint location, tileLocation;
 
-	if (LANZODADOROJO && GameState.isCurrentPlayerMachine()) {
-		CCLOG("Ya se lanzo el dado rojo, voy a salir\n");
-		changePhase(NULL, NULL); // Provisional
-		WAIT = false;
-		return;
-	}
-
 	// Se verifica si el toque es para seleccionar el zombie a mover:
-	if (LANZODADOROJO && prevZombieLocation.x == -1 && prevZombieLocation.y == -1)
+	if (LANZODADOROJO && prevZombieLocation.x == -1 && prevZombieLocation.y == -1 && !GameState.isCurrentPlayerMachine())
 	{
 		location = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
@@ -1593,16 +1599,43 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 
 		CCLOG("thirdPhase: zombie seleccionado\n");
 
-	} else if (LANZODADOROJO && prevZombieLocation.x != -1 && prevZombieLocation.y != -1) { // Va a seleccionar a donde lo quiere mover
+	} else if (LANZODADOROJO && ((prevZombieLocation.x != -1 && prevZombieLocation.y != -1) || GameState.isCurrentPlayerMachine())) { // Va a seleccionar a donde lo quiere mover
 		CCLOG("thirdPhase: seleccionado a donde se quiere mover el zombie\n");
 
-		CCPoint nLocation = axisToMapCardMatrix(prevZombieLocation.x,prevZombieLocation.y);
-		CCPoint nTileLocation = axisToTileMatrix(prevZombieLocation.x,prevZombieLocation.y);
-		position prev_pos = relativeTileToAbsoluteTile(nLocation.x, nLocation.y, nTileLocation.x,nTileLocation.y);
+		CCPoint nLocation, nTileLocation;
+		position prev_pos, p;
 
-		nLocation = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
-		nTileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
-		position p = relativeTileToAbsoluteTile(nLocation.x, nLocation.y, nTileLocation.x,nTileLocation.y);
+		if (GameState.isCurrentPlayerMachine()) {
+			decision d;
+			pair<position, position> zombieMove;
+			if (!d.moveZombie(GameState, zombieMove)) // No se movio zombie
+			{
+				WAIT = false;
+				changePhase(NULL, NULL);
+				return;
+			}
+
+			prev_pos = zombieMove.first;
+			prev_pos.t();
+			prevZombieLocation = tileMatrixToAxis(prev_pos.x / 3, prev_pos.y / 3, prev_pos.x % 3, prev_pos.y % 3);
+			prev_pos.invT();
+
+			p = zombieMove.second;
+			p.t();
+			nLocation.x = p.x / 3; nLocation.y = p.y / 3;
+			nTileLocation.x = p.x % 3; nTileLocation.y = p.y % 3;
+			ptoConvertido = tileMatrixToAxis(nLocation.x, nLocation.y, nTileLocation.x, nTileLocation.y);
+			p.invT();
+
+		} else {
+			nLocation = axisToMapCardMatrix(prevZombieLocation.x,prevZombieLocation.y);
+			nTileLocation = axisToTileMatrix(prevZombieLocation.x,prevZombieLocation.y);
+			prev_pos = relativeTileToAbsoluteTile(nLocation.x, nLocation.y, nTileLocation.x,nTileLocation.y);
+
+			nLocation = axisToMapCardMatrix(ptoConvertido.x,ptoConvertido.y);
+			nTileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
+			p = relativeTileToAbsoluteTile(nLocation.x, nLocation.y, nTileLocation.x,nTileLocation.y);
+		}
 
 		// De-seleccion de zombie
 		if ( p == prev_pos ){
@@ -1666,7 +1699,8 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
                                                delay,
                                                stop_zombie_move_action,
                                                activate_touch_action,
-                                               (!NUM_OF_ZOMBIES_TO_MOVE? CCCallFuncND::create( this, callfuncND_selector(PlayScene::changePhase), NULL) : NULL),
+                                               (!NUM_OF_ZOMBIES_TO_MOVE? CCCallFuncN::create( this, callfuncN_selector(PlayScene::changePhase)) :
+                                            		   (GameState.isCurrentPlayerMachine() ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::callThirdPhase)): NULL)),
                                                NULL);
 
 		// SIEMPRE DEBE SUCEDER que zombieSpriteToMove != null
@@ -1850,7 +1884,8 @@ void PlayScene::show_mapCard_selected(CCNode* node)
 
     PUTMAPCARD = true;
 
-    addMapCardBox();
+    if (!GameState.isCurrentPlayerMachine())
+    	addMapCardBox();
 
 }
 
@@ -1919,6 +1954,7 @@ void PlayScene::setBackgrounds()
     box->setPosition(ccp(VisibleRect::top().x-boxSize.width/2, VisibleRect::top().y-h));
     box->setContentSize(boxSize);
     box->setOpacity((GLubyte)(140));
+    _stayLayer->addChild(box,1);
 }
 
 void PlayScene::checkBattle(CCNode* sender, void* data)
@@ -1933,10 +1969,12 @@ void PlayScene::checkBattle(CCNode* sender, void* data)
 	} else if ( LANZODADOAZUL ) {
 		checkLifeAndBullet(NULL, NULL);
 		checkLeftMoves(NULL, NULL);
+		return;
 	}
 
 	if (GameState.isCurrentPlayerMachine() && currFase == 1)
 		{CCLOG("Se llama second en checkBattle\n");secondPhase(ccp(-1,-1), ccp(-1,-1));}
+
 }
 
 void PlayScene::checkLeftMoves(CCNode* sender, void* data)
@@ -2163,12 +2201,13 @@ void PlayScene::popUpbuttonCallback(CCNode *pNode)
     changePhase(NULL,NULL);
 }
 
-// LLamadas para la maquina
-void PlayScene::callFirstPhase(CCNode* sender, void * data)
+void PlayScene::showContinueButton(CCNode* sender, void * data)
 {
-	firstPhase(ccp(-1, -1), ccp(-1, -1));
+	if (!GameState.isCurrentPlayerMachine())
+		_stayLayer->getChildByTag(CONTINUAR_LABEL_TAG)->setVisible(true);
 }
 
+// LLamadas para la maquina
 void PlayScene::callSecondPhase(CCNode* sender, void * data)
 {
 	secondPhase(ccp(-1, -1), ccp(-1, -1));
