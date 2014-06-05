@@ -1403,8 +1403,8 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		actions->addObject(single_action);
 
 		// mostrar boton de continuar
-		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::showContinueButton), NULL);
-		actions->addObject(single_action);
+//		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::showContinueButton), NULL);
+//		actions->addObject(single_action);
 
 		/*
 		 * Quedamos en que el arreglo de eventos tendria eventos hasta encontrarse con un zombie para
@@ -1993,6 +1993,8 @@ void PlayScene::checkLeftMoves(CCNode* sender, void* data)
 
 		if (GameState.isCurrentPlayerMachine())
 			{CCLOG("Se llama second en checkLeft\n");secondPhase(ccp(-1, -1), ccp(-1, -1));}
+		else
+			showContinueButton(NULL, NULL);
 	}
 }
 
