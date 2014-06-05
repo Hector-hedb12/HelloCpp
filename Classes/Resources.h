@@ -13,9 +13,9 @@ USING_NS_CC;
 
 #define FONT_SIZE ( isScreenSizeHD() ? 18 : 16)
 
-static const int PLAY    = 0;
-static const int CREDITS = 1;
-static const int EXIT    = 2;
+static const int PLAY    = 1;
+static const int CREDITS = 2;
+static const int EXIT    = 3;
 static const int MENU_OPTIONS_COUNT = 3;
 
 static bool isScreenSizeHD() {

@@ -30,16 +30,38 @@ bool MenuScene::init()
         return false;
     }
 
+    CCSprite* mSprite = CCSprite::create("bg.png");
+    mSprite->setPosition( VisibleRect::center() );
+    mSprite->setScaleX(VisibleRect::getVisibleRect().size.width / mSprite->getContentSize().width);
+    mSprite->setScaleY(VisibleRect::getVisibleRect().size.height / mSprite->getContentSize().height);
+    addChild(mSprite, 0);
+
+    mSprite = CCSprite::create("logo_home.png");
+    mSprite->setPosition( ccp( VisibleRect::top().x , VisibleRect::top().y - mSprite->getContentSize().height / 2 - 10 ) );
+    addChild(mSprite, 0);
 
     // Crea el menu y agrega las opciones con su respectivo callback
 	menuOptions = CCMenu::create();
 
-	for ( int i = 0;  i < MENU_OPTIONS_COUNT; ++ i) {
-		CCLabelTTF* label = CCLabelTTF::create(MENU_OPTIONS[i].c_str(), "Arial", FONT_SIZE);
-		CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(MenuScene::menuCallBack));
-		menuOptions->addChild(itemLabel,i);
-		itemLabel->setPosition( ccp( VisibleRect::center().x , VisibleRect::center().y + ((MENU_OPTIONS_COUNT/2 + MENU_OPTIONS_COUNT%2 - (i+1)) * LINE_SPACE) ) );
-	}
+	CCMenuItemImage * itemImage = CCMenuItemImage::create("boton_jugar.png","boton_jugar.png",this,menu_selector(MenuScene::menuCallBack));
+	itemImage->setPosition( ccp( VisibleRect::center().x , VisibleRect::center().y - mSprite->getContentSize().height / 2) );
+	menuOptions->addChild(itemImage, 1);
+
+	itemImage = CCMenuItemImage::create("boton_creditos.png","boton_creditos.png",this,menu_selector(MenuScene::menuCallBack));
+	itemImage->setPosition( ccp( VisibleRect::leftBottom().x + itemImage->getContentSize().width / 2 + 5, VisibleRect::leftBottom().y + itemImage->getContentSize().height / 2 + 5) );
+	menuOptions->addChild(itemImage, 2);
+
+	itemImage = CCMenuItemImage::create("boton_salir.png","boton_salir.png",this,menu_selector(MenuScene::menuCallBack));
+	itemImage->setPosition( ccp( VisibleRect::rightBottom().x - itemImage->getContentSize().width / 2 - 5 , VisibleRect::rightBottom().y + itemImage->getContentSize().height / 2 + 5) );
+	menuOptions->addChild(itemImage, 3);
+
+
+//	for ( int i = 0;  i < MENU_OPTIONS_COUNT; ++ i) {
+//		CCLabelTTF* label = CCLabelTTF::create(MENU_OPTIONS[i].c_str(), "Arial", FONT_SIZE);
+//		CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(MenuScene::menuCallBack));
+//		menuOptions->addChild(itemLabel,i);
+//		itemLabel->setPosition( ccp( VisibleRect::center().x , VisibleRect::center().y + ((MENU_OPTIONS_COUNT/2 + MENU_OPTIONS_COUNT%2 - (i+1)) * LINE_SPACE) ) );
+//	}
 
 	menuOptions->setContentSize(CCSizeMake(VisibleRect::getVisibleRect().size.width, (MENU_OPTIONS_COUNT + 1) * (LINE_SPACE)));
 	menuOptions->setPosition(s_tCurPos);

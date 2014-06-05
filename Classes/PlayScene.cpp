@@ -365,14 +365,13 @@ void PlayScene::setStaticBlueDice(CCNode* node)
 void PlayScene::setMenuBackMenu(CCLayer *mLayer)
 {
 	CCLOG("Entrando a: void PlayScene::setMenuBackMenu(CCLayer *mLayer)\n");
-	CCLabelTTF* label = CCLabelTTF::create(MAIN_MENU_STRING.c_str(), "Arial", FONT_SIZE);
-	CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(PlayScene::mainMenuCallback));
+	CCMenuItemImage * itemImage = CCMenuItemImage::create("Menu.png","Menu.png",this,menu_selector(PlayScene::mainMenuCallback));
 
-	itemLabel->setPosition(ccp(VisibleRect::rightBottom().x - itemLabel->getContentSize().width/2 -10,
-                               VisibleRect::rightBottom().y + itemLabel->getContentSize().height/2 +10));
+	itemImage->setPosition(ccp(VisibleRect::rightBottom().x - itemImage->getContentSize().width/2,
+                               VisibleRect::rightBottom().y + itemImage->getContentSize().height/2));
 
     // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(itemLabel, NULL);
+    CCMenu* pMenu = CCMenu::create(itemImage, NULL);
     pMenu->setPosition(CCPointZero);
     mLayer->addChild(pMenu, 1);
 }
@@ -577,13 +576,12 @@ void PlayScene::setInterface()
 
 	// Boton de Skip movimiento de zombie o player:
 
-	label = CCLabelTTF::create("Continuar", "Arial", FONT_SIZE);
-	CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(PlayScene::skipMenuCallback));
+	CCMenuItemImage * itemImage = CCMenuItemImage::create("Continuar.png","Continuar.png",this,menu_selector(PlayScene::skipMenuCallback));
 
-	itemLabel->setPosition(ccp(VisibleRect::right().x - label->getContentSize().width/2 - 8,
-			                   VisibleRect::right().y - label->getContentSize().height));
+	itemImage->setPosition(ccp(VisibleRect::right().x - itemImage->getContentSize().width/2 - 5,
+			                   VisibleRect::right().y - itemImage->getContentSize().height/2));
 
-    CCMenu* pMenu = CCMenu::create(itemLabel, NULL);
+    CCMenu* pMenu = CCMenu::create(itemImage, NULL);
     pMenu->setPosition(CCPointZero);
     pMenu->setVisible(false);
     pMenu->setTag(CONTINUAR_LABEL_TAG);
@@ -1405,7 +1403,7 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		actions->addObject(single_action);
 
 		// mostrar boton de continuar
-		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL);
+		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::showContinueButton), NULL);
 		actions->addObject(single_action);
 
 		/*
