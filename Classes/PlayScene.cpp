@@ -81,6 +81,7 @@ bool PlayScene::init()
     currSubFase = 0;
     fase[0] = true;
     currCardRotation = 0;
+    gameIsOver = false;
 
     for (int i = 1; i < NUM_FASES; i++) fase[i] = false;
 
@@ -124,6 +125,13 @@ bool PlayScene::init()
     return true;
 }
 
+void PlayScene::onEnter() {
+    CCLayer::onEnter();
+
+    CCLOG("onEnter()");
+    if (GameState.isCurrentPlayerMachine())
+    	firstPhase(ccp(-1,-1), ccp(-1,-1));
+}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * *
  *           Funciones Callbacks                   *
@@ -131,12 +139,16 @@ bool PlayScene::init()
 
 void PlayScene::skipMenuCallback(CCObject* pSender)
 {
+	WAIT = true;
+
 	if (currFase == 1)
 		removePlayerBox();
 	if (currFase == 2)
 		removeZombieBox();
 
 	changePhase(NULL, NULL);
+
+	WAIT = false;
 }
 
 void PlayScene::mainMenuCallback(CCObject* pSender)
@@ -770,8 +782,9 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data)
 		checkLifeAndBullet(NULL, NULL);
 
 		// Chequear fin de juego
-		if (GameState.currentPlayerOverHeliport())
+		if (GameState.currentPlayerOverHeliport()) {
 			gameOver();
+		}
 	}
 }
 
@@ -1396,10 +1409,6 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL);
 		actions->addObject(single_action);
 
-		// mostrar boton de continuar
-//		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::showContinueButton), NULL);
-//		actions->addObject(single_action);
-
 		/*
 		 * Quedamos en que el arreglo de eventos tendria eventos hasta encontrarse con un zombie para
 		 * batallar o hasta llegar al punto final del movimiento (en caso de que no haya batalla)
@@ -1675,25 +1684,36 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		prevZombieLocation = zombies[zombieSpriteToMove].sprite->getPosition();
 
 		// Se mueve el sprite. Aqui, evento != NULL
-		CCFiniteTimeAction* animate_zombie_action, *move_zombie_action, *stop_zombie_move_action, *activate_touch_action, *delay;
+		CCFiniteTimeAction* single_action;
 		CCSequence *sq;
+		CCArray *actions = CCArray::createWithCapacity(7);
 
 		NUM_OF_ZOMBIES_TO_MOVE--;
 
-		animate_zombie_action = (CCFiniteTimeAction*) CCCallFuncND::create( this, callfuncND_selector(PlayScene::setMoveZombieSprite), (void*) &events[0]);
-		move_zombie_action = (CCFiniteTimeAction*) CCCallFuncND::create( this, callfuncND_selector(PlayScene::animateZombieSprite), (void*) &events[0]);
-		delay = CCDelayTime::create(abs(events[0].movement) / VELOCITY_SPRITE_MOVEMENT);
-		stop_zombie_move_action = (CCFiniteTimeAction*) CCCallFuncN::create( this, callfuncN_selector(PlayScene::setStaticZombieSprite));
-		activate_touch_action = (CCFiniteTimeAction*) CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL);
+		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::setMoveZombieSprite), (void*) &events[0]);
+		actions->addObject(single_action);
 
-		sq = (CCSequence *) CCSequence::create(animate_zombie_action,
-                                               move_zombie_action,
-                                               delay,
-                                               stop_zombie_move_action,
-                                               activate_touch_action,
-                                               (!NUM_OF_ZOMBIES_TO_MOVE? CCCallFuncN::create( this, callfuncN_selector(PlayScene::changePhase)) :
-                                            		   (GameState.isCurrentPlayerMachine() ? CCCallFuncN::create( this, callfuncN_selector(PlayScene::callThirdPhase)): NULL)),
-                                               NULL);
+		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::animateZombieSprite), (void*) &events[0]);
+		actions->addObject(single_action);
+
+		single_action = CCDelayTime::create(abs(events[0].movement) / VELOCITY_SPRITE_MOVEMENT);
+		actions->addObject(single_action);
+
+		single_action = CCCallFuncN::create( this, callfuncN_selector(PlayScene::setStaticZombieSprite));
+		actions->addObject(single_action);
+
+		if (NUM_OF_ZOMBIES_TO_MOVE == 0) {
+			single_action = CCCallFuncN::create( this, callfuncN_selector(PlayScene::changePhase));
+			actions->addObject(single_action);
+		} else if (GameState.isCurrentPlayerMachine()) {
+			single_action = CCCallFuncN::create( this, callfuncN_selector(PlayScene::callThirdPhase));
+			actions->addObject(single_action);
+		}
+
+		single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::activateTouch), NULL);
+		actions->addObject(single_action);
+
+		sq = CCSequence::create(actions);
 
 		// SIEMPRE DEBE SUCEDER que zombieSpriteToMove != null
 		zombies[zombieSpriteToMove].sprite->runAction( sq );
@@ -1952,6 +1972,8 @@ void PlayScene::setBackgrounds()
 void PlayScene::checkBattle(CCNode* sender, void* data)
 {
 	CCLOG("Entrando a: void PlayScene::checkBattle(CCNode* sender, void* data)\n");
+	if (gameIsOver) return;
+
 	if ( GameState.queryZombie() )
 	{
 		HAY_BATALLA = true;
@@ -2153,6 +2175,13 @@ void PlayScene::continueBattle(CCNode* sender)
 void PlayScene::gameOver()
 {
 	CCLOG("Entrando a: void PlayScene::gameOver() \n");
+
+	gameIsOver = true;
+
+	// Limpiamos las interfaces
+	_moveLayer->removeAllChildren();
+	_stayLayer->removeAllChildren();
+
 	this->removeChild(_moveLayer);
 	this->removeChild(_stayLayer);
 
