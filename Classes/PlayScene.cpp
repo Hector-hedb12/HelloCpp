@@ -662,21 +662,21 @@ void PlayScene::setSprites(CCLayer* mLayer)
 	CCLOG("Entrando a: void PlayScene::setSprites(CCLayer* mLayer)\n");
 	CCPoint center = mapCardMatrixToAxis(MAX_MAP_DIM/2, MAX_MAP_DIM/2);
 
-	center.y += (mSprite[0]->getContentSize().height / 2);
+	center.y += (mSprite[0]->getContentSize().height / 2) + 5;
 
 	for(int i = 0; i < NUM_OF_PLAYER; i++){
 		if (i == 0)
-			center.x += (mSprite[i]->getContentSize().width / 2);
+			center.x += (mSprite[i]->getContentSize().width / 2) + 7;
 		else
-			center.x -= (mSprite[i]->getContentSize().width / 2);
+			center.x -= (mSprite[i]->getContentSize().width / 2) + 7;
 
 		mSprite[i]->setPosition(center);
 		mLayer->addChild(mSprite[i], 5);
 
 		if (i == 0)
-			center.x -= (mSprite[i]->getContentSize().width / 2);
+			center.x -= (mSprite[i]->getContentSize().width / 2) + 7;
 		else
-			center.x += (mSprite[i]->getContentSize().width / 2);
+			center.x += (mSprite[i]->getContentSize().width / 2) + 7;
 	}
 }
 
@@ -707,10 +707,10 @@ void PlayScene::setMoveSprite(CCNode* sender, void* data)
 
 	_moveLayer->addChild(spritebatch, 5);
 
-	CCArray* animFrames = CCArray::createWithCapacity(10);
+	CCArray* animFrames = CCArray::createWithCapacity(5);
 
 	char str[250] = {0};
-	for(int i = 1; i < 10; i++)
+	for(int i = 1; i < 5; i++)
 	{
 		sprintf(str, "%s_%d.png", name.c_str(), i);
 		CCSpriteFrame* frame = cache->spriteFrameByName( str );
@@ -815,18 +815,12 @@ void PlayScene::setMoveZombieSprite(CCNode* sender, void* data)
 
 	_moveLayer->addChild(spritebatch, 5);
 
-	CCArray* animFrames = CCArray::createWithCapacity(4);
+	CCArray* animFrames = CCArray::createWithCapacity(5);
 
 	char str[250] = {0};
 	int i;
-	for(i = 1; i < 4; i++)
+	for(i = 1; i < 5; i++)
 	{
-		sprintf(str, "%s_%d.png", name.c_str(), i);
-		CCSpriteFrame* frame = cache->spriteFrameByName( str );
-		animFrames->addObject(frame);
-	}
-
-	if (d->orientation == 'V'){
 		sprintf(str, "%s_%d.png", name.c_str(), i);
 		CCSpriteFrame* frame = cache->spriteFrameByName( str );
 		animFrames->addObject(frame);
@@ -932,7 +926,7 @@ bool PlayScene::putMapCard(CCPoint location)
 	float bv_offset_x, bv_offset_y, z_offset_y;
 
 	//Zombie
-	sprite = CCSprite::create("sprite/zombie_down_1.png");
+	sprite = CCSprite::create("sprite/zombie.png");
 	z_offset_y = - sprite->getContentSize().height/4;
 
 	// vida y bala
@@ -958,7 +952,7 @@ bool PlayScene::putMapCard(CCPoint location)
 			tile currTile = GameState.getLastMapCard().getTile(i-1, j-1);
 			element.tile_j = j;
 			if (currTile.hasZombie()) {
-				element.sprite = CCSprite::create("sprite/zombie_down_1.png");
+				element.sprite = CCSprite::create("sprite/zombie.png");
 				element.sprite->setPosition(ccp(actualLocation.x, actualLocation.y + z_offset_y));
 				_moveLayer->addChild(element.sprite,4);
 				zombies.push_back(element);

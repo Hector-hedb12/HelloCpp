@@ -32,7 +32,7 @@ static const int NUM_OF_PLAYER = 2;
 static const int NUM_OF_USERS = 1;
 static const int NUM_OF_MACHINES = 1;
 static const int VELOCITY_SPRITE_MOVEMENT = 100.0;
-static const std::string PATH_PLAYER_SPRITE[] = {"sprite/player_d.png","sprite/player_d.png"};
+static const std::string PATH_PLAYER_SPRITE[] = {"sprite/player.png","sprite/cpu.png"};
 static const int UP = 0;
 static const int RIGHT = 1;
 static const int DOWN = 2;
@@ -43,7 +43,7 @@ static const int ZOMBIES_TO_WIN = 25;
 static const float EPSILON_DISTANCE = 5;
 static const std::string NAME_PLAYER_SPRITE_ANIMATION[][4] = {
 		{"player_up","player_right","player_down","player_left"},
-		{"player_up","player_right","player_down","player_left"}
+		{"cpu_up","cpu_right","cpu_down","cpu_left"}
 };
 
 static const std::string NAME_ZOMBIE_SPRITE_ANIMATION[4] = {"zombie_up","zombie_right","zombie_down","zombie_left"};
