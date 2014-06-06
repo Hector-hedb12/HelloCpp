@@ -2109,11 +2109,11 @@ void PlayScene::loseBattleAndDie(CCNode* sender)
 
 	CCPoint point = tileMatrixToAxis(MAX_MAP_DIM/2,MAX_MAP_DIM/2,1,1);
 
-	point.y += (mSprite[0]->getContentSize().height / 2);
+	point.y += (mSprite[0]->getContentSize().height / 2) + 5;
 	if (GameState.getCurrentPlayer() == 0)
-		point.x += (mSprite[GameState.getCurrentPlayer()]->getContentSize().width / 2);
+		point.x += (mSprite[GameState.getCurrentPlayer()]->getContentSize().width / 2) + 7;
 	else
-		point.x -= (mSprite[GameState.getCurrentPlayer()]->getContentSize().width / 2);
+		point.x -= (mSprite[GameState.getCurrentPlayer()]->getContentSize().width / 2) + 7;
 
 	float distance = mSprite[GameState.getCurrentPlayer()]->getPosition().getDistance(point);
 	mSprite[GameState.getCurrentPlayer()]->runAction(CCSequence::create(CCMoveTo::create(distance/VELOCITY_SPRITE_MOVEMENT, point),
@@ -2172,6 +2172,8 @@ void PlayScene::gameOver()
 	setMenuBackMenu(_gameOverLayer);
 
 	this->addChild(_gameOverLayer);
+
+	setTouchEnabled(false);
 }
 
 

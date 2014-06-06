@@ -107,6 +107,7 @@ class PlayScene : public cocos2d::CCLayer
 	   void activateMapCardModeCallback(CCObject* pSender);
 
 	private:
+
 	   // Utilizado para mostrar al usario el Zombie/Player seleccionado:
 
 	   CCSize boxTileSize;
