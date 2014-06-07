@@ -11,15 +11,17 @@
 
 #include "state.h"
 #include "strategy.h"
+#include "dice.h"
 #include <cassert>
 #include <cstdio>
 #include <iostream>
 #include <string>
 #include <map>
 #include <algorithm>
+
 class decision{
 	/*
-	 * Return a sparce vector with the sum of the distances of every element in se.
+	 * Return a sparse vector with the sum of the distances of every element in se.
 	 */
 	map<int,int> getmap(set<position> se, map<position, int> dist){
 		map<int, int> res;
@@ -201,10 +203,17 @@ public:
 			}
 		}
 		sort(vres.begin(), vres.end());
+		reverse(vres.begin(), vres.end());
 
-		out = vres.back().second;
-		if(out.first == out.second) return false;
-		return true;
+		if(vres.empty()) return false; // Shouldnt happen
+
+		dice d;
+		for(int i = 0; i < vres.size(); i++){
+			out = vres[i].second;
+			if(out.first != out.second)	return true;
+			if(d.next() <= 3) return false;
+		}
+		return false;
 	}
 };
 
