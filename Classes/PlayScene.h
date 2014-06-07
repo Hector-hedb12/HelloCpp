@@ -93,6 +93,8 @@ class PlayScene : public cocos2d::CCLayer
 	   static cocos2d::CCScene* scene();
 	   CREATE_FUNC(PlayScene);
 
+	   void onEnter();
+
 	   // Callbacks:
 	   // Funciones que manejan
 	   void skipMenuCallback(CCObject* pSender);
@@ -159,6 +161,9 @@ class PlayScene : public cocos2d::CCLayer
 	   // Para el manejo de los elementos (zombies, vidas y balas)
 	   int zombieSpriteToMove;
 	   vector<Element> zombies, lifes, bullets;
+
+	   // Fin del juego
+	   bool gameIsOver;
 
 	   // Para colocar elementos en los layers:
 	   // Estas funciones agregan elementos de interfaz y elementos
