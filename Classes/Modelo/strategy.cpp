@@ -58,8 +58,8 @@ void strategy::init(int x){
 		c_b = 20;
 		c_z = 30;
 		c_p = 20;
-		c_h = 100;
-		c_d = 1;
+		c_h = 1000;
+		c_d = 0;
 
 		c_zi = -40;
 		c_zu = 60;
@@ -79,10 +79,10 @@ void strategy::init(int x){
 	}else if(x == 3){ // Get Resources
 		c_l = 20;
 		c_b = 20;
-		c_z = -3;
-		c_p = -3;
-		c_h = 100;
-		c_d = 0;
+		c_z = 2;
+		c_p = -1;
+		c_h = 1000;
+		c_d = -2;
 
 		c_zi = -50;
 		c_zu = 30;
@@ -90,10 +90,10 @@ void strategy::init(int x){
 	}else if(x == 4){ // Get Bullets
 		c_l = 3;
 		c_b = 20;
-		c_z = -3;
-		c_p = -3;
-		c_h = 100;
-		c_d = 0;
+		c_z = 2;
+		c_p = -1;
+		c_h = 1000;
+		c_d = -2;
 
 		c_zi = -50;
 		c_zu = 30;
