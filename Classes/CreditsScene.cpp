@@ -31,40 +31,42 @@ bool CreditsScene::init()
         return false;
     }
     
-    // ** Back Menu **
-
-	CCLabelTTF* label = CCLabelTTF::create(MAIN_MENU_STRING.c_str(), "Arial", FONT_SIZE);
-	CCMenuItemLabel* itemLabel = CCMenuItemLabel::create(label,this,menu_selector(CreditsScene::mainMenuCallback));
-    
-	itemLabel->setPosition(ccp(VisibleRect::rightBottom().x - itemLabel->getContentSize().width/2 -10,
-                               VisibleRect::rightBottom().y + itemLabel->getContentSize().height/2 +10));
-
-    // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(itemLabel, NULL);
-    pMenu->setPosition(CCPointZero);
-    this->addChild(pMenu, 1);
-    
-    // ** FIN: Back Menu **
+    setMenuBackMenu();
 
     // ** Titulo **
-    CCLabelTTF* pLabel = CCLabelTTF::create("Zombies!! el juego", "Arial", FONT_SIZE);
-    
-    // coloca el sprite en el centro de la pantalla
+    CCLabelTTF* pLabel = CCLabelTTF::create("Zombies!!! El Juego", "Arial", FONT_SIZE);
     pLabel->setPosition(ccp(VisibleRect::center().x, VisibleRect::top().y - pLabel->getContentSize().height - 10));
-
-    // agrega el label como un hijo del layer principal
-    this->addChild(pLabel, 1);
-
+    addChild(pLabel, 1);
     // ** FIN Titulo **
 
+    // ** Logo **
     CCSprite* pSprite = CCSprite::create("ugr_logo.png");
-
-    // coloca el sprite en el centro de la pantalla
-    pSprite->setPosition(ccp(VisibleRect::center().x, VisibleRect::center().y));
-
-    // agrega el sprite como un hijo del layer principal
-    this->addChild(pSprite, 0);
+    pSprite->setPosition( ccp(VisibleRect::center().x, VisibleRect::center().y + 10) );
+    addChild(pSprite, 0);
+    // ** FIN Logo **
     
+    // ** Creadores **
+    pLabel = CCLabelTTF::create("Artica Media, C.A.", "Arial", FONT_SIZE - 5);
+    pLabel->setPosition(ccp(VisibleRect::bottom().x, VisibleRect::bottom().y + pLabel->getContentSize().height - 5));
+    addChild(pLabel, 1);
+
+    pLabel = CCLabelTTF::create("José Sánchez", "Arial", FONT_SIZE - 5);
+    pLabel->setPosition(ccp(VisibleRect::bottom().x, VisibleRect::bottom().y + pLabel->getContentSize().height*2 - 5*2));
+    addChild(pLabel, 1);
+
+    pLabel = CCLabelTTF::create("Héctor Domínguez", "Arial", FONT_SIZE - 5);
+    pLabel->setPosition(ccp(VisibleRect::bottom().x, VisibleRect::bottom().y + pLabel->getContentSize().height*3 - 5*3));
+    addChild(pLabel, 1);
+
+    pLabel = CCLabelTTF::create("José Piñero", "Arial", FONT_SIZE - 5);
+    pLabel->setPosition(ccp(VisibleRect::bottom().x, VisibleRect::bottom().y + pLabel->getContentSize().height*4 - 5*4));
+    addChild(pLabel, 1);
+
+    pLabel = CCLabelTTF::create("Creadores:", "Arial", FONT_SIZE);
+    pLabel->setPosition(ccp(VisibleRect::bottom().x, VisibleRect::bottom().y + pLabel->getContentSize().height*5 - 5*8));
+    addChild(pLabel, 1);
+    // ** FIN Creadores **
+
     return true;
 }
 
@@ -72,4 +74,16 @@ void CreditsScene::mainMenuCallback(CCObject* pSender)
 {
 	CCScene* pScene = MenuScene::scene();
 	CCDirector::sharedDirector()->replaceScene(pScene);
+}
+
+void CreditsScene::setMenuBackMenu()
+{
+	CCMenuItemImage * itemImage = CCMenuItemImage::create("Menu.png","Menu.png",this,menu_selector(CreditsScene::mainMenuCallback));
+
+	itemImage->setPosition(ccp(VisibleRect::rightBottom().x - itemImage->getContentSize().width/2,
+                               VisibleRect::rightBottom().y + itemImage->getContentSize().height/2));
+
+    CCMenu* pMenu = CCMenu::create(itemImage, NULL);
+    pMenu->setPosition(CCPointZero);
+    addChild(pMenu, 1);
 }

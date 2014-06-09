@@ -27,6 +27,7 @@ public:
      * presionado. Causa que se muestre la pantalla principal del juego
      */
     void mainMenuCallback(CCObject* pSender);
+    void setMenuBackMenu();
     
     // implement the "static node()" method manually
     CREATE_FUNC(CreditsScene);
