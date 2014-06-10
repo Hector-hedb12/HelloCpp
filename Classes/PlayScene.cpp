@@ -30,9 +30,8 @@ bool PlayScene::init()
     {
         return false;
     }
-    CCLOG("Antes el estado\n");
+
     GameState.init(NUM_OF_USERS, NUM_OF_MACHINES);
-    CCLOG("Cree el estado\n");
 
     CCSprite * mapCardSprite = CCSprite::create(mapPath[0].c_str());
     PIXELS_MAP_CARD = mapCardSprite->getTextureRect().size.height;
@@ -476,15 +475,6 @@ void PlayScene::setMap(CCLayer *mLayer)
 	CCLOG("Entrando a: void PlayScene::setMap(CCLayer *mLayer)\n");
 	CCSprite* mapCardSprite;
 	CCPoint zeroPos = mapCardMatrixToAxis(0,0), currPos;
-//	for (int i = 0; i < MAX_MAP_DIM; i++) {
-//		currPos.y = zeroPos.y + PIXELS_MAP_CARD * -i;
-//		for (int j = 0; j < MAX_MAP_DIM; j++){
-//			mapCardSprite = CCSprite::create("map/empty_card2.png");
-//			currPos.x = zeroPos.x + PIXELS_MAP_CARD * j;
-//			mapCardSprite->setPosition(currPos);
-//			mLayer->addChild(mapCardSprite);
-//		}
-//	}
 
 	mapCardSprite = CCSprite::create(mapPath[0].c_str()); // Plaza Central
 	mapCardSprite->setPosition(mapCardMatrixToAxis(MAX_MAP_DIM/2, MAX_MAP_DIM/2));
@@ -762,12 +752,7 @@ void PlayScene::setStaticSprite(CCNode* sender, void* data)
 	CCLOG("Entrando a: void PlayScene::setStaticSprite(CCNode* sender, void* data) \n");
 	Event *d =  (Event*) data;
 
-	CCLOG("CurrPlayerPos Before: (%d, %d)\n", GameState.getCurrentPlayerPosition().x, GameState.getCurrentPlayerPosition().y);
-	CCLOG("Se va a mover a: (%d, %d)\n", d->end_point.x, d->end_point.y);
-
 	GameState.movePlayerTo(d->end_point);
-
-	CCLOG("CurrPlayerPos: (%d, %d)\n", GameState.getCurrentPlayerPosition().x, GameState.getCurrentPlayerPosition().y);
 
 	if (spritebatch != NULL ) {
 		_moveLayer->removeChild(spritebatch);
@@ -891,7 +876,6 @@ bool PlayScene::isAllowed(position p)
 {
 	CCLOG("Entrando a: bool PlayScene::isAllowed(position p) \n");
 	for (int i = 0; i < allowedPositions[currCardRotation].size(); i++) {
-		CCLOG("Allow (%d, %d)\n", allowedPositions[currCardRotation][i].x, allowedPositions[currCardRotation][i].y);
 		if (allowedPositions[currCardRotation][i] == p)
 			return true;
 	}
@@ -904,7 +888,7 @@ bool PlayScene::putMapCard(CCPoint location)
 {
 	CCLOG("Entrando a: bool PlayScene::putMapCard(CCPoint location, int id)\n");
 	position p = position(location.x, location.y);
-	CCLOG("Lugar a poner el mapCard (%d, %d)\n", p.x, p.y);
+
 	if (!isAllowed(p)) {
 		if (GameState.isCurrentPlayerMachine()) return true;
 
@@ -933,8 +917,6 @@ bool PlayScene::putMapCard(CCPoint location)
 
 	// Se eliminan los box de las posibles posiciones de un mapcard
 	removeMapCardBox();
-
-	CCLOG("path putMapCard %s\n", GameState.getLastMapCard().getPath().c_str());
 
 	float bv_offset_x, bv_offset_y, z_offset_y;
 
@@ -1006,10 +988,6 @@ position PlayScene::relativeTileToAbsoluteTile(int mx, int my, int tx, int ty)
 
 CCPoint PlayScene::axisToMapCardMatrix(float x, float y)
 {
-//	CCLOG("Entrando a: CCPoint PlayScene::axisToMapCardMatrix(float x, float y)\n");
-//	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
-//	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
-
 	float aux_x = abs( PIXELS_MAP_CARD - x );
 	float aux_y = abs( PIXELS_MAP_CARD + MAX_MAP_DIM * PIXELS_MAP_CARD - y );
 
@@ -1018,9 +996,6 @@ CCPoint PlayScene::axisToMapCardMatrix(float x, float y)
 
 CCPoint PlayScene::axisToTileMatrix(float x, float y)
 {
-//	CCLOG("Entrando a: CCPoint PlayScene::axisToTileMatrix(float x, float y)\n");
-//	float aux_x = abs( - (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - x);
-//	float aux_y = abs(   (MAX_MAP_DIM/2 * PIXELS_MAP_CARD + PIXELS_MAP_CARD / 2) - y);
 	float aux_x = abs( PIXELS_MAP_CARD - x );
 	float aux_y = abs( PIXELS_MAP_CARD + MAX_MAP_DIM * PIXELS_MAP_CARD - y );
 
@@ -1029,10 +1004,6 @@ CCPoint PlayScene::axisToTileMatrix(float x, float y)
 
 CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)
 {
-//	CCLOG("Entrando a: CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)\n");
-//	float origen_x = (MAX_MAP_DIM/2)*(-PIXELS_MAP_CARD);
-//	float origen_y = (MAX_MAP_DIM/2)* PIXELS_MAP_CARD;
-
 	float origen_x = PIXELS_MAP_CARD + PIXELS_MAP_CARD/2;
 	float origen_y = PIXELS_MAP_CARD + MAX_MAP_DIM* PIXELS_MAP_CARD - PIXELS_MAP_CARD/2;
 
@@ -1041,7 +1012,6 @@ CCPoint PlayScene::mapCardMatrixToAxis(int i, int j)
 
 CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j)
 {
-//	CCLOG("Entrando a: CCPoint PlayScene::tileMatrixToAxis(int i_mapCard, int j_mapCard, int i, int j)\n");
 	CCPoint center = mapCardMatrixToAxis(i_mapCard,j_mapCard);
 
 	return ccp(center.x + PIXELS_TILE * (j-1), center.y - PIXELS_TILE * (i-1) );
@@ -1143,15 +1113,12 @@ void PlayScene::pointToEvent(position p)
 	// arreglo con los eventos. provisional
 
 	vector<position> road = GameState.queryMovePlayerTo(p);
-	CCLOG("Luego de query\n");
+
 	events.clear();
 	Event e;
 
-	CCLOG("pointToEvent: road size %d\n", road.size() );
-	CCLOG("road (%d, %d)\n", road[0].x, road[0].y);
 	for (int i = 1; i < road.size() && i < 20; i++){
-		CCLOG("pointToEvent %d\n", i);
-		CCLOG("road (%d, %d)\n", road[i].x, road[i].y);
+
 		if ( road[i-1].x != road[i].x ) {
 			e.orientation = 'V';
 			if (road[i-1].x > road[i].x)
@@ -1213,7 +1180,6 @@ void PlayScene::changePhase(CCNode* sender, void* data)
 		hideFirstPhase();
 		showSecondPhase();
 		checkBattle(NULL,NULL);
-		CCLOG("Sali de checkBattle de changePhase\n");
 	}
 
 	if (currFase == 2) {
@@ -1240,7 +1206,7 @@ void PlayScene::changeSubPhase(CCNode* sender, void* data)
 	// Si es la maquina se juega la fase automaticamente
 	if (GameState.isCurrentPlayerMachine()) {
 			if      (currFase == 0) firstPhase(ccp(-1, -1), ccp(-1, -1));
-			else if (currFase == 1) {CCLOG("Se llama second en changeSub\n");secondPhase(ccp(-1, -1), ccp(-1, -1));}
+			else if (currFase == 1) secondPhase(ccp(-1, -1), ccp(-1, -1));
 			else if (currFase == 2) thirdPhase(ccp(-1, -1), ccp(-1, -1));
 	}
 }
@@ -1286,7 +1252,6 @@ void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 				pair<int, position> choise = d.putmapcard(GameState);
 				currCardRotation = choise.first;
 				p = ccp(choise.second.x, choise.second.y);
-				CCLOG("La Decision tomada fue (%d, %d) con rotacion %d\n", (int)p.x, (int)p.y, currCardRotation);
 			}
 
 			if (putMapCard(p))
@@ -1298,10 +1263,6 @@ void PlayScene::firstPhase(CCPoint pto, CCPoint ptoConvertido)
 bool PlayScene::canMove(position p)
 {
 	CCLOG("Entrando a: bool PlayScene::canMove(position p) \n");
-	CCLOG("(%d, %d)\n", p.x, p.y);
-	for (int i = 0; i < possibleMoves.size(); i++) {
-		CCLOG("poss = (%d, %d)\n", possibleMoves[i].x, possibleMoves[i].y);
-	}
 
 	for (int i = 0; i < possibleMoves.size(); i++) {
 		if (possibleMoves[i] == p)
@@ -1315,12 +1276,6 @@ bool PlayScene::canMoveZombie(position prev_p, position p)
 {
 	CCLOG("Entrando a: bool PlayScene::canMoveZombie(position prev_p, position p) \n");
 	vector<position> posibles_moves = GameState.getPossibleZombieMoves(prev_p);
-
-	CCLOG("(%d, %d)->(%d, %d)\n", prev_p.x, prev_p.y, p.x, p.y);
-
-	for (int i = 0; i < posibles_moves.size(); i++) {
-		CCLOG("poss = (%d, %d)\n", posibles_moves[i].x, posibles_moves[i].y);
-	}
 
 	for (int i = 0; i < posibles_moves.size(); i++) {
 		if (posibles_moves[i] == p)
@@ -1336,7 +1291,6 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	// El dado azul fue cliqueado
 	if ( !HAY_PREGUNTA && !LANZODADOAZUL && !HAY_BATALLA  && (blueDices[0]->boundingBox().containsPoint(pto) || GameState.isCurrentPlayerMachine()))
 	{
-		CCLOG("A lanzar el dado\n");
 		// Se muestra el jugador que va a tomar turno
 		showCurrPlayerBox();
 
@@ -1350,7 +1304,6 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 	if (!HAY_BATALLA && LANZODADOAZUL && !HAY_PREGUNTA)
 	{
-		CCLOG("A moverse\n");
 		CCPoint index_cardMap = axisToMapCardMatrix(ptoConvertido.x, ptoConvertido.y);
 		CCPoint index_tile = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		position p;
@@ -1360,11 +1313,9 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 			if (!canMove(p)) return;
 		} else // Juega la maquina
 		{
-			CCLOG ("Decision de maquina\n");
 			decision d;
 			p = d.movement(GameState);
 			if (p == GameState.getCurrentPlayerPosition()) {
-				CCLOG("Decidio quedarse, se cambia fase\n");
 				removePlayerBox();
 				changePhase(NULL, NULL);
 				return;
@@ -1384,15 +1335,12 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 		point.y += (mSprite[0]->getContentSize().height / 2);
 
-		CCLOG("antes point to event\n");
 		pointToEvent(p);
-		CCLOG("despues point to event\n");
 
 		CCArray *actions = CCArray::createWithCapacity(4 * events.size() + 3);
 		CCFiniteTimeAction* single_action;
 
 		for (int i = 0; i < events.size(); i++) {
-			CCLOG("event %d\n",i);
 			single_action = CCCallFuncND::create( this, callfuncND_selector(PlayScene::setMoveSprite), (void*) &events[i]);
 			actions->addObject(single_action);
 
@@ -1429,7 +1377,6 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 
 	if ( HAY_BATALLA && !HAY_PREGUNTA && (redDices[0]->boundingBox().containsPoint(pto) || GameState.isCurrentPlayerMachine()))
 	{
-		CCLOG("Hay Batalla\n");
 		// desactiva touch
 		WAIT = true;
 		redDiceCallback();
@@ -1437,7 +1384,6 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 	}
 
 	if ( HAY_PREGUNTA ) {
-		CCLOG("Hay Pregunta\n");
 		CCSprite * life, * bullet;
 		life = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG);
 		bullet = (CCSprite * ) _stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG);
@@ -1458,8 +1404,9 @@ void PlayScene::secondPhase(CCPoint pto, CCPoint ptoConvertido)
 			_stayLayer->getChildByTag(QUESTION_LIFE_ICON_TAG)->setVisible(false);
 			_stayLayer->getChildByTag(QUESTION_BULLET_ICON_TAG)->setVisible(false);
 
-			if (GameState.isCurrentPlayerMachine())
-				{CCLOG("Se llama second en secondphase\n");secondPhase(ccp(-1, -1), ccp(-1,-1));}
+			if (GameState.isCurrentPlayerMachine()){
+				secondPhase(ccp(-1, -1), ccp(-1,-1));
+			}
 
 		} else if ((bullet->boundingBox().containsPoint(pto) || (isMachine && !selectLife))
 				&& GameState.getCurrentPlayerBullet() + lastRedDiceResult >= 3) {
@@ -1557,12 +1504,9 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		tileLocation = axisToTileMatrix(ptoConvertido.x,ptoConvertido.y);
 		position p = relativeTileToAbsoluteTile(location.x, location.y, tileLocation.x,tileLocation.y);
 
-		CCLOG("p:(%d,%d)",p.x,p.y);
-
 		// si no hay zombie o si  ha sido movido antes
 		if ( !GameState.isValidZombie(p) )
 		{
-			CCLOG("thirdPhase: si no hay zombie o si  ha sido movido antes\n");
 			WAIT = false;
 			return;
 		}
@@ -1597,11 +1541,7 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		    _moveLayer->addChild(boxTile, 1);
 	    }
 
-
-		CCLOG("thirdPhase: zombie seleccionado\n");
-
 	} else if (LANZODADOROJO && ((prevZombieLocation.x != -1 && prevZombieLocation.y != -1) || GameState.isCurrentPlayerMachine())) { // Va a seleccionar a donde lo quiere mover
-		CCLOG("thirdPhase: seleccionado a donde se quiere mover el zombie\n");
 
 		CCPoint nLocation, nTileLocation;
 		position prev_pos, p;
@@ -1650,7 +1590,6 @@ void PlayScene::thirdPhase(CCPoint pto, CCPoint ptoConvertido)
 		// Si hay zombie en el nuevo lugar o no es valido el movimiento --> no se mueve
 		if ( GameState.queryZombie(p) || !canMoveZombie(prev_pos, p) )
 		{
-			CCLOG("thirdPhase: Si hay zombie en el nuevo lugar o no es valido el movimiento\n");
 			WAIT = false;
 			return;
 		}
@@ -1828,8 +1767,6 @@ void PlayScene::initFlipXCallback(CCObject* target)
 {
 	CCLOG("Entrando a: void PlayScene::initFlipXCallback(CCObject* target)\n");
 	CCSprite * reversed_sprite = (CCSprite *) _stayLayer->getChildByTag(MAP_CARD_REVERSE);
-	// Aqui el chino deberia dar el id de la carta seleccionada (generada random)
-	// y sacar con el id el path: arreglo[id].path
 
 	mapCard card = GameState.pickMapCard();
 
@@ -1839,7 +1776,6 @@ void PlayScene::initFlipXCallback(CCObject* target)
 
 	reversed_sprite->setVisible(true);
 	CCSprite * sprite = CCSprite::create(card.getPath().c_str());
-	CCLOG("path flip %s\n", card.getPath().c_str());
 
     // 110 y 300
 	sprite->setScale(reversed_sprite->getContentSize().width/PIXELS_MAP_CARD);
@@ -1986,8 +1922,9 @@ void PlayScene::checkBattle(CCNode* sender, void* data)
 		return;
 	}
 
-	if (GameState.isCurrentPlayerMachine() && currFase == 1)
-		{CCLOG("Se llama second en checkBattle\n");secondPhase(ccp(-1,-1), ccp(-1,-1));}
+	if (GameState.isCurrentPlayerMachine() && currFase == 1){
+		secondPhase(ccp(-1,-1), ccp(-1,-1));
+	}
 
 }
 
@@ -2007,9 +1944,9 @@ void PlayScene::checkLeftMoves(CCNode* sender, void* data)
 		showCurrPlayerBox();
 		addPlayerBox();
 
-		if (GameState.isCurrentPlayerMachine())
-			{CCLOG("Se llama second en checkLeft\n");secondPhase(ccp(-1, -1), ccp(-1, -1));}
-		else
+		if (GameState.isCurrentPlayerMachine()){
+			secondPhase(ccp(-1, -1), ccp(-1, -1));
+		} else
 			showContinueButton(NULL, NULL);
 	}
 }
@@ -2168,8 +2105,9 @@ void PlayScene::continueBattle(CCNode* sender)
 
 	HAY_PREGUNTA = true;
 
-	if (GameState.isCurrentPlayerMachine())
-		{CCLOG("Se llama second en continueBattle\n");secondPhase(ccp(-1,-1), ccp(-1,-1));}
+	if (GameState.isCurrentPlayerMachine()){
+		secondPhase(ccp(-1,-1), ccp(-1,-1));
+	}
 }
 
 void PlayScene::gameOver()
